@@ -1,0 +1,170 @@
+/* Base layout */
+:root{
+	--bg:#f4f6f8;
+	--card:#ffffff;
+	--accent:#0d6efd;
+	--muted:#6c757d;
+}
+
+html,body{
+	height:100%;
+	margin:0;
+	font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+	background:var(--bg);
+	color:#222;
+}
+
+.navbar-brand{
+	font-weight:700;
+	letter-spacing:0.4px;
+}
+
+.container{
+	max-width:1000px;
+}
+
+main h2{
+	margin-top:0;
+	margin-bottom:0.5rem;
+}
+
+/* Tab and nav tweaks */
+.nav-pills .nav-link{
+	margin-left:0.4rem;
+}
+
+.nav-pills .nav-link.active{
+	background-color:var(--accent);
+	color:#fff;
+}
+
+/* Cards and sections */
+.card{
+	background:var(--card);
+	border:1px solid rgba(0,0,0,0.06);
+	box-shadow:0 1px 2px rgba(16,24,40,0.03);
+}
+
+/* Full-width bottom navigation: spread items, dividers, larger touch targets */
+.navbar .nav{
+	width:100%;
+	display:flex;
+	padding:0;
+	margin:0;
+	align-items:stretch;
+}
+.navbar .nav .nav-item{
+	flex:1 1 0;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	border-left:1px solid rgba(255,255,255,0.06);
+}
+.navbar .nav .nav-item:first-child{border-left:none}
+.navbar .nav .nav-link,
+.navbar .nav .btn{
+	display:block;
+	width:100%;
+	padding:.7rem 0;
+	text-align:center;
+	border-radius:0;
+	font-size:1rem;
+}
+.navbar .nav .nav-link:hover,
+.navbar .nav .btn:hover{background:rgba(255,255,255,0.03)}
+
+
+/* Make main content comfortable */
+main p{color:var(--muted);font-size:1rem}
+
+/* Responsive */
+@media (max-width:576px){
+	.nav-pills .nav-link{font-size:0.95rem;padding:.3rem .6rem}
+}
+
+/* Utility */
+.py-4{padding-top:1.5rem;padding-bottom:1.5rem}
+
+/* Ensure main content isn't hidden behind fixed bottom nav */
+.site-main{padding-bottom:84px}
+
+/* Slightly taller fixed nav handling */
+.navbar.fixed-bottom{height:auto}
+
+/* Floating action button (circular plus) */
+.fab{
+	position:fixed;
+	right:18px;
+	bottom:74px; /* floats above bottom nav */
+	width:56px;
+	height:56px;
+	border-radius:50%;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	font-size:28px;
+	background:var(--accent);
+	color:#fff;
+	box-shadow:0 6px 18px rgba(13,110,253,0.2);
+	z-index:1050;
+	text-decoration:none;
+}
+.fab:active{transform:scale(0.98)}
+
+@media (max-width:480px){
+	.fab{right:12px;bottom:78px;width:52px;height:52px;font-size:24px}
+}
+
+/* Score card styling for index */
+.score-card{
+	background:var(--card);
+	border:1px solid rgba(0,0,0,0.06);
+	padding:1rem;
+	margin-bottom:.75rem;
+	border-radius:.4rem;
+}
+.score-main{
+	display:flex;
+	align-items:baseline;
+	justify-content:space-between;
+}
+.score-title{font-size:1.05rem;font-weight:700}
+.score-total{font-size:1.6rem;font-weight:800}
+.score-sub{color:var(--muted);font-size:0.95rem}
+.badge-pb{background:#ffc107;color:#111;font-weight:700;padding:.35rem .5rem;border-radius:.35rem}
+
+/* Page header at top */
+.page-header{background:#fff;border-bottom:1px solid rgba(0,0,0,0.06)}
+.page-header .container{max-width:1000px}
+.page-header h1{margin:0;padding:.6rem 0;font-size:1.1rem;font-weight:700}
+
+/* Responsive stacking for coach mode buttons */
+@media (max-width:576px){
+	.btn-group.stack-sm{display:flex;flex-direction:column}
+	.btn-group.stack-sm .btn{width:100%}
+}
+
+/* Small icon above tab labels */
+.nav-icon{display:block;font-size:18px;line-height:1;margin-bottom:2px}
+
+/* Wider floating action button for profile management */
+.fab-wide{
+	position:fixed;
+	right:18px;
+	bottom:74px;
+	padding:0.6rem 1rem;
+	border-radius:28px;
+	display:inline-flex;
+	align-items:center;
+	justify-content:center;
+	font-size:16px;
+	background:var(--accent);
+	color:#fff;
+	box-shadow:0 6px 18px rgba(13,110,253,0.18);
+	z-index:1050;
+	text-decoration:none;
+}
+
+@media (max-width:480px){
+	.fab-wide{right:12px;bottom:78px;padding:.5rem .9rem}
+}

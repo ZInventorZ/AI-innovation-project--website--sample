@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>AI Innovation Project - Menu</title>
+	<link rel="stylesheet" href="style.css">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
+		<div class="container-fluid">
+			<a class="navbar-brand" href="index.html">AI Innovation</a>
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+							aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+
+			<div class="collapse navbar-collapse" id="navbarNav">
+				<ul class="nav nav-pills ms-auto" role="tablist">
+					<li class="nav-item" role="presentation">
+						<a class="nav-link" href="AI_Coach.html">AI Coach</a>
+					</li>
+					<li class="nav-item" role="presentation">
+						<a class="nav-link" href="Scores.html">Score</a>
+					</li>
+					<li class="nav-item" role="presentation">
+						<a class="nav-link" href="score_history.html">Score History</a>
+					</li>
+					<li class="nav-item" role="presentation">
+						<a class="nav-link" href="AI_camera_scoring.html">Feedback</a>
+					</li>
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle active" href="#" id="menuDropdown" role="button" data-bs-toggle="dropdown"
+							 aria-expanded="false">Menu</a>
+						<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="menuDropdown">
+							<li><a class="dropdown-item" href="#">Settings</a></li>
+							<li><a class="dropdown-item" href="#">Profile</a></li>
+							<li><hr class="dropdown-divider"></li>
+							<li><a class="dropdown-item" href="#">Help</a></li>
+						</li>
+						<!-- floating action button placed separately -->
+					</ul>
+					</li>
+				</ul>
+			</div>
+
+		<main class="site-main container py-4">
+
+	<main class="container py-4">
+		<!doctype html>
+		<html lang="en">
+		<head>
+			<meta charset="utf-8" />
+			<meta name="viewport" content="width=device-width, initial-scale=1" />
+			<title>AI Innovation Project - Menu</title>
+			<link rel="stylesheet" href="style.css">
+			<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+		</head>
+		<body>
+			<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
+				<div class="container-fluid">
+					<a class="navbar-brand" href="index.html">AI Innovation</a>
+					<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+									aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+						<span class="navbar-toggler-icon"></span>
+					</button>
+
+					<div class="collapse navbar-collapse" id="navbarNav">
+						<ul class="nav nav-pills ms-auto" role="tablist">
+							<li class="nav-item" role="presentation">
+								<a class="nav-link" href="index.html" title="Score History"><span class="nav-icon">📈</span>Score History</a>
+							</li>
+							<li class="nav-item" role="presentation">
+								<a class="nav-link" href="AI_Coach.html" title="AI Coach"><span class="nav-icon">🤖</span>AI Coach</a>
+							</li>
+							<li class="nav-item" role="presentation">
+								<a class="nav-link" href="AI_camera_scoring.html" title="Equipment"><span class="nav-icon">🏹</span>Equipment</a>
+							</li>
+                    
+							<li class="nav-item" role="presentation">
+								<a class="nav-link" href="score_history.html" title="Feedback"><span class="nav-icon">💬</span>Feedback</a>
+							</li>
+							<li class="nav-item dropdown">
+								<a class="nav-link dropdown-toggle" href="#" id="menuDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"><span class="nav-icon">☰</span>Menu</a>
+								<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="menuDropdown">
+									<li><a class="dropdown-item" href="#">Settings</a></li>
+									<li><a class="dropdown-item" href="profiles.html">Profile</a></li>
+									<li><hr class="dropdown-divider"></li>
+									<li><a class="dropdown-item" href="#">Help</a></li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</nav>
+
+			<main class="site-main container py-4">
+				<h2>Menu</h2>
+				<p>Application settings and quick links.</p>
+				<div class="mt-3">
+					<button id="toggleMobileView" class="btn btn-primary">Switch to mobile view</button>
+				</div>
+				<div id="mobileView" class="mt-3" style="display:none;">
+					<div class="card p-3">
+						<h5>Quick Score Entry (mobile)</h5>
+						<div class="row g-2 mt-2">
+							<div class="col-12"><input id="m_name" class="form-control" placeholder="Practice name"></div>
+							<div class="col-6"><input id="m_arrowCount" type="number" class="form-control" placeholder="Arrows per end"></div>
+							<div class="col-6"><input id="m_ends" type="number" class="form-control" placeholder="Ends"></div>
+							<div class="col-6"><input id="m_distance" type="number" class="form-control" placeholder="Distance (m)"></div>
+							<div class="col-6"><input id="m_totalScore" type="number" class="form-control" placeholder="Total Score (optional)"></div>
+							<div class="col-12 mt-2"><button id="m_save" class="btn btn-success w-100">Save Score</button></div>
+							<div class="col-12 mt-2"><div id="m_status" class="text-success"></div></div>
+						</div>
+					</div>
+				</div>
+			</main>
+
+			<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+			<script>
+			(function(){
+				const t=document.getElementById('toggleMobileView');
+				const mv=document.getElementById('mobileView');
+				const status=document.getElementById('m_status');
+				function getPractices(){return JSON.parse(localStorage.getItem('practices')||'[]');}
+				function savePractices(arr){localStorage.setItem('practices',JSON.stringify(arr));}
+				t.addEventListener('click',()=>{
+					mv.style.display = mv.style.display==='none' ? 'block' : 'none';
+				});
+				document.getElementById('m_save').addEventListener('click',()=>{
+					const p={
+						id:Date.now(),
+						name:document.getElementById('m_name').value||'Mobile Entry',
+						endCount: Number(document.getElementById('m_arrowCount').value)||0,
+						arrowCount: Number(document.getElementById('m_arrowCount').value)||0,
+						ends: Number(document.getElementById('m_ends').value)||0,
+						distance: Number(document.getElementById('m_distance').value)||0,
+						totalScore: (function(){const v=document.getElementById('m_totalScore').value; return v!==''?Number(v):null; })(),
+						notes:'Saved from mobile view',
+						created: new Date().toISOString()
+					};
+					// estimate totalScore if blank using same logic as new_practice
+					if(p.totalScore==null){
+						const list=getPractices();
+						let sumScore=0,sumArrows=0;
+						list.forEach(pr=>{ if(pr.totalScore!=null){ const perEnd=Number(pr.endCount)||Number(pr.arrowCount)||0; const arrows=perEnd*(Number(pr.ends)||1); if(arrows>0){sumScore+=Number(pr.totalScore); sumArrows+=arrows}}});
+						const avgPerArrow = sumArrows>0? (sumScore/sumArrows):8.0;
+						const arrowsNow=(Number(p.endCount)||0)*(Number(p.ends)||1);
+						p.totalScore = arrowsNow>0? Math.round(avgPerArrow*arrowsNow):0;
+					}
+					const arr=getPractices(); arr.push(p); savePractices(arr);
+					status.textContent='Saved ✓';
+					setTimeout(()=>status.textContent='',2000);
+				});
+			})();
+			</script>
+		</body>
+		</html>
