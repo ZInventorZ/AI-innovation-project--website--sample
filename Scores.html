@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<title>AI Innovation Project - Scores</title>
+	<title>AI Innovation Project - Statistics</title>
 	<link rel="stylesheet" href="style.css">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
 </head>
@@ -18,7 +18,7 @@
 			<div class="collapse navbar-collapse" id="navbarNav">
 				<ul class="nav nav-pills ms-auto" role="tablist">
 					<li class="nav-item" role="presentation">
-						<a class="nav-link" href="index.html" title="Score History"><span class="nav-icon">📈</span>Score History</a>
+						<a class="nav-link" href="index.html" title="History"><span class="nav-icon">📈</span>History</a>
 					</li>
 					<li class="nav-item" role="presentation">
 						<a class="nav-link" href="AI_Coach.html" title="AI Coach"><span class="nav-icon">🤖</span>AI Coach</a>
@@ -27,7 +27,7 @@
 						<a class="nav-link" href="AI_camera_scoring.html" title="Equipment"><span class="nav-icon">🏹</span>Equipment</a>
 					</li>
 					<li class="nav-item" role="presentation">
-						<a class="nav-link active" href="Scores.html" title="Score"><span class="nav-icon">🎯</span>Score</a>
+						<a class="nav-link active" href="Scores.html" title="Statistics"><span class="nav-icon">🎯</span>Statistics</a>
 					</li>
 					<li class="nav-item" role="presentation">
 						<a class="nav-link" href="score_history.html" title="Feedback"><span class="nav-icon">💬</span>Feedback</a>
@@ -47,10 +47,39 @@
 	</nav>
 
 	<main class="site-main container py-4">
-		<h2>Score</h2>
-		<p>Current score and summary go here.</p>
+		<h2>Statistics</h2>
+		<p>Performance averages over time.</p>
+		<div class="card p-3 mb-3">
+			<canvas id="statsChart" height="150"></canvas>
+		</div>
+		<div id="statsSummary" class="mb-3"></div>
 	</main>
 
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script>
+	(function(){
+		function getPractices(){return JSON.parse(localStorage.getItem('practices')||'[]');}
+		const list = getPractices().filter(p=>p.totalScore!=null);
+		if(!list.length){ document.getElementById('statsSummary').innerHTML='<div class="alert alert-secondary">No scored practices to chart.</div>'; return; }
+		// Sort by date ascending
+		list.sort((a,b)=>new Date(a.created)-new Date(b.created));
+		const labels = list.map(p=> new Date(p.created).toLocaleDateString());
+		const data = list.map(p=>{
+			const arrows = (Number(p.endCount)||Number(p.arrowCount)||0) * (Number(p.ends)||1);
+			return arrows>0 ? (Number(p.totalScore)/arrows).toFixed(2) : null;
+		});
+		const ctx = document.getElementById('statsChart').getContext('2d');
+		new Chart(ctx,{
+			type:'line',
+			data:{ labels: labels, datasets:[{ label:'Avg per arrow', data: data, borderColor:'rgb(13,110,253)', backgroundColor:'rgba(13,110,253,0.08)', tension:0.25, pointRadius:4 }]},
+			options:{ scales: { y: { beginAtZero:true } }, responsive:true, maintainAspectRatio:false }
+		});
+		// summary
+		const nums = data.map(x=>Number(x)).filter(x=>!isNaN(x));
+		const avg = (nums.reduce((s,n)=>s+n,0)/nums.length).toFixed(2);
+		document.getElementById('statsSummary').innerHTML = `<div class="card p-3">Overall average per arrow: <strong style="color:var(--accent)">${avg}</strong> (based on ${nums.length} sessions)</div>`;
+	})();
+	</script>
 </body>
 </html>

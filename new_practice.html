@@ -19,7 +19,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="nav nav-pills ms-auto" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <a class="nav-link" href="index.html" title="Score History"><span class="nav-icon">📈</span>Score History</a>
+                    <a class="nav-link" href="index.html" title="History"><span class="nav-icon">📈</span>History</a>
                 </li>
                 <li class="nav-item" role="presentation">
                     <a class="nav-link" href="AI_Coach.html" title="AI Coach"><span class="nav-icon">🤖</span>AI Coach</a>
@@ -73,12 +73,28 @@
             <input id="distance" type="number" class="form-control">
         </div>
         <div class="col-md-3">
+            <label class="form-label">Equipment Setup</label>
+            <select id="equipmentSetup" class="form-select">
+                <option value="">(none)</option>
+            </select>
+        </div>
+        <div class="col-md-3">
             <label class="form-label">Ends</label>
             <input id="ends" type="number" class="form-control">
         </div>
         <div class="col-12">
             <label class="form-label">Notes</label>
             <textarea id="notes" class="form-control" rows="3"></textarea>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Weather / Session</label>
+            <div class="d-flex gap-2">
+                <select id="weather" class="form-select">
+                    <option value="indoor">Indoor</option>
+                    <option value="outdoor">Outdoor</option>
+                </select>
+                <button id="pullWeather" type="button" class="btn btn-outline-secondary">Pull</button>
+            </div>
         </div>
         <div class="col-12">
             <div class="form-check">
@@ -120,6 +136,14 @@ function computeAverages(){
     };
 }
 
+// populate equipment setups
+function getSetups(){return JSON.parse(localStorage.getItem('equipmentSetups')||'[]');}
+function populateSetups(){
+    const sel=document.getElementById('equipmentSetup'); sel.innerHTML='<option value="">(none)</option>';
+    getSetups().forEach(s=>{ const opt=document.createElement('option'); opt.value=s.id; opt.textContent = s.name; sel.appendChild(opt); });
+}
+populateSetups();
+
 document.getElementById('unidentified').addEventListener('change', function(){
     if(this.checked){
         const avg=computeAverages();
@@ -145,8 +169,18 @@ document.getElementById('practiceForm').addEventListener('submit', function(e){
             return v!=='' ? Number(v) : null;
         })(),
         notes: document.getElementById('notes').value||'',
+            weather: document.getElementById('weather') ? document.getElementById('weather').value : null,
+            equipmentSetupId: (function(){const v=document.getElementById('equipmentSetup')?.value; return v? Number(v): null})(),
+            equipmentSetup: null,
         created: new Date().toISOString()
     };
+
+        // attach equipmentSetup snapshot if selected
+        if(p.equipmentSetupId){
+            const setups = getSetups();
+            const s = setups.find(x=>x.id===p.equipmentSetupId);
+            if(s) p.equipmentSetup = s;
+        }
     // helper to compute total arrows
     function totalArrows(obj){
         const perEnd = Number(obj.endCount) || Number(obj.arrowCount) || 0;
@@ -171,6 +205,13 @@ document.getElementById('practiceForm').addEventListener('submit', function(e){
     arr.push(p);
     savePractices(arr);
     window.location.href='practice_detail.html?id='+p.id;
+});
+document.getElementById('pullWeather').addEventListener('click',()=>{
+    const mdl = document.createElement('div'); mdl.innerHTML = '<div class="modal fade" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Not available</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body">Pulling weather from location/time is not yet available.</div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div></div></div></div>';
+    document.body.appendChild(mdl);
+    const bsModal = new bootstrap.Modal(mdl.querySelector('.modal'));
+    bsModal.show();
+    mdl.querySelector('.modal').addEventListener('hidden.bs.modal', ()=> mdl.remove());
 });
 </script>
 </body>

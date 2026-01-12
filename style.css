@@ -138,10 +138,51 @@ main p{color:var(--muted);font-size:1rem}
 .page-header .container{max-width:1000px}
 .page-header h1{margin:0;padding:.6rem 0;font-size:1.1rem;font-weight:700}
 
+/* Sessions / history layout to match mobile screenshot (keeps current colors) */
+.sessions-header{background:var(--card);padding:1rem 0;border-bottom:1px solid rgba(0,0,0,0.03)}
+.sessions-header .title{font-size:1.6rem;font-weight:700;color:var(--accent)}
+.filter-pills{display:flex;gap:.6rem;padding:.8rem 0}
+.pill{background:transparent;border:1px solid rgba(0,0,0,0.06);padding:.45rem .8rem;border-radius:999px;font-size:0.95rem;color:var(--muted)}
+.pill.active{background:rgba(13,110,253,0.06);color:var(--accent);border-color:rgba(13,110,253,0.12)}
+.result-count{color:var(--accent);font-size:1.25rem;margin:0.6rem 0}
+
+/* make pills horizontally scrollable on narrow screens */
+.filter-pills{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.filter-pills .pill{flex:0 0 auto}
+
+.session-card{position:relative;background:var(--card);border-radius:.6rem;padding:1rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 0 rgba(0,0,0,0.02)}
+.session-card .left-stripe{position:absolute;left:0;top:0;bottom:0;width:8px;border-top-left-radius:.6rem;border-bottom-left-radius:.6rem}
+.session-card .content{margin-left:14px;flex:1}
+.session-card .score{font-size:1.55rem;font-weight:800;text-align:right;min-width:64px}
+.session-card .meta{color:var(--muted);font-size:0.95rem;margin-top:.45rem}
+.pb-badge{background:#26c6a6;color:#fff;padding:.35rem .5rem;border-radius:999px;font-weight:700;margin-left:.6rem}
+
+.stripe-yellow{background:#f7d36b}
+.stripe-blue{background:var(--accent)}
+.stripe-teal{background:#26c6a6}
+.stripe-gray{background:#cfcfcf}
+
+@media (max-width:420px){
+	.filter-pills{gap:.4rem;padding:.5rem 0}
+	.pill{font-size:0.85rem;padding:.35rem .6rem}
+	.result-count{font-size:1rem}
+}
+
 /* Responsive stacking for coach mode buttons */
 @media (max-width:576px){
 	.btn-group.stack-sm{display:flex;flex-direction:column}
 	.btn-group.stack-sm .btn{width:100%}
+}
+
+/* Make bottom tabs smaller but still visible on very small screens */
+@media (max-width:420px){
+	.navbar .nav .nav-link, .navbar .nav .btn{
+		font-size:0.78rem;
+		padding:0.35rem 0;
+	}
+	.nav-icon{font-size:14px}
+	.page-header h1{font-size:1rem}
+	.site-main{padding-bottom:72px}
 }
 
 /* Small icon above tab labels */

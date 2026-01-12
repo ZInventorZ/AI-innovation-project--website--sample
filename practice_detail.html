@@ -18,7 +18,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="nav nav-pills ms-auto">
                 <li class="nav-item" role="presentation">
-                    <a class="nav-link" href="index.html" title="Score History"><span class="nav-icon">📈</span>Score History</a>
+                    <a class="nav-link" href="index.html" title="History"><span class="nav-icon">📈</span>History</a>
                 </li>
                 <li class="nav-item" role="presentation">
                     <a class="nav-link" href="AI_Coach.html" title="AI Coach"><span class="nav-icon">🤖</span>AI Coach</a>
@@ -50,9 +50,28 @@
 
 <main class="site-main container py-4">
     <div id="content"></div>
+    <p class="mt-3"><strong>Units:</strong> <select id="unitsSelect" class="form-select d-inline-block w-auto ms-2">
+        <option value="m">Meters</option>
+        <option value="yd">Yards</option>
+    </select>
+    </p>
+
+    <div class="card mt-3 p-3" id="weatherCard" style="display:none;">
+        <label class="form-label"><strong>Weather / Session</strong></label>
+        <div class="d-flex gap-2 align-items-center">
+            <select id="weatherType" class="form-select w-auto">
+                <option value="indoor">Indoor</option>
+                <option value="outdoor">Outdoor</option>
+            </select>
+            <button id="pullWeather" class="btn btn-outline-secondary">Pull weather (from location/time)</button>
+            <button id="saveWeather" class="btn btn-primary">Save</button>
+        </div>
+    </div>
+
     <p><a id="backLink" href="practice_list.html">Back to list</a></p>
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 function getPractices(){return JSON.parse(localStorage.getItem('practices')||'[]');}
 function qs(name){
@@ -63,23 +82,66 @@ const id=Number(qs('id'));
 const list=getPractices();
 const p=list.find(x=>x.id===id);
 const content=document.getElementById('content');
-if(!p){content.innerHTML='<div class="alert alert-warning">Practice not found.</div>';}
+if(!p){content.innerHTML='<div class="alert alert-warning">Practice not found.</div>';} 
 else{
-    content.innerHTML=`<h2>${p.name}</h2>
-    <ul class="list-group">
-      <li class="list-group-item"><strong>End Count:</strong> ${p.endCount}</li>
-      <li class="list-group-item"><strong>Arrow Count:</strong> ${p.arrowCount}</li>
-      <li class="list-group-item"><strong>Distance:</strong> ${p.distance} m</li>
-      <li class="list-group-item"><strong>Ends:</strong> ${p.ends}</li>
-      <li class="list-group-item"><strong>Notes:</strong> ${p.notes||'<em>None</em>'}</li>
-      <li class="list-group-item"><strong>Saved:</strong> ${new Date(p.created).toLocaleString()}</li>
-    </ul>
-    <p class="mt-3"><a href="#" id="delete" class="btn btn-danger">Delete</a></p>`;
+        content.innerHTML=`<h2>${p.name}</h2>
+        <ul class="list-group">
+            <li class="list-group-item"><strong>End Count:</strong> ${p.endCount}</li>
+            <li class="list-group-item"><strong>Arrow Count:</strong> ${p.arrowCount}</li>
+            <li class="list-group-item"><strong>Distance:</strong> <span id="distanceVal">${p.distance}</span> <span id="distanceUnit">m</span></li>
+            <li class="list-group-item"><strong>Ends:</strong> ${p.ends}</li>
+            <li class="list-group-item"><strong>Equipment:</strong> ${p.equipmentSetup? (p.equipmentSetup.name || 'Setup') : '<em>None</em>'}
+                ${p.equipmentSetup? '<div class="small text-muted mt-1">Bow: '+(p.equipmentSetup.bow||'-')+' • Sight: '+(p.equipmentSetup.sight||'-')+' • Release: '+(p.equipmentSetup.release||'-')+' • Arrows: '+(p.equipmentSetup.arrows||'-')+'</div>' : ''}
+            </li>
+            <li class="list-group-item"><strong>Notes:</strong> ${p.notes||'<em>None</em>'}</li>
+            <li class="list-group-item"><strong>Saved:</strong> ${new Date(p.created).toLocaleString()}</li>
+        </ul>
+        <p class="mt-3"><a href="#" id="delete" class="btn btn-danger">Delete</a></p>`;
     document.getElementById('delete').addEventListener('click',function(e){
         e.preventDefault();
         const filtered=list.filter(x=>x.id!==id);
         localStorage.setItem('practices',JSON.stringify(filtered));
         location.href='practice_list.html';
+    });
+
+    // show weather card
+    document.getElementById('weatherCard').style.display='block';
+    const unitsSelect=document.getElementById('unitsSelect');
+    const distanceEl=document.getElementById('distanceVal');
+    const distanceUnitEl=document.getElementById('distanceUnit');
+    const originalMeters = Number(p.distance) || 0;
+    function showUnits(u){
+        if(u==='yd'){
+            const y = (originalMeters * 1.0936133).toFixed(1);
+            distanceEl.textContent = y;
+            distanceUnitEl.textContent = 'yd';
+        } else {
+            distanceEl.textContent = originalMeters;
+            distanceUnitEl.textContent = 'm';
+        }
+    }
+    unitsSelect.addEventListener('change', ()=> showUnits(unitsSelect.value));
+    // initialize
+    showUnits(unitsSelect.value);
+
+    // weather controls
+    const weatherType = document.getElementById('weatherType');
+    const pullBtn = document.getElementById('pullWeather');
+    const saveWeather = document.getElementById('saveWeather');
+    // populate if saved
+    if(p.weather) weatherType.value = p.weather;
+    pullBtn.addEventListener('click', ()=>{
+        // non-functional placeholder
+        const mdl = document.createElement('div'); mdl.innerHTML = '<div class="modal fade" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Not available</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body">Pulling weather from location/time is not yet available.</div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div></div></div></div>';
+        document.body.appendChild(mdl);
+        const bsModal = new bootstrap.Modal(mdl.querySelector('.modal'));
+        bsModal.show();
+        mdl.querySelector('.modal').addEventListener('hidden.bs.modal', ()=> mdl.remove());
+    });
+    saveWeather.addEventListener('click', ()=>{
+        p.weather = weatherType.value;
+        const idx = list.findIndex(x=>x.id===p.id);
+        if(idx>-1){ list[idx]=p; localStorage.setItem('practices',JSON.stringify(list)); alert('Weather saved'); }
     });
 }
 </script>

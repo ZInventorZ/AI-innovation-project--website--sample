@@ -1,6 +1,126 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Innovation Project - Menu</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body>
+  <main class="site-main container py-4">
+    <div class="page-header">
+      <div class="container">
+        <h1>Menu</h1>
+      </div>
+    </div>
+
+    <section class="mt-3">
+      <div class="row g-3">
+        <div class="col-12 col-md-6">
+          <a href="feedback.html" class="btn btn-outline-primary w-100">Feature Request / Feedback</a>
+        </div>
+        <div class="col-12 col-md-6">
+          <a href="profile_edit.html" class="btn btn-outline-secondary w-100">Edit Profile</a>
+        </div>
+        <div class="col-12 col-md-6">
+          <a href="find_coach.html" class="btn btn-outline-info w-100">Find a Coach</a>
+        </div>
+        <div class="col-12 col-md-6">
+          <a href="settings.html" class="btn btn-outline-success w-100">Settings (Theme)</a>
+        </div>
+        <div class="col-12">
+          <button id="btnNewSession" class="btn btn-primary w-100">+ Create New Session</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-4">
+      <h5>Quick Mobile Entry</h5>
+      <div class="card p-3">
+        <div class="row g-2">
+          <div class="col-12"><input id="m_name" class="form-control" placeholder="Practice name"></div>
+          <div class="col-6"><input id="m_arrowCount" type="number" class="form-control" placeholder="Arrows per end"></div>
+          <div class="col-6"><input id="m_ends" type="number" class="form-control" placeholder="Ends"></div>
+          <div class="col-6"><input id="m_distance" type="number" class="form-control" placeholder="Distance (m)"></div>
+          <div class="col-6"><input id="m_totalScore" type="number" class="form-control" placeholder="Total Score (optional)"></div>
+          <div class="col-6">
+            <select id="m_equipmentSetup" class="form-select">
+              <option value="">(none)</option>
+            </select>
+          </div>
+          <div class="col-12 mt-2"><button id="m_save" class="btn btn-success w-100">Save Score</button></div>
+          <div class="col-12 mt-2"><div id="m_status" class="text-success"></div></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom navigation kept simple and consistent with other pages -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="nav nav-pills ms-auto" role="tablist">
+          <li class="nav-item" role="presentation"><a class="nav-link" href="index.html"><span class="nav-icon">📈</span>History</a></li>
+          <li class="nav-item" role="presentation"><a class="nav-link" href="AI_Coach.html"><span class="nav-icon">🤖</span>AI Coach</a></li>
+          <li class="nav-item" role="presentation"><a class="nav-link" href="AI_camera_scoring.html"><span class="nav-icon">🏹</span>Equipment</a></li>
+          <li class="nav-item" role="presentation"><a class="nav-link" href="Scores.html"><span class="nav-icon">📊</span>Statistics</a></li>
+          <li class="nav-item" role="presentation"><a class="nav-link active" href="menu.html"><span class="nav-icon">☰</span>Menu</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <a id="fab" class="fab" href="#" title="New session">+</a>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+  (function(){
+    function getPractices(){return JSON.parse(localStorage.getItem('practices')||'[]');}
+    function savePractices(arr){localStorage.setItem('practices',JSON.stringify(arr));}
+
+    // new session quick-create: add placeholder and go to entry page
+    document.getElementById('btnNewSession').addEventListener('click',function(){
+      const id = Date.now();
+      const p = { id, name:'New Session', endCount:0, arrowCount:0, ends:0, distance:0, totalScore:0, notes:'', created:new Date().toISOString() };
+      const arr = getPractices(); arr.unshift(p); savePractices(arr);
+      // open the score entry for editing if available
+      location.href = 'score_entry.html?id='+id;
+    });
+
+    // floating fab should do same
+    document.getElementById('fab').addEventListener('click',function(e){ e.preventDefault(); document.getElementById('btnNewSession').click(); });
+
+    // mobile quick entry save
+    document.getElementById('m_save').addEventListener('click',()=>{
+      const p={
+        id:Date.now(),
+        name:document.getElementById('m_name').value||'Mobile Entry',
+        endCount:Number(document.getElementById('m_arrowCount').value)||0,
+        arrowCount:Number(document.getElementById('m_arrowCount').value)||0,
+        ends:Number(document.getElementById('m_ends').value)||0,
+        distance:Number(document.getElementById('m_distance').value)||0,
+        totalScore:(function(){const v=document.getElementById('m_totalScore').value; return v!==''?Number(v):0; })(),
+        notes:'Saved from mobile view',
+        created:new Date().toISOString()
+      };
+      const arr=getPractices(); arr.unshift(p); savePractices(arr);
+      const status=document.getElementById('m_status'); status.textContent='Saved ✓'; setTimeout(()=>status.textContent='',1500);
+    });
+
+    // populate equipment setups into mobile select
+    (function(){ const sel=document.getElementById('m_equipmentSetup'); const arr=JSON.parse(localStorage.getItem('equipmentSetups')||'[]'); arr.forEach(s=>{ const opt=document.createElement('option'); opt.value=s.id; opt.textContent=s.name; sel.appendChild(opt); }); })();
+
+    // apply persisted theme if present
+    (function(){ const t=localStorage.getItem('theme'); if(t){ try{ const obj=JSON.parse(t); Object.keys(obj).forEach(k=>document.documentElement.style.setProperty(k,obj[k])); }catch(e){} }})();
+  })();
+  </script>
+</body>
+</html>
+<!doctype html>
+<html lang="en">
+<head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<title>AI Innovation Project - Menu</title>
@@ -22,10 +142,10 @@
 						<a class="nav-link" href="AI_Coach.html">AI Coach</a>
 					</li>
 					<li class="nav-item" role="presentation">
-						<a class="nav-link" href="Scores.html">Score</a>
+						<a class="nav-link" href="Scores.html">Statistics</a>
 					</li>
 					<li class="nav-item" role="presentation">
-						<a class="nav-link" href="score_history.html">Score History</a>
+						<a class="nav-link" href="score_history.html">History</a>
 					</li>
 					<li class="nav-item" role="presentation">
 						<a class="nav-link" href="AI_camera_scoring.html">Feedback</a>
@@ -69,7 +189,7 @@
 					<div class="collapse navbar-collapse" id="navbarNav">
 						<ul class="nav nav-pills ms-auto" role="tablist">
 							<li class="nav-item" role="presentation">
-								<a class="nav-link" href="index.html" title="Score History"><span class="nav-icon">📈</span>Score History</a>
+								<a class="nav-link" href="index.html" title="History"><span class="nav-icon">📈</span>History</a>
 							</li>
 							<li class="nav-item" role="presentation">
 								<a class="nav-link" href="AI_Coach.html" title="AI Coach"><span class="nav-icon">🤖</span>AI Coach</a>
@@ -110,6 +230,18 @@
 							<div class="col-6"><input id="m_ends" type="number" class="form-control" placeholder="Ends"></div>
 							<div class="col-6"><input id="m_distance" type="number" class="form-control" placeholder="Distance (m)"></div>
 							<div class="col-6"><input id="m_totalScore" type="number" class="form-control" placeholder="Total Score (optional)"></div>
+							<div class="col-6">
+								<select id="m_weather" class="form-select">
+									<option value="indoor">Indoor</option>
+									<option value="outdoor">Outdoor</option>
+								</select>
+							</div>
+							<div class="col-6 mt-2">
+								<label class="form-label visually-hidden">Setup</label>
+								<select id="m_equipmentSetup" class="form-select">
+									<option value="">(none)</option>
+								</select>
+							</div>
 							<div class="col-12 mt-2"><button id="m_save" class="btn btn-success w-100">Save Score</button></div>
 							<div class="col-12 mt-2"><div id="m_status" class="text-success"></div></div>
 						</div>
@@ -138,8 +270,14 @@
 						distance: Number(document.getElementById('m_distance').value)||0,
 						totalScore: (function(){const v=document.getElementById('m_totalScore').value; return v!==''?Number(v):null; })(),
 						notes:'Saved from mobile view',
+						weather: document.getElementById('m_weather')? document.getElementById('m_weather').value : null,
+						equipmentSetupId: (function(){const v=document.getElementById('m_equipmentSetup')?.value; return v? Number(v): null})(),
+						equipmentSetup: null,
 						created: new Date().toISOString()
 					};
+
+					// attach equipment snapshot
+					if(p.equipmentSetupId){ const sets = JSON.parse(localStorage.getItem('equipmentSetups')||'[]'); const s = sets.find(x=>x.id===p.equipmentSetupId); if(s) p.equipmentSetup = s; }
 					// estimate totalScore if blank using same logic as new_practice
 					if(p.totalScore==null){
 						const list=getPractices();
@@ -153,6 +291,9 @@
 					status.textContent='Saved ✓';
 					setTimeout(()=>status.textContent='',2000);
 				});
+
+				// populate mobile setups dropdown
+				(function(){ const sel=document.getElementById('m_equipmentSetup'); const arr = JSON.parse(localStorage.getItem('equipmentSetups')||'[]'); arr.forEach(s=>{ const opt=document.createElement('option'); opt.value=s.id; opt.textContent=s.name; sel.appendChild(opt); }); })();
 			})();
 			</script>
 		</body>

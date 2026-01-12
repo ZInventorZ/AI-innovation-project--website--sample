@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Find a Coach</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body>
+  <div class="container py-4">
+    <div class="page-header"><div class="container"><h1>Find a Coach</h1></div></div>
+
+    <div class="mt-3">
+      <p>Search for local coaches or add your own contact here.</p>
+      <div class="card p-3">
+        <div class="row g-2">
+          <div class="col-12"><input id="coach_query" class="form-control" placeholder="City or postcode"></div>
+          <div class="col-12"><button id="coach_search" class="btn btn-primary w-100">Search</button></div>
+          <div class="col-12 mt-3"><div id="coach_results"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (function(){
+    document.getElementById('coach_search').addEventListener('click',function(){
+      const q=document.getElementById('coach_query').value.trim(); const out=document.getElementById('coach_results'); out.innerHTML=''; if(!q){ out.innerHTML='<div class="text-muted">Enter a location to search.</div>'; return; }
+      // Placeholder: static demo results
+      out.innerHTML = '<div class="card p-3"><strong>Demo Coach</strong><div class="text-muted small">'+q+'</div><p>Contact: demo@example.com</p></div>';
+    });
+  })();
+  </script>
+</body>
+</html>

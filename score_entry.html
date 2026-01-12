@@ -46,7 +46,50 @@
         <div class="col-md-4"><label class="form-label">Distance (m)</label><input id="distance" type="number" class="form-control"></div>
         <div class="col-md-4"><label class="form-label">Total Score (optional)</label><input id="totalScore" type="number" class="form-control"></div>
         <div class="col-md-4"><label class="form-label">Notes</label><input id="notes" class="form-control"></div>
+        <div class="col-md-4">
+          <label class="form-label">Weather</label>
+          <div class="d-flex gap-2">
+            <select id="weather" class="form-select">
+              <option value="indoor">Indoor</option>
+              <option value="outdoor">Outdoor</option>
+            </select>
+            <button id="pullWeather" type="button" class="btn btn-outline-secondary">Pull</button>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Equipment Setup</label>
+          <select id="equipmentSetup" class="form-select">
+            <option value="">(none)</option>
+          </select>
+        </div>
       </div>
+    </div>
+
+    <!-- Scan scoresheet -->
+    <div class="card mt-3 p-3">
+      <h5 class="mb-2">Scan Scoresheet</h5>
+      <div class="d-flex gap-2 align-items-center">
+        <input id="scanFile" type="file" accept="image/*,application/pdf" class="form-control w-auto">
+        <button id="takePhoto" type="button" class="btn btn-outline-secondary">Take picture</button>
+        <div id="scanStatus" class="ms-2 text-muted">No file selected</div>
+      </div>
+    </div>
+
+    <!-- Session equipment details -->
+    <div class="card mt-3 p-3">
+      <h5 class="mb-2">Session Equipment Details</h5>
+      <div class="row g-2">
+        <div class="col-md-6"><label class="form-label">Bow</label><input id="session_bow" class="form-control"></div>
+        <div class="col-md-6"><label class="form-label">Sight - Pin count</label><input id="session_sight_pins" type="number" class="form-control"></div>
+        <div class="col-md-6"><label class="form-label">Sight - Type</label>
+          <select id="session_sight_type" class="form-select"><option value="slider">Slider</option><option value="fixed">Fixed</option></select>
+        </div>
+        <div class="col-md-6"><label class="form-label">Arrow Model</label><input id="session_arrow_model" class="form-control"></div>
+        <div class="col-md-4"><label class="form-label">Vanes</label><input id="session_arrow_vanes" class="form-control" placeholder="e.g., 4 AirRazer"></div>
+        <div class="col-md-4"><label class="form-label">Spine</label><input id="session_arrow_spine" class="form-control" placeholder="e.g., 300"></div>
+        <div class="col-md-4"><label class="form-label">Diameter</label><input id="session_arrow_diameter" class="form-control" placeholder="e.g., 25"></div>
+      </div>
+      <div class="mt-2"><button id="fillVictory" class="btn btn-sm btn-secondary">Fill Victory V-TAC</button></div>
     </div>
 
     <div class="mt-3">
@@ -91,6 +134,14 @@
       distance: Number(document.getElementById('distance').value)||0,
       totalScore:(function(){const v=document.getElementById('totalScore').value; return v!==''?Number(v):null})(),
       notes:document.getElementById('notes').value||'',
+      weather: document.getElementById('weather')? document.getElementById('weather').value : null,
+      equipmentSetupId: (function(){const v=document.getElementById('equipmentSetup')?.value; return v? Number(v): null})(),
+      equipmentSetup: null,
+      sessionEquipment: {
+        bow: document.getElementById('session_bow')?document.getElementById('session_bow').value:null,
+        sight: { pins: Number(document.getElementById('session_sight_pins')?.value)||0, type: document.getElementById('session_sight_type')?.value||null },
+        arrow: { model: document.getElementById('session_arrow_model')?.value||null, vanes: document.getElementById('session_arrow_vanes')?.value||null, spine: document.getElementById('session_arrow_spine')?.value||null, diameter: document.getElementById('session_arrow_diameter')?.value||null }
+      },
       created:new Date().toISOString()
     };
     // compute totalScore if blank (same logic as new_practice)
@@ -102,6 +153,52 @@
     }
     const arr=getPractices(); arr.push(p); savePractices(arr);
     window.location.href='practice_detail.html?id='+p.id;
+  });
+  // attach chosen equipment snapshot if present
+  (function(){
+    const sel=document.getElementById('equipmentSetup');
+    const arr = JSON.parse(localStorage.getItem('equipmentSetups')||'[]');
+    arr.forEach(s=>{ const opt=document.createElement('option'); opt.value=s.id; opt.textContent=s.name; sel.appendChild(opt); });
+    // When saving, include snapshot (ensure listener wraps after this)
+    const saveBtn = document.getElementById('save');
+    saveBtn.addEventListener('click', ()=>{
+      // find last saved practice (just created in same handler) and attach snapshot if selected
+      const setups = JSON.parse(localStorage.getItem('equipmentSetups')||'[]');
+      const list = JSON.parse(localStorage.getItem('practices')||'[]');
+      if(!list.length) return;
+      const last = list[list.length-1];
+      const selId = Number(document.getElementById('equipmentSetup')?.value) || null;
+      if(selId){ const s = setups.find(x=>x.id===selId); if(s){ last.equipmentSetup = s; list[list.length-1]=last; localStorage.setItem('practices',JSON.stringify(list)); }}
+    });
+  })();
+  document.getElementById('pullWeather').addEventListener('click',()=>{
+    const mdl = document.createElement('div'); mdl.innerHTML = '<div class="modal fade" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Not available</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body">Pulling weather from location/time is not yet available.</div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div></div></div></div>';
+    document.body.appendChild(mdl);
+    const bsModal = new bootstrap.Modal(mdl.querySelector('.modal'));
+    bsModal.show();
+    mdl.querySelector('.modal').addEventListener('hidden.bs.modal', ()=> mdl.remove());
+  });
+  // scan file handling
+  const scanFile = document.getElementById('scanFile');
+  const scanStatus = document.getElementById('scanStatus');
+  scanFile.addEventListener('change', (ev)=>{ const f = ev.target.files && ev.target.files[0]; if(f) scanStatus.textContent = f.name; else scanStatus.textContent='No file selected'; });
+  document.getElementById('takePhoto').addEventListener('click', ()=>{
+    const mdl = document.createElement('div'); mdl.innerHTML = '<div class="modal fade" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Camera</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body">Camera not functional at this time.</div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div></div></div></div>';
+    document.body.appendChild(mdl);
+    const bsModal = new bootstrap.Modal(mdl.querySelector('.modal'));
+    bsModal.show();
+    mdl.querySelector('.modal').addEventListener('hidden.bs.modal', ()=> mdl.remove());
+  });
+
+  // Victory preset
+  document.getElementById('fillVictory').addEventListener('click', ()=>{
+    document.getElementById('session_bow').value = 'My Bow';
+    document.getElementById('session_sight_pins').value = 3;
+    document.getElementById('session_sight_type').value = 'slider';
+    document.getElementById('session_arrow_model').value = 'Victory V-TAC';
+    document.getElementById('session_arrow_vanes').value = '4 AirRazer vanes';
+    document.getElementById('session_arrow_spine').value = '300';
+    document.getElementById('session_arrow_diameter').value = '25';
   });
 })();
 </script>
