@@ -8,6 +8,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
 </head>
 <body>
+    <!-- Top-left back button: tries history.back(), falls back to index.html -->
+    <a class="back-btn" href="index.html" onclick="if(history.length>1){history.back();return false;}">← Back</a>
     <header class="page-header">
         <div class="container">
             <h1>History</h1>
@@ -29,22 +31,19 @@
                     <li class="nav-item" role="presentation">
                         <a class="nav-link" href="AI_Coach.html" title="AI Coach"><span class="nav-icon">🤖</span>AI Coach</a>
                     </li>
-                    <li class="nav-item" role="presentation">
-                        <a class="nav-link" href="AI_camera_scoring.html" title="Equipment"><span class="nav-icon">🧰</span>Equipment</a>
+					<li class="nav-item" role="presentation">
+                        <a class="nav-link" href="equipment.html" title="Equipment"><span class="nav-icon">🏹</span>Equipment</a>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <a class="nav-link" href="score_history.html" title="Feedback"><span class="nav-icon">💬</span>Feedback</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="menuDropdown" role="button" data-bs-toggle="dropdown"
-                             aria-expanded="false">Menu</a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="menuDropdown">
-                            <li><a class="dropdown-item" href="#">Settings</a></li>
-                            <li><a class="dropdown-item" href="#">Profile</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#">Help</a></li>
-                        </ul>
-                    </li>
+                        <a class="nav-link" href="Scores.html" title="Statistics"><span class="nav-icon">📊</span>Statistics</a>
+					</li>
+                    
+					<li class="nav-item" role="presentation">
+						<a class="nav-link" href="competition.html" title="Competition"><span class="nav-icon">🏆</span>Competition</a>
+					</li>
+					<li class="nav-item" role="presentation">
+						<a class="nav-link" href="menu.html">Menu</a>
+					</li>
                     <!-- floating action button placed separately -->
                 </ul>
             </div>
@@ -76,21 +75,36 @@
     <script>
     (function(){
         function getPractices(){return JSON.parse(localStorage.getItem('practices')||'[]');}
+        // Seed fake data for demo if no practices exist
+        function seedFakeData(){
+            const existing = JSON.parse(localStorage.getItem('practices')||'[]');
+            if(existing && existing.length) return;
+            const now = Date.now();
+            const samples = [
+                { id: now-1, name:'Vegas 300', endCount:3, arrowCount:3, ends:10, distance:18, totalScore:270, notes:'Evening indoor', created:new Date(now-1000*60*60*24*5).toISOString(), sessionEquipment:{bow:'EliteX', sight:{pins:3,type:'slider'}} },
+                { id: now-2, name:'Practice - 50m', endCount:6, arrowCount:6, ends:6, distance:50, totalScore:312, notes:'Outdoor windy', created:new Date(now-1000*60*60*24*12).toISOString(), sessionEquipment:{bow:'LongShot', sight:{pins:5,type:'fixed'}} },
+                { id: now-3, name:'Short Range', endCount:3, arrowCount:3, ends:8, distance:18, totalScore:204, notes:'Quick drill', created:new Date(now-1000*60*60*24*2).toISOString(), sessionEquipment:{bow:'My Bow', sight:{pins:3,type:'slider'}} },
+                { id: now-4, name:'3D Shoot', endCount:0, arrowCount:0, ends:0, distance:0, totalScore:85, notes:'3D course', created:new Date(now-1000*60*60*24*30).toISOString() },
+                { id: now-5, name:'Practice - indoor', endCount:6, arrowCount:6, ends:4, distance:25, totalScore:160, notes:'Practice', created:new Date(now-1000*60*60*24*1).toISOString() }
+            ];
+            localStorage.setItem('practices', JSON.stringify(samples));
+        }
+        seedFakeData();
         function totalArrows(p){
             const perEnd = Number(p.endCount) || Number(p.arrowCount) || 0;
             const ends = Number(p.ends) || 1;
             return perEnd * ends;
         }
         function renderScores(){
-            const list=getPractices();
-            const container=document.getElementById('scores');
-            container.innerHTML='';
-            if(!list.length){container.innerHTML='<div class="alert alert-secondary">No history yet.</div>';return}
-            const scored=list.filter(p=>p.totalScore!=null);
+            const list = getPractices();
+            const container = document.getElementById('scores');
+            container.innerHTML = '';
+            if(!list.length){ container.innerHTML = '<div class="alert alert-secondary">No history yet.</div>'; document.querySelector('.result-count').textContent = '0 Results'; return; }
+            const scored = list.filter(p=>p.totalScore!=null);
             const pb = scored.length ? Math.max(...scored.map(p=>p.totalScore)) : null;
-            // newest first
-            // apply filters
-            const filtered = list.slice().reverse().filter(p=>{
+
+            // apply filters and ordering
+            let filtered = list.slice().reverse().filter(p=>{
                 if(state.round && state.round!==''){
                     if(!p.name || p.name.toLowerCase().indexOf(state.round.toLowerCase())===-1) return false;
                 }
@@ -101,7 +115,6 @@
                 return true;
             });
 
-            // sort
             if(state.sort==='dateAsc') filtered.sort((a,b)=>new Date(a.created)-new Date(b.created));
             else if(state.sort==='avgDesc') filtered.sort((a,b)=>((b.totalScore/((b.endCount||b.arrowCount||0)*(b.ends||1))||0)- (a.totalScore/((a.endCount||a.arrowCount||0)*(a.ends||1))||0)));
 
@@ -110,56 +123,22 @@
                 const arrows = totalArrows(p);
                 const avg = (total!=null && arrows>0) ? (total/arrows).toFixed(1) : '—';
                 const title = (p.name && p.name!=='Unidentified Practice') ? p.name : (p.distance? (p.distance+'m') : 'Unknown target') + (p.ends? (' • '+p.ends+' ends') : '');
-                const card=document.createElement('div');
-                card.className='score-card';
-                card.innerHTML=`
-                    <div class="score-main">
-                      <div>
-                        <div class="score-title">${title}</div>
-                        <div class="score-sub">${new Date(p.created).toLocaleString()}</div>
-                      </div>
-                      <div style="text-align:right">
-                        <div class="score-total">${total!=null? total : '<span class="text-muted">Unscored</span>'}</div>
-                        ${ (pb!=null && total===pb) ? '<div class="mt-1"><span class="badge-pb">Personal Best</span></div>' : '' }
-                      </div>
+                const card = document.createElement('div');
+                card.className = 'session-card';
+                let stripeClass='stripe-gray';
+                if(/vegas/i.test(p.name)) stripeClass='stripe-yellow';
+                else if(/s3da|indoor/i.test(p.name)) stripeClass='stripe-blue';
+                const pbHtml = (pb!=null && total===pb) ? '<span class="pb-badge">PB</span>' : '';
+                card.innerHTML = `<div class="left-stripe ${stripeClass}"></div>
+                    <div class="content">
+                      <div class="score-title">${title} ${pbHtml}</div>
+                      <div class="meta"><span style="margin-right:.6rem">📅 ${new Date(p.created).toLocaleDateString()}</span> Avg: <strong style="color:var(--accent)">${avg}</strong></div>
                     </div>
-                    <div class="mt-2 score-sub">${arrows} arrows • Avg per arrow: ${avg}</div>
-                `;
+                    <div class="score">${total!=null? total : '<span class="text-muted">—</span>'}</div>`;
                 container.appendChild(card);
             });
+            document.querySelector('.result-count').textContent = filtered.length + ' Results';
         }
-                function renderScores(){
-                    const list=getPractices();
-                    const container=document.getElementById('scores');
-                    container.innerHTML='';
-                    if(!list.length){container.innerHTML='<div class="alert alert-secondary">No history yet.</div>';return}
-                    const scored=list.filter(p=>p.totalScore!=null);
-                    const pb = scored.length ? Math.max(...scored.map(p=>p.totalScore)) : null;
-                    // newest first
-                    list.slice().reverse().forEach(p=>{
-                        const total = p.totalScore;
-                        const arrows = totalArrows(p);
-                        const avg = (total!=null && arrows>0) ? (total/arrows).toFixed(1) : '—';
-                        const title = (p.name && p.name!=='Unidentified Practice') ? p.name : (p.distance? (p.distance+'m') : 'Unknown target') + (p.ends? (' • '+p.ends+' ends') : '');
-                        const card=document.createElement('div');
-                        card.className='session-card';
-                        // choose stripe color based on name
-                        let stripeClass='stripe-gray';
-                        if(/vegas/i.test(p.name)) stripeClass='stripe-yellow';
-                        else if(/s3da|indoor/i.test(p.name)) stripeClass='stripe-blue';
-                        else stripeClass='stripe-gray';
-                        const pbHtml = (pb!=null && total===pb) ? '<span class="pb-badge">PB</span>' : '';
-                        card.innerHTML=`<div class="left-stripe ${stripeClass}"></div>
-                            <div class="content">
-                              <div class="score-title">${title} ${pbHtml}</div>
-                              <div class="meta"><span style="margin-right:.6rem">📅 ${new Date(p.created).toLocaleDateString()}</span> Avg: <strong style="color:var(--accent)">${avg}</strong></div>
-                            </div>
-                            <div class="score">${total!=null? total : '<span class="text-muted">—</span>'}</div>`;
-                        container.appendChild(card);
-                    });
-                    // update result count
-                    document.querySelector('.result-count').textContent = filtered.length + ' Results';
-                }
                 // filter state and UI
                 const state = {round:'', bow:'', sort:'dateDesc'};
 

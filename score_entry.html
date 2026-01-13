@@ -8,6 +8,8 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
 </head>
 <body>
+<!-- Top-left back button: tries history.back(), falls back to index.html -->
+<a class="back-btn" href="index.html" onclick="if(history.length>1){history.back();return false;}">← Back</a>
 <header class="page-header"><div class="container"><h1>New Score</h1></div></header>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
   <div class="container-fluid">
@@ -19,8 +21,9 @@
       <ul class="nav nav-pills ms-auto">
         <li class="nav-item"><a class="nav-link" href="index.html"><span class="nav-icon">📈</span>History</a></li>
         <li class="nav-item"><a class="nav-link" href="AI_Coach.html"><span class="nav-icon">🤖</span>AI Coach</a></li>
-        <li class="nav-item"><a class="nav-link" href="AI_camera_scoring.html"><span class="nav-icon">🏹</span>Equipment</a></li>
-        <li class="nav-item"><a class="nav-link" href="score_history.html"><span class="nav-icon">💬</span>Feedback</a></li>
+        <li class="nav-item"><a class="nav-link" href="equipment.html"><span class="nav-icon">🏹</span>Equipment</a></li>
+        <li class="nav-item"><a class="nav-link" href="Scores.html"><span class="nav-icon">📊</span>Statistics</a></li>
+        <li class="nav-item"><a class="nav-link" href="score_history.html"><span class="nav-icon">📈</span>History</a></li>
         <li class="nav-item"><a class="nav-link" href="profile_edit.html"><span class="nav-icon">👤</span>Profile</a></li>
       </ul>
     </div>
@@ -39,11 +42,37 @@
     </select>
 
     <div id="roundFields">
-      <div class="row g-2">
-        <div class="col-md-6"><label class="form-label">Practice Name</label><input id="name" class="form-control"></div>
+        <div class="row g-2">
+        <div class="col-md-6">
+          <label class="form-label">Practice Name (choose template)</label>
+          <div class="d-flex gap-2">
+            <select id="name" class="form-select"></select>
+            <button id="btnAddTemplate" type="button" class="btn btn-outline-secondary">Save</button>
+            <button id="btnClearTemplates" type="button" class="btn btn-outline-danger">Clear</button>
+          </div>
+        </div>
+        <div class="col-12">
+          <label class="form-label">Distances (add multiple distances or use the single Distance/Ends fields below)</label>
+          <div id="distances" class="mb-2"></div>
+          <button id="addDistance" type="button" class="btn btn-sm btn-outline-primary">+ Add distance</button>
+        </div>
         <div class="col-md-3"><label class="form-label">Arrows per end</label><input id="arrowCount" type="number" class="form-control"></div>
         <div class="col-md-3"><label class="form-label">Ends</label><input id="ends" type="number" class="form-control"></div>
         <div class="col-md-4"><label class="form-label">Distance (m)</label><input id="distance" type="number" class="form-control"></div>
+        <div class="col-md-4"><label class="form-label">Organization</label>
+          <select id="organization" class="form-select">
+            <option value="">(none)</option>
+            <option value="ASA">ASA</option>
+            <option value="NFAA">NFAA</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="col-md-4"><label class="form-label">Target Face</label>
+          <select id="targetFace" class="form-select">
+            <option value="standard">Standard</option>
+            <option value="blue">Blue-faced (NFAA)</option>
+          </select>
+        </div>
         <div class="col-md-4"><label class="form-label">Total Score (optional)</label><input id="totalScore" type="number" class="form-control"></div>
         <div class="col-md-4"><label class="form-label">Notes</label><input id="notes" class="form-control"></div>
         <div class="col-md-4">
@@ -71,6 +100,7 @@
       <div class="d-flex gap-2 align-items-center">
         <input id="scanFile" type="file" accept="image/*,application/pdf" class="form-control w-auto">
         <button id="takePhoto" type="button" class="btn btn-outline-secondary">Take picture</button>
+        <button id="scanTarget" type="button" class="btn btn-outline-secondary">Scan target</button>
         <div id="scanStatus" class="ms-2 text-muted">No file selected</div>
       </div>
     </div>
@@ -104,6 +134,8 @@
 (function(){
   function getPractices(){return JSON.parse(localStorage.getItem('practices')||'[]');}
   function savePractices(arr){localStorage.setItem('practices',JSON.stringify(arr));}
+  function getTemplates(){return JSON.parse(localStorage.getItem('practiceTemplates')||'[]');}
+  function saveTemplates(arr){localStorage.setItem('practiceTemplates',JSON.stringify(arr));}
   const style=document.getElementById('roundStyle');
   const map = {
     vegas300:{ends:10,arrowCount:3,name:'Vegas 300'},
@@ -123,27 +155,41 @@
   style.addEventListener('change',applyPreset);
   applyPreset();
 
-  document.getElementById('save').addEventListener('click',function(e){
+  // Templates and multi-distance helpers
+  const tplSelect = document.getElementById('name');
+  function populateTemplates(){ tplSelect.innerHTML=''; const opt0=document.createElement('option'); opt0.value=''; opt0.textContent='(new / none)'; tplSelect.appendChild(opt0); const tpls = getTemplates(); tpls.forEach(t=>{ const o=document.createElement('option'); o.value=t.id; o.textContent=t.name; tplSelect.appendChild(o); }); }
+
+  const distancesEl = document.getElementById('distances');
+  function addDistanceRow(d){ const div=document.createElement('div'); div.className='d-flex gap-2 align-items-center mb-2'; div.innerHTML = `<input class="form-control form-control-sm" type="number" placeholder="Distance (m)" value="${d?.distance||18}" style="width:110px"><input class="form-control form-control-sm" type="number" placeholder="Ends" value="${d?.ends||1}" style="width:90px"><input class="form-control form-control-sm" type="number" placeholder="Arrows/end" value="${d?.arrowsPerEnd||3}" style="width:110px"><button class="btn btn-sm btn-outline-danger">Remove</button>`; div.querySelector('button').addEventListener('click',()=>div.remove()); distancesEl.appendChild(div); }
+  document.getElementById('addDistance').addEventListener('click',()=> addDistanceRow());
+
+  tplSelect.addEventListener('change', function(){ const id=this.value; if(!id){ distancesEl.innerHTML=''; return; } const t = getTemplates().find(x=>String(x.id)===String(id)); if(!t) return; distancesEl.innerHTML=''; (t.distances||[]).forEach(d=>addDistanceRow(d)); document.getElementById('weather').value = t.weather || 'indoor'; document.getElementById('equipmentSetup').value = t.equipmentSetupId || ''; document.getElementById('distance').value=''; document.getElementById('arrowCount').value=''; document.getElementById('ends').value=''; });
+
+  document.getElementById('btnAddTemplate').addEventListener('click', ()=>{
+    const name = prompt('Template name:'); if(!name) return; const tpl = { id: Date.now(), name, distances: [], weather: document.getElementById('weather').value, equipmentSetupId: document.getElementById('equipmentSetup').value || '' };
+    document.querySelectorAll('#distances > div').forEach(div=>{ const inputs=div.querySelectorAll('input'); tpl.distances.push({ distance: Number(inputs[0].value)||0, ends: Number(inputs[1].value)||0, arrowsPerEnd: Number(inputs[2].value)||0 }); });
+    const arr = getTemplates(); arr.unshift(tpl); saveTemplates(arr); populateTemplates(); document.getElementById('m_status') && (document.getElementById('m_status').textContent='Template saved ✓'); setTimeout(()=>{ document.getElementById('m_status') && (document.getElementById('m_status').textContent=''); },1500);
+  });
+
+  document.getElementById('btnClearTemplates').addEventListener('click', ()=>{ if(!confirm('Clear saved templates?')) return; saveTemplates([]); populateTemplates(); document.getElementById('m_status') && (document.getElementById('m_status').textContent='Templates cleared'); setTimeout(()=>{ document.getElementById('m_status') && (document.getElementById('m_status').textContent=''); },1500); });
+
+  populateTemplates();
+
+    document.getElementById('save').addEventListener('click',function(e){
     e.preventDefault();
-    const p={
-      id:Date.now(),
-      name:document.getElementById('name').value||map[style.value].name,
-      endCount: Number(document.getElementById('arrowCount').value)||0,
-      arrowCount: Number(document.getElementById('arrowCount').value)||0,
-      ends: Number(document.getElementById('ends').value)||0,
-      distance: Number(document.getElementById('distance').value)||0,
-      totalScore:(function(){const v=document.getElementById('totalScore').value; return v!==''?Number(v):null})(),
-      notes:document.getElementById('notes').value||'',
-      weather: document.getElementById('weather')? document.getElementById('weather').value : null,
-      equipmentSetupId: (function(){const v=document.getElementById('equipmentSetup')?.value; return v? Number(v): null})(),
-      equipmentSetup: null,
-      sessionEquipment: {
-        bow: document.getElementById('session_bow')?document.getElementById('session_bow').value:null,
-        sight: { pins: Number(document.getElementById('session_sight_pins')?.value)||0, type: document.getElementById('session_sight_type')?.value||null },
-        arrow: { model: document.getElementById('session_arrow_model')?.value||null, vanes: document.getElementById('session_arrow_vanes')?.value||null, spine: document.getElementById('session_arrow_spine')?.value||null, diameter: document.getElementById('session_arrow_diameter')?.value||null }
-      },
-      created:new Date().toISOString()
-    };
+    // build practice object, supporting multi-distance rows if present
+    const p = { id:Date.now(), name: (document.getElementById('name').selectedOptions ? (document.getElementById('name').selectedOptions[0].textContent||'') : document.getElementById('name').value) || map[style.value].name, distances: null, endCount: 0, arrowCount:0, ends:0, distance:0, totalScore:(function(){const v=document.getElementById('totalScore').value; return v!==''?Number(v):null})(), notes:document.getElementById('notes').value||'', weather: document.getElementById('weather')? document.getElementById('weather').value : null, equipmentSetupId: (function(){const v=document.getElementById('equipmentSetup')?.value; return v? Number(v): null})(), equipmentSetup: null, sessionEquipment: { bow: document.getElementById('session_bow')?document.getElementById('session_bow').value:null, sight: { pins: Number(document.getElementById('session_sight_pins')?.value)||0, type: document.getElementById('session_sight_type')?.value||null }, arrow: { model: document.getElementById('session_arrow_model')?.value||null, vanes: document.getElementById('session_arrow_vanes')?.value||null, spine: document.getElementById('session_arrow_spine')?.value||null, diameter: document.getElementById('session_arrow_diameter')?.value||null } }, created:new Date().toISOString(), organization: (document.getElementById('organization')?.value) || null, targetFace: (document.getElementById('targetFace')?.value) || null };
+    // if distances rows exist, use them
+    const rows = document.querySelectorAll('#distances > div');
+    if(rows && rows.length){ p.distances = []; rows.forEach(div=>{ const inputs = div.querySelectorAll('input'); p.distances.push({ distance: Number(inputs[0].value)||0, ends: Number(inputs[1].value)||0, arrowsPerEnd: Number(inputs[2].value)||0 }); });
+      // compute simple summary fields
+      let totalArrows=0; p.distances.forEach(d=> totalArrows += (d.ends||0)*(d.arrowsPerEnd||0)); p.totalArrows = totalArrows; }
+    else {
+      p.endCount = Number(document.getElementById('arrowCount').value)||0;
+      p.arrowCount = Number(document.getElementById('arrowCount').value)||0;
+      p.ends = Number(document.getElementById('ends').value)||0;
+      p.distance = Number(document.getElementById('distance').value)||0;
+    }
     // compute totalScore if blank (same logic as new_practice)
     function totalArrows(obj){const perEnd = Number(obj.endCount) || Number(obj.arrowCount) || 0; const ends = Number(obj.ends) || 1; return perEnd * ends;}
     if(p.totalScore==null){
@@ -189,6 +235,18 @@
     bsModal.show();
     mdl.querySelector('.modal').addEventListener('hidden.bs.modal', ()=> mdl.remove());
   });
+
+  // scan target placeholder
+  const scanTargetBtn = document.getElementById('scanTarget');
+  if(scanTargetBtn){
+    scanTargetBtn.addEventListener('click', ()=>{
+      const mdl = document.createElement('div'); mdl.innerHTML = '<div class="modal fade" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Target Scan</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body">Target scanning is not available in this demo. Upload an image or use the camera in a real environment.</div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div></div></div></div>';
+      document.body.appendChild(mdl);
+      const bsModal = new bootstrap.Modal(mdl.querySelector('.modal'));
+      bsModal.show();
+      mdl.querySelector('.modal').addEventListener('hidden.bs.modal', ()=> mdl.remove());
+    });
+  }
 
   // Victory preset
   document.getElementById('fillVictory').addEventListener('click', ()=>{

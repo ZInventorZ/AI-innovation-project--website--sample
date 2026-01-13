@@ -8,6 +8,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
 </head>
 <body>
+<!-- Top-left back button: tries history.back(), falls back to index.html -->
+<a class="back-btn" href="index.html" onclick="if(history.length>1){history.back();return false;}">← Back</a>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
     <div class="container-fluid">
         <a class="navbar-brand" href="index.html">AI Innovation</a>
@@ -25,20 +27,16 @@
                     <a class="nav-link" href="AI_Coach.html" title="AI Coach"><span class="nav-icon">🤖</span>AI Coach</a>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <a class="nav-link" href="AI_camera_scoring.html" title="Equipment"><span class="nav-icon">🏹</span>Equipment</a>
+                    <a class="nav-link" href="equipment.html" title="Equipment"><span class="nav-icon">🏹</span>Equipment</a>
                 </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" href="Scores.html" title="Statistics"><span class="nav-icon">📊</span>Statistics</a>
                     
                 <li class="nav-item" role="presentation">
                     <a class="nav-link" href="score_history.html" title="Feedback"><span class="nav-icon">💬</span>Feedback</a>
                 </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="menuDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"><span class="nav-icon">☰</span>Menu</a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="menuDropdown">
-                        <li><a class="dropdown-item" href="menu.html">Settings</a></li>
-                        <li><a class="dropdown-item" href="profiles.html">Profile</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#">Help</a></li>
-                    </ul>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" href="menu.html"><span class="nav-icon">☰</span>Menu</a>
                 </li>
             </ul>
         </div>
@@ -81,6 +79,22 @@
         <div class="col-md-3">
             <label class="form-label">Ends</label>
             <input id="ends" type="number" class="form-control">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Organization</label>
+            <select id="organization" class="form-select">
+                <option value="">(none)</option>
+                <option value="ASA">ASA</option>
+                <option value="NFAA">NFAA</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Target Face</label>
+            <select id="targetFace" class="form-select">
+                <option value="standard">Standard</option>
+                <option value="blue">Blue-faced (NFAA)</option>
+            </select>
         </div>
         <div class="col-12">
             <label class="form-label">Notes</label>
@@ -172,7 +186,9 @@ document.getElementById('practiceForm').addEventListener('submit', function(e){
             weather: document.getElementById('weather') ? document.getElementById('weather').value : null,
             equipmentSetupId: (function(){const v=document.getElementById('equipmentSetup')?.value; return v? Number(v): null})(),
             equipmentSetup: null,
-        created: new Date().toISOString()
+            created: new Date().toISOString(),
+            organization: (document.getElementById('organization')?.value) || null,
+            targetFace: (document.getElementById('targetFace')?.value) || null
     };
 
         // attach equipmentSetup snapshot if selected

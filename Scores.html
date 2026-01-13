@@ -7,7 +7,10 @@
 	<link rel="stylesheet" href="style.css">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
 </head>
+
 <body>
+	<!-- Top-left back button: tries history.back(), falls back to index.html -->
+	<a class="back-btn" href="index.html" onclick="if(history.length>1){history.back();return false;}">← Back</a>
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
 		<div class="container-fluid">
 			<a class="navbar-brand" href="index.html">AI Innovation</a>
@@ -24,22 +27,16 @@
 						<a class="nav-link" href="AI_Coach.html" title="AI Coach"><span class="nav-icon">🤖</span>AI Coach</a>
 					</li>
 					<li class="nav-item" role="presentation">
-						<a class="nav-link" href="AI_camera_scoring.html" title="Equipment"><span class="nav-icon">🏹</span>Equipment</a>
+						<a class="nav-link" href="equipment.html" title="Equipment"><span class="nav-icon">🏹</span>Equipment</a>
 					</li>
 					<li class="nav-item" role="presentation">
-						<a class="nav-link active" href="Scores.html" title="Statistics"><span class="nav-icon">🎯</span>Statistics</a>
+						<a class="nav-link active" href="Scores.html" title="Statistics"><span class="nav-icon">📊</span>Statistics</a>
 					</li>
 					<li class="nav-item" role="presentation">
-						<a class="nav-link" href="score_history.html" title="Feedback"><span class="nav-icon">💬</span>Feedback</a>
+						<a class="nav-link" href="competition.html" title="Competition"><span class="nav-icon">🏆</span>Competition</a>
 					</li>
-					<li class="nav-item dropdown">
-						<a class="nav-link dropdown-toggle" href="#" id="menuDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"><span class="nav-icon">☰</span>Menu</a>
-						<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="menuDropdown">
-							<li><a class="dropdown-item" href="menu.html">Settings</a></li>
-							<li><a class="dropdown-item" href="profiles.html">Profile</a></li>
-							<li><hr class="dropdown-divider"></li>
-							<li><a class="dropdown-item" href="#">Help</a></li>
-						</ul>
+					<li class="nav-item" role="presentation">
+						<a class="nav-link" href="menu.html"><span class="nav-icon">☰</span>Menu</a>
 					</li>
 				</ul>
 			</div>
@@ -49,6 +46,7 @@
 	<main class="site-main container py-4">
 		<h2>Statistics</h2>
 		<p>Performance averages over time.</p>
+		<div id="statsBreakdown"></div>
 		<div class="card p-3 mb-3">
 			<canvas id="statsChart" height="150"></canvas>
 		</div>
@@ -62,6 +60,27 @@
 		function getPractices(){return JSON.parse(localStorage.getItem('practices')||'[]');}
 		const list = getPractices().filter(p=>p.totalScore!=null);
 		if(!list.length){ document.getElementById('statsSummary').innerHTML='<div class="alert alert-secondary">No scored practices to chart.</div>'; return; }
+		// helper: infer style and per-arrow max
+		const inferStyle = (p)=>{
+			const s = (p.roundStyle||'').toString().toLowerCase();
+			const n = (p.name||'').toString().toLowerCase();
+			if(s) return s;
+			if(n.indexOf('3d')!==-1) return '3d';
+			if(n.indexOf('vegas')!==-1) return 'vegas';
+			if(n.indexOf('nfaa')!==-1) return 'nfaa';
+			return 'generic';
+		};
+		const perArrowMaxForStyle = (style, p)=>{
+			// blue-faced targets (NFAA) have a lower max per arrow
+			if(p && p.targetFace === 'blue') return 5;
+			if(style === '3d'){
+				if(p && p.organization === 'ASA') return 12;
+				if(p && p.organization === 'NFAA') return 11;
+				return 5; // default fallback
+			}
+			return 10; // standard target (10 per arrow)
+		};
+
 		// Sort by date ascending
 		list.sort((a,b)=>new Date(a.created)-new Date(b.created));
 		const labels = list.map(p=> new Date(p.created).toLocaleDateString());
@@ -69,16 +88,48 @@
 			const arrows = (Number(p.endCount)||Number(p.arrowCount)||0) * (Number(p.ends)||1);
 			return arrows>0 ? (Number(p.totalScore)/arrows).toFixed(2) : null;
 		});
+
+		// Build breakdown by style
+		const groups = {};
+		let overallScore=0, overallPossible=0, sessionsWithValues=0;
+		list.forEach(p=>{
+			const arrows = (Number(p.endCount)||Number(p.arrowCount)||0) * (Number(p.ends)||1);
+			const total = Number(p.totalScore)||0;
+			const style = inferStyle(p);
+			const perMax = perArrowMaxForStyle(style);
+			overallScore += total;
+			overallPossible += arrows * perMax;
+			if(total!=null) sessionsWithValues++;
+			const perMaxThis = perArrowMaxForStyle(style, p);
+			if(!groups[style]) groups[style] = { sessions:0, totalScore:0, arrows:0, totalPossible:0 };
+			groups[style].sessions += 1;
+			groups[style].totalScore += total;
+			groups[style].arrows += arrows;
+			groups[style].totalPossible += (arrows * perMaxThis);
+		});
+
+		let breakdownHtml = '<div class="card p-3 mb-3"><h5>By Target Style</h5><div class="table-responsive"><table class="table table-sm mb-0"><thead><tr><th>Style</th><th>Sessions</th><th>Avg per arrow</th><th>% of possible</th></tr></thead><tbody>';
+		Object.keys(groups).forEach(k=>{
+			const g = groups[k];
+			const avg = g.arrows>0 ? (g.totalScore / g.arrows).toFixed(2) : '—';
+			const pct = (g.arrows>0 && g.totalPossible>0) ? ((g.totalScore / g.totalPossible)*100).toFixed(1) + '%' : '—';
+			breakdownHtml += `<tr><td>${k}</td><td>${g.sessions}</td><td>${avg}</td><td>${pct}</td></tr>`;
+		});
+		breakdownHtml += '</tbody></table></div></div>';
+		document.getElementById('statsBreakdown').innerHTML = breakdownHtml;
+
 		const ctx = document.getElementById('statsChart').getContext('2d');
 		new Chart(ctx,{
 			type:'line',
 			data:{ labels: labels, datasets:[{ label:'Avg per arrow', data: data, borderColor:'rgb(13,110,253)', backgroundColor:'rgba(13,110,253,0.08)', tension:0.25, pointRadius:4 }]},
 			options:{ scales: { y: { beginAtZero:true } }, responsive:true, maintainAspectRatio:false }
 		});
-		// summary
+
+		// summary: overall average and percent of possible
 		const nums = data.map(x=>Number(x)).filter(x=>!isNaN(x));
-		const avg = (nums.reduce((s,n)=>s+n,0)/nums.length).toFixed(2);
-		document.getElementById('statsSummary').innerHTML = `<div class="card p-3">Overall average per arrow: <strong style="color:var(--accent)">${avg}</strong> (based on ${nums.length} sessions)</div>`;
+		const avg = (nums.length? (nums.reduce((s,n)=>s+n,0)/nums.length).toFixed(2) : '—');
+		const overallPercent = (overallPossible>0) ? ((overallScore/overallPossible)*100).toFixed(1) + '%' : '—';
+		document.getElementById('statsSummary').innerHTML = `<div class="card p-3">Overall average per arrow: <strong style="color:var(--accent)">${avg}</strong> (based on ${nums.length} sessions)<div style="margin-top:.5rem">Overall percent of possible score: <strong>${overallPercent}</strong></div></div>`;
 	})();
 	</script>
 </body>

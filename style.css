@@ -209,3 +209,51 @@ main p{color:var(--muted);font-size:1rem}
 @media (max-width:480px){
 	.fab-wide{right:12px;bottom:78px;padding:.5rem .9rem}
 }
+
+/* Top-left Back button used across pages */
+.back-btn{
+	position:fixed;
+	top:12px;
+	left:12px;
+	z-index:1200;
+	display:inline-flex;
+	align-items:center;
+	gap:8px;
+	padding:.38rem .6rem;
+	background:var(--card);
+	color:#111;
+	border:1px solid rgba(0,0,0,0.08);
+	border-radius:.35rem;
+	text-decoration:none;
+	box-shadow:0 6px 18px rgba(16,24,40,0.06);
+	font-weight:600;
+}
+.back-btn:hover{transform:translateY(-1px)}
+
+@media (max-width:420px){
+	.back-btn{top:8px;left:8px;padding:.28rem .5rem;font-size:0.95rem}
+}
+
+/* Simulate a narrow mobile viewport within the page (cannot resize browser window) */
+.mobile-simulate body, .mobile-simulate .site-main, .mobile-simulate main, .mobile-simulate .container{
+	max-width:420px;
+	margin-left:auto;
+	margin-right:auto;
+}
+.mobile-simulate .site-main{box-shadow:0 6px 24px rgba(16,24,40,0.06);border-radius:8px;overflow:hidden;background:transparent}
+
+/* Force bottom navbar to expand inline on small screens (Option A)
+	 - Hide the toggler, always show the collapsed nav, allow wrapping
+	 - Keeps nav items accessible without a pop-out/offcanvas on small devices
+*/
+@media (max-width:767.98px){
+	.navbar .navbar-toggler{ display:none !important; }
+	.navbar .navbar-collapse{ display:block !important; height:auto !important; visibility:visible !important; }
+	.navbar.fixed-bottom{padding-bottom:0}
+	.navbar .nav{flex-wrap:wrap; align-items:stretch}
+	/* let items wrap into multiple rows when space is tight */
+	.navbar .nav .nav-item{flex:1 0 33%; border-left:1px solid rgba(255,255,255,0.06)}
+	.navbar .nav .nav-item:first-child{border-left:none}
+	.navbar .nav .nav-link{padding:.55rem .35rem}
+}
+
