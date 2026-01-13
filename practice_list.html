@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Practices</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body>
+<!-- Top-left back button: tries history.back(), falls back to index.html -->
+<a class="back-btn" href="index.html" onclick="if(history.length>1){history.back();return false;}">← Back</a>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="index.html">AI Innovation</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="nav nav-pills ms-auto">
+                <li class="nav-item" role="presentation">
+						<a class="nav-link" href="index.html" title="History"><span class="nav-icon">📈</span>History</a>
+					</li>
+					<li class="nav-item" role="presentation">
+						<a class="nav-link active" href="AI_Coach.html" title="AI Coach"><span class="nav-icon">🤖</span>AI Coach</a>
+					</li>
+					<li class="nav-item" role="presentation">
+                        <a class="nav-link" href="equipment.html" title="Equipment"><span class="nav-icon">🏹</span>Equipment</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" href="Scores.html" title="Statistics"><span class="nav-icon">📊</span>Statistics</a>
+					</li>
+                    
+					<li class="nav-item" role="presentation">
+						<a class="nav-link" href="competition.html" title="Competition"><span class="nav-icon">🏆</span>Competition</a>
+					</li>
+					<li class="nav-item" role="presentation">
+						<a class="nav-link" href="menu.html">Menu</a>
+					</li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+    <header class="page-header">
+        <div class="container"><h1>Practices</h1></div>
+    </header>
+
+<main class="site-main container py-4">
+    <h2>Saved Practices</h2>
+    <div id="list" class="list-group"></div>
+    <p class="mt-3"><a href="new_practice.html" class="btn btn-primary">Add Practice</a></p>
+</main>
+
+<script>
+function getPractices(){return JSON.parse(localStorage.getItem('practices')||'[]');}
+function render(){
+    const list=getPractices();
+    const container=document.getElementById('list');
+    container.innerHTML='';
+    if(!list.length){container.innerHTML='<div class="alert alert-secondary">No saved practices yet.</div>';return}
+    list.slice().reverse().forEach(p=>{
+        const a=document.createElement('a');
+        a.href='practice_detail.html?id='+p.id;
+        a.className='list-group-item list-group-item-action';
+        a.innerHTML=`<div class="d-flex w-100 justify-content-between"><h5 class="mb-1">${p.name}</h5><small>${new Date(p.created).toLocaleString()}</small></div>
+        <p class="mb-1">Arrows: ${p.arrowCount} • Ends: ${p.ends} • Distance: ${p.distance}m</p>`;
+        container.appendChild(a);
+    })
+}
+render();
+</script>
+</body>
+</html>

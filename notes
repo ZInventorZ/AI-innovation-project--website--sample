@@ -1,0 +1,3 @@
+fill in the equipment page data to equipment.html and redirect links, and the equipment page needs separate buttons for arrows, sight, and bow, 
+the options feed into the portion for set up, within the sight set up have pins and then add lines for each pin, the data for each pin that is needed: color, distance(for multipin set-ups). he sight needs to include, lense (yes/no) then what power of lense and which clarifier goes with it (optional). 
+arrows need area for length, fletch type, fletch count, material, diameter, spine, weight etc., within every file, can you add comments to the code to make it easier to edit and understand?

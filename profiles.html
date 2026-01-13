@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>AI Innovation Project - Profiles</title>
+	<link rel="stylesheet" href="style.css">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body>
+	<!-- Top-left back button: tries history.back(), falls back to index.html -->
+	<a class="back-btn" href="index.html" onclick="if(history.length>1){history.back();return false;}">← Back</a>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
+		<div class="container-fluid">
+			<a class="navbar-brand" href="index.html">AI Innovation</a>
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+
+			<div class="collapse navbar-collapse" id="navbarNav">
+				<ul class="nav nav-pills ms-auto" role="tablist">
+					<li class="nav-item" role="presentation">
+						<a class="nav-link" href="index.html" title="History"><span class="nav-icon">📈</span>History</a>
+					</li>
+					<li class="nav-item" role="presentation">
+						<a class="nav-link" href="AI_Coach.html" title="AI Coach"><span class="nav-icon">🤖</span>AI Coach</a>
+					</li>
+					<li class="nav-item" role="presentation">
+						<a class="nav-link" href="equipment.html" title="Equipment"><span class="nav-icon">🏹</span>Equipment</a>
+					</li>
+					<li class="nav-item" role="presentation">
+						<a class="nav-link" href="Scores.html" title="Statistics"><span class="nav-icon">📊</span>Statistics</a>
+					</li>
+                    
+					<li class="nav-item" role="presentation">
+						<a class="nav-link" href="score_history.html" title="History"><span class="nav-icon">📈</span>History</a>
+					</li>
+					<li class="nav-item" role="presentation">
+						<a class="nav-link" href="menu.html"><span class="nav-icon">☰</span>Menu</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+	<header class="page-header">
+		<div class="container">
+			<h1>Profile</h1>
+		</div>
+	</header>
+
+	<main class="site-main container py-4">
+		<h2>Profiles</h2>
+		<p>Manage your account and personal settings.</p>
+		<p><a class="fab-wide" href="#" id="manageProfile">Manage Profile</a></p>
+	</main>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

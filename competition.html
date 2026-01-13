@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Competitions</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body>
+  <!-- Back button -->
+  <a class="back-btn" href="index.html" onclick="if(history.length>1){history.back();return false;}">← Back</a>
+
+  <header class="page-header"><div class="container"><h1>Competitions</h1></div></header>
+
+  <!-- Bottom nav -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="nav nav-pills ms-auto" role="tablist">
+          <li class="nav-item"><a class="nav-link" href="index.html"><span class="nav-icon">📈</span>History</a></li>
+          <li class="nav-item"><a class="nav-link" href="AI_Coach.html"><span class="nav-icon">🤖</span>AI Coach</a></li>
+          <li class="nav-item"><a class="nav-link" href="equipment.html"><span class="nav-icon">🏹</span>Equipment</a></li>
+          <li class="nav-item"><a class="nav-link" href="Scores.html"><span class="nav-icon">📊</span>Statistics</a></li>
+          <li class="nav-item"><a class="nav-link active" href="competition.html"><span class="nav-icon">🏆</span>Competition</a></li>
+          <li class="nav-item"><a class="nav-link" href="menu.html"><span class="nav-icon">☰</span>Menu</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="site-main container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2>Competition Results</h2>
+      <div>
+        <button id="btnAdd" class="btn btn-primary">+ Add Competition</button>
+      </div>
+    </div>
+
+    <div id="listArea"></div>
+  </main>
+
+  <!-- Add competition modal (simple) -->
+  <div class="modal fade" id="addModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title">Add Competition</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <div class="mb-2"><label class="form-label">Event name</label><input id="c_name" class="form-control"/></div>
+          <div class="row g-2"><div class="col-6"><label class="form-label">Score</label><input id="c_score" type="number" class="form-control"/></div><div class="col-6"><label class="form-label">X Count</label><input id="c_x" type="number" class="form-control"/></div></div>
+          <div class="row g-2 mt-2"><div class="col-6"><label class="form-label">Place</label><input id="c_place" type="number" class="form-control"/></div><div class="col-6"><label class="form-label">Distance (m)</label><input id="c_distance" type="number" class="form-control"/></div></div>
+          <div class="mt-2"><label class="form-label">Date</label><input id="c_date" type="date" class="form-control"/></div>
+        </div>
+        <div class="modal-footer"><button id="c_save" class="btn btn-primary">Save</button><button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+  (function(){
+    function getComps(){return JSON.parse(localStorage.getItem('competitions')||'[]');}
+    function saveComps(a){localStorage.setItem('competitions',JSON.stringify(a));}
+    const listArea = document.getElementById('listArea');
+    const addModal = new bootstrap.Modal(document.getElementById('addModal'));
+
+    function render(){
+      const arr = getComps();
+      listArea.innerHTML='';
+      if(!arr.length){ listArea.innerHTML='<div class="alert alert-secondary">No competitions yet. Add one with the button.</div>'; return; }
+      arr.slice().reverse().forEach(c=>{
+        const card = document.createElement('div'); card.className='card p-3 mb-2';
+        card.innerHTML = `<div class="d-flex justify-content-between align-items-start"><div><strong>${c.name||'Competition'}</strong><div class="small text-muted">${new Date(c.date||c.created).toLocaleDateString()}</div></div><div style="text-align:right"><div>Score: <strong>${c.score}</strong></div><div>X: <strong>${c.xCount||0}</strong></div><div>Place: <strong>${c.place||'-'}</strong></div></div></div>`;
+        const del = document.createElement('button'); del.className='btn btn-sm btn-outline-danger mt-2'; del.textContent='Delete'; del.addEventListener('click',()=>{ const arr=getComps().filter(x=>x.id!==c.id); saveComps(arr); render(); });
+        card.appendChild(del);
+        listArea.appendChild(card);
+      });
+    }
+
+    document.getElementById('btnAdd').addEventListener('click', ()=>{ document.getElementById('c_name').value=''; document.getElementById('c_score').value=''; document.getElementById('c_x').value=''; document.getElementById('c_place').value=''; document.getElementById('c_distance').value=''; document.getElementById('c_date').value=''; addModal.show(); });
+    document.getElementById('c_save').addEventListener('click', ()=>{
+      const obj = { id: Date.now(), name: document.getElementById('c_name').value||'Competition', score: Number(document.getElementById('c_score').value)||0, xCount: Number(document.getElementById('c_x').value)||0, place: Number(document.getElementById('c_place').value)||null, distance: Number(document.getElementById('c_distance').value)||null, date: document.getElementById('c_date').value||new Date().toISOString(), created: new Date().toISOString() };
+      const arr = getComps(); arr.push(obj); saveComps(arr); addModal.hide(); render();
+    });
+
+    render();
+  })();
+  </script>
+</body>
+</html>

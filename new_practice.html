@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>New Practice</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body>
+<!-- Top-left back button: tries history.back(), falls back to index.html -->
+<a class="back-btn" href="index.html" onclick="if(history.length>1){history.back();return false;}">← Back</a>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="index.html">AI Innovation</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="nav nav-pills ms-auto" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" href="index.html" title="History"><span class="nav-icon">📈</span>History</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" href="AI_Coach.html" title="AI Coach"><span class="nav-icon">🤖</span>AI Coach</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" href="equipment.html" title="Equipment"><span class="nav-icon">🏹</span>Equipment</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" href="Scores.html" title="Statistics"><span class="nav-icon">📊</span>Statistics</a>
+                    
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" href="score_history.html" title="Feedback"><span class="nav-icon">💬</span>Feedback</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" href="menu.html"><span class="nav-icon">☰</span>Menu</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+    <header class="page-header">
+        <div class="container"><h1>New Practice</h1></div>
+    </header>
+
+<main class="site-main container py-4">
+    <h2>New Practice</h2>
+    <form id="practiceForm" class="row g-3">
+        <div class="col-md-6">
+            <label class="form-label">Practice Name</label>
+            <input id="name" class="form-control" placeholder="e.g. Morning Session">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">End Count</label>
+            <input id="endCount" type="number" class="form-control">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Arrow Count</label>
+            <input id="arrowCount" type="number" class="form-control">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Total Score</label>
+            <input id="totalScore" type="number" class="form-control" placeholder="leave blank if unknown">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Distance (m)</label>
+            <input id="distance" type="number" class="form-control">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Equipment Setup</label>
+            <select id="equipmentSetup" class="form-select">
+                <option value="">(none)</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Ends</label>
+            <input id="ends" type="number" class="form-control">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Organization</label>
+            <select id="organization" class="form-select">
+                <option value="">(none)</option>
+                <option value="ASA">ASA</option>
+                <option value="NFAA">NFAA</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Target Face</label>
+            <select id="targetFace" class="form-select">
+                <option value="standard">Standard</option>
+                <option value="blue">Blue-faced (NFAA)</option>
+            </select>
+        </div>
+        <div class="col-12">
+            <label class="form-label">Notes</label>
+            <textarea id="notes" class="form-control" rows="3"></textarea>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Weather / Session</label>
+            <div class="d-flex gap-2">
+                <select id="weather" class="form-select">
+                    <option value="indoor">Indoor</option>
+                    <option value="outdoor">Outdoor</option>
+                </select>
+                <button id="pullWeather" type="button" class="btn btn-outline-secondary">Pull</button>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="unidentified">
+                <label class="form-check-label" for="unidentified">Unidentified practice (fill with averages)</label>
+            </div>
+        </div>
+        <div class="col-12">
+            <button id="saveBtn" class="btn btn-primary">Save Practice</button>
+            <a class="btn btn-link" href="practice_list.html">View Practices</a>
+        </div>
+    </form>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function getPractices(){
+    return JSON.parse(localStorage.getItem('practices')||'[]');
+}
+function savePractices(arr){
+    localStorage.setItem('practices', JSON.stringify(arr));
+}
+
+function computeAverages(){
+    const list=getPractices();
+    if(!list.length) return {endCount:6,arrowCount:12,distance:18,ends:6};
+    const sum=list.reduce((s,p)=>{
+        s.endCount+=Number(p.endCount||0);
+        s.arrowCount+=Number(p.arrowCount||0);
+        s.distance+=Number(p.distance||0);
+        s.ends+=Number(p.ends||0);
+        return s;
+    },{endCount:0,arrowCount:0,distance:0,ends:0});
+    return {
+        endCount: Math.round(sum.endCount/list.length)||6,
+        arrowCount: Math.round(sum.arrowCount/list.length)||12,
+        distance: Math.round(sum.distance/list.length)||18,
+        ends: Math.round(sum.ends/list.length)||6,
+    };
+}
+
+// populate equipment setups
+function getSetups(){return JSON.parse(localStorage.getItem('equipmentSetups')||'[]');}
+function populateSetups(){
+    const sel=document.getElementById('equipmentSetup'); sel.innerHTML='<option value="">(none)</option>';
+    getSetups().forEach(s=>{ const opt=document.createElement('option'); opt.value=s.id; opt.textContent = s.name; sel.appendChild(opt); });
+}
+populateSetups();
+
+document.getElementById('unidentified').addEventListener('change', function(){
+    if(this.checked){
+        const avg=computeAverages();
+        document.getElementById('endCount').value=avg.endCount;
+        document.getElementById('arrowCount').value=avg.arrowCount;
+        document.getElementById('distance').value=avg.distance;
+        document.getElementById('ends').value=avg.ends;
+        document.getElementById('name').value='Unidentified Practice';
+    }
+});
+
+document.getElementById('practiceForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const p={
+        id: Date.now(),
+        name: document.getElementById('name').value||'Unidentified Practice',
+        endCount: Number(document.getElementById('endCount').value)||0,
+        arrowCount: Number(document.getElementById('arrowCount').value)||0,
+        distance: Number(document.getElementById('distance').value)||0,
+        ends: Number(document.getElementById('ends').value)||0,
+        totalScore: (function(){
+            const v=document.getElementById('totalScore').value;
+            return v!=='' ? Number(v) : null;
+        })(),
+        notes: document.getElementById('notes').value||'',
+            weather: document.getElementById('weather') ? document.getElementById('weather').value : null,
+            equipmentSetupId: (function(){const v=document.getElementById('equipmentSetup')?.value; return v? Number(v): null})(),
+            equipmentSetup: null,
+            created: new Date().toISOString(),
+            organization: (document.getElementById('organization')?.value) || null,
+            targetFace: (document.getElementById('targetFace')?.value) || null
+    };
+
+        // attach equipmentSetup snapshot if selected
+        if(p.equipmentSetupId){
+            const setups = getSetups();
+            const s = setups.find(x=>x.id===p.equipmentSetupId);
+            if(s) p.equipmentSetup = s;
+        }
+    // helper to compute total arrows
+    function totalArrows(obj){
+        const perEnd = Number(obj.endCount) || Number(obj.arrowCount) || 0;
+        const ends = Number(obj.ends) || 1;
+        return perEnd * ends;
+    }
+    // if totalScore missing, estimate from historical average per-arrow or default
+    if(p.totalScore==null){
+        const practices=getPractices();
+        let sumScore=0, sumArrows=0;
+        practices.forEach(pr=>{
+            if(pr.totalScore!=null){
+                const arrows = totalArrows(pr);
+                if(arrows>0){ sumScore += Number(pr.totalScore); sumArrows += arrows; }
+            }
+        });
+        const avgPerArrow = (sumArrows>0) ? (sumScore / sumArrows) : 8.0;
+        const arrowsNow = totalArrows(p);
+        p.totalScore = arrowsNow>0 ? Math.round(avgPerArrow * arrowsNow) : 0;
+    }
+    const arr=getPractices();
+    arr.push(p);
+    savePractices(arr);
+    window.location.href='practice_detail.html?id='+p.id;
+});
+document.getElementById('pullWeather').addEventListener('click',()=>{
+    const mdl = document.createElement('div'); mdl.innerHTML = '<div class="modal fade" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Not available</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body">Pulling weather from location/time is not yet available.</div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div></div></div></div>';
+    document.body.appendChild(mdl);
+    const bsModal = new bootstrap.Modal(mdl.querySelector('.modal'));
+    bsModal.show();
+    mdl.querySelector('.modal').addEventListener('hidden.bs.modal', ()=> mdl.remove());
+});
+</script>
+</body>
+</html>

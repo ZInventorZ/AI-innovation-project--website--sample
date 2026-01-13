@@ -1,0 +1,259 @@
+/* Base layout */
+:root{
+	--bg:#f4f6f8;
+	--card:#ffffff;
+	--accent:#0d6efd;
+	--muted:#6c757d;
+}
+
+html,body{
+	height:100%;
+	margin:0;
+	font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+	background:var(--bg);
+	color:#222;
+}
+
+.navbar-brand{
+	font-weight:700;
+	letter-spacing:0.4px;
+}
+
+.container{
+	max-width:1000px;
+}
+
+main h2{
+	margin-top:0;
+	margin-bottom:0.5rem;
+}
+
+/* Tab and nav tweaks */
+.nav-pills .nav-link{
+	margin-left:0.4rem;
+}
+
+.nav-pills .nav-link.active{
+	background-color:var(--accent);
+	color:#fff;
+}
+
+/* Cards and sections */
+.card{
+	background:var(--card);
+	border:1px solid rgba(0,0,0,0.06);
+	box-shadow:0 1px 2px rgba(16,24,40,0.03);
+}
+
+/* Full-width bottom navigation: spread items, dividers, larger touch targets */
+.navbar .nav{
+	width:100%;
+	display:flex;
+	padding:0;
+	margin:0;
+	align-items:stretch;
+}
+.navbar .nav .nav-item{
+	flex:1 1 0;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	border-left:1px solid rgba(255,255,255,0.06);
+}
+.navbar .nav .nav-item:first-child{border-left:none}
+.navbar .nav .nav-link,
+.navbar .nav .btn{
+	display:block;
+	width:100%;
+	padding:.7rem 0;
+	text-align:center;
+	border-radius:0;
+	font-size:1rem;
+}
+.navbar .nav .nav-link:hover,
+.navbar .nav .btn:hover{background:rgba(255,255,255,0.03)}
+
+
+/* Make main content comfortable */
+main p{color:var(--muted);font-size:1rem}
+
+/* Responsive */
+@media (max-width:576px){
+	.nav-pills .nav-link{font-size:0.95rem;padding:.3rem .6rem}
+}
+
+/* Utility */
+.py-4{padding-top:1.5rem;padding-bottom:1.5rem}
+
+/* Ensure main content isn't hidden behind fixed bottom nav */
+.site-main{padding-bottom:84px}
+
+/* Slightly taller fixed nav handling */
+.navbar.fixed-bottom{height:auto}
+
+/* Floating action button (circular plus) */
+.fab{
+	position:fixed;
+	right:18px;
+	bottom:74px; /* floats above bottom nav */
+	width:56px;
+	height:56px;
+	border-radius:50%;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	font-size:28px;
+	background:var(--accent);
+	color:#fff;
+	box-shadow:0 6px 18px rgba(13,110,253,0.2);
+	z-index:1050;
+	text-decoration:none;
+}
+.fab:active{transform:scale(0.98)}
+
+@media (max-width:480px){
+	.fab{right:12px;bottom:78px;width:52px;height:52px;font-size:24px}
+}
+
+/* Score card styling for index */
+.score-card{
+	background:var(--card);
+	border:1px solid rgba(0,0,0,0.06);
+	padding:1rem;
+	margin-bottom:.75rem;
+	border-radius:.4rem;
+}
+.score-main{
+	display:flex;
+	align-items:baseline;
+	justify-content:space-between;
+}
+.score-title{font-size:1.05rem;font-weight:700}
+.score-total{font-size:1.6rem;font-weight:800}
+.score-sub{color:var(--muted);font-size:0.95rem}
+.badge-pb{background:#ffc107;color:#111;font-weight:700;padding:.35rem .5rem;border-radius:.35rem}
+
+/* Page header at top */
+.page-header{background:#fff;border-bottom:1px solid rgba(0,0,0,0.06)}
+.page-header .container{max-width:1000px}
+.page-header h1{margin:0;padding:.6rem 0;font-size:1.1rem;font-weight:700}
+
+/* Sessions / history layout to match mobile screenshot (keeps current colors) */
+.sessions-header{background:var(--card);padding:1rem 0;border-bottom:1px solid rgba(0,0,0,0.03)}
+.sessions-header .title{font-size:1.6rem;font-weight:700;color:var(--accent)}
+.filter-pills{display:flex;gap:.6rem;padding:.8rem 0}
+.pill{background:transparent;border:1px solid rgba(0,0,0,0.06);padding:.45rem .8rem;border-radius:999px;font-size:0.95rem;color:var(--muted)}
+.pill.active{background:rgba(13,110,253,0.06);color:var(--accent);border-color:rgba(13,110,253,0.12)}
+.result-count{color:var(--accent);font-size:1.25rem;margin:0.6rem 0}
+
+/* make pills horizontally scrollable on narrow screens */
+.filter-pills{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.filter-pills .pill{flex:0 0 auto}
+
+.session-card{position:relative;background:var(--card);border-radius:.6rem;padding:1rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 0 rgba(0,0,0,0.02)}
+.session-card .left-stripe{position:absolute;left:0;top:0;bottom:0;width:8px;border-top-left-radius:.6rem;border-bottom-left-radius:.6rem}
+.session-card .content{margin-left:14px;flex:1}
+.session-card .score{font-size:1.55rem;font-weight:800;text-align:right;min-width:64px}
+.session-card .meta{color:var(--muted);font-size:0.95rem;margin-top:.45rem}
+.pb-badge{background:#26c6a6;color:#fff;padding:.35rem .5rem;border-radius:999px;font-weight:700;margin-left:.6rem}
+
+.stripe-yellow{background:#f7d36b}
+.stripe-blue{background:var(--accent)}
+.stripe-teal{background:#26c6a6}
+.stripe-gray{background:#cfcfcf}
+
+@media (max-width:420px){
+	.filter-pills{gap:.4rem;padding:.5rem 0}
+	.pill{font-size:0.85rem;padding:.35rem .6rem}
+	.result-count{font-size:1rem}
+}
+
+/* Responsive stacking for coach mode buttons */
+@media (max-width:576px){
+	.btn-group.stack-sm{display:flex;flex-direction:column}
+	.btn-group.stack-sm .btn{width:100%}
+}
+
+/* Make bottom tabs smaller but still visible on very small screens */
+@media (max-width:420px){
+	.navbar .nav .nav-link, .navbar .nav .btn{
+		font-size:0.78rem;
+		padding:0.35rem 0;
+	}
+	.nav-icon{font-size:14px}
+	.page-header h1{font-size:1rem}
+	.site-main{padding-bottom:72px}
+}
+
+/* Small icon above tab labels */
+.nav-icon{display:block;font-size:18px;line-height:1;margin-bottom:2px}
+
+/* Wider floating action button for profile management */
+.fab-wide{
+	position:fixed;
+	right:18px;
+	bottom:74px;
+	padding:0.6rem 1rem;
+	border-radius:28px;
+	display:inline-flex;
+	align-items:center;
+	justify-content:center;
+	font-size:16px;
+	background:var(--accent);
+	color:#fff;
+	box-shadow:0 6px 18px rgba(13,110,253,0.18);
+	z-index:1050;
+	text-decoration:none;
+}
+
+@media (max-width:480px){
+	.fab-wide{right:12px;bottom:78px;padding:.5rem .9rem}
+}
+
+/* Top-left Back button used across pages */
+.back-btn{
+	position:fixed;
+	top:12px;
+	left:12px;
+	z-index:1200;
+	display:inline-flex;
+	align-items:center;
+	gap:8px;
+	padding:.38rem .6rem;
+	background:var(--card);
+	color:#111;
+	border:1px solid rgba(0,0,0,0.08);
+	border-radius:.35rem;
+	text-decoration:none;
+	box-shadow:0 6px 18px rgba(16,24,40,0.06);
+	font-weight:600;
+}
+.back-btn:hover{transform:translateY(-1px)}
+
+@media (max-width:420px){
+	.back-btn{top:8px;left:8px;padding:.28rem .5rem;font-size:0.95rem}
+}
+
+/* Simulate a narrow mobile viewport within the page (cannot resize browser window) */
+.mobile-simulate body, .mobile-simulate .site-main, .mobile-simulate main, .mobile-simulate .container{
+	max-width:420px;
+	margin-left:auto;
+	margin-right:auto;
+}
+.mobile-simulate .site-main{box-shadow:0 6px 24px rgba(16,24,40,0.06);border-radius:8px;overflow:hidden;background:transparent}
+
+/* Force bottom navbar to expand inline on small screens (Option A)
+	 - Hide the toggler, always show the collapsed nav, allow wrapping
+	 - Keeps nav items accessible without a pop-out/offcanvas on small devices
+*/
+@media (max-width:767.98px){
+	.navbar .navbar-toggler{ display:none !important; }
+	.navbar .navbar-collapse{ display:block !important; height:auto !important; visibility:visible !important; }
+	.navbar.fixed-bottom{padding-bottom:0}
+	.navbar .nav{flex-wrap:wrap; align-items:stretch}
+	/* let items wrap into multiple rows when space is tight */
+	.navbar .nav .nav-item{flex:1 0 33%; border-left:1px solid rgba(255,255,255,0.06)}
+	.navbar .nav .nav-item:first-child{border-left:none}
+	.navbar .nav .nav-link{padding:.55rem .35rem}
+}
+
