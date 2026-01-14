@@ -12,19 +12,19 @@
 <a class="back-btn" href="index.html" onclick="if(history.length>1){history.back();return false;}">← Back</a>
 <header class="page-header"><div class="container"><h1>New Score</h1></div></header>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
-    	<div class="container-fluid">
-      		<div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="nav nav-pills ms-auto">
-        <li class="nav-item"><a class="nav-link" href="index.html"><span class="nav-icon">📈</span>History</a></li>
-        <li class="nav-item"><a class="nav-link" href="AI_Coach.html"><span class="nav-icon">🤖</span>AI Coach</a></li>
-        <li class="nav-item"><a class="nav-link" href="equipment.html"><span class="nav-icon">🏹</span>Equipment</a></li>
-        <li class="nav-item"><a class="nav-link" href="Scores.html"><span class="nav-icon">📊</span>Statistics</a></li>
-        <li class="nav-item"><a class="nav-link" href="score_history.html"><span class="nav-icon">📈</span>History</a></li>
-        <li class="nav-item"><a class="nav-link" href="profile_edit.html"><span class="nav-icon">👤</span>Profile</a></li>
-      </ul>
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="nav nav-pills ms-auto" role="tablist">
+          <li class="nav-item"><a class="nav-link active" href="index.html"><span class="nav-icon">📈</span>History</a></li>
+          <li class="nav-item"><a class="nav-link" href="AI_Coach.html"><span class="nav-icon">🤖</span>AI Coach</a></li>
+          <li class="nav-item"><a class="nav-link" href="equipment.html"><span class="nav-icon">🏹</span>Equipment</a></li>
+          <li class="nav-item"><a class="nav-link" href="statistics.html"><span class="nav-icon">📊</span>Statistics</a></li>
+          <li class="nav-item"><a class="nav-link" href="competition.html"><span class="nav-icon">🏆</span>Competition</a></li>
+          <li class="nav-item"><a class="nav-link" href="menu.html"><span class="nav-icon">☰</span>Menu</a></li>
+        </ul>
+      </div>
     </div>
-  </div>
-</nav>
+  </nav>
 
 <main class="site-main container py-4">
   <div class="card p-3">
@@ -54,6 +54,7 @@
         </div>
         <div class="col-md-3"><label class="form-label">Arrows per end</label><input id="arrowCount" type="number" class="form-control"></div>
         <div class="col-md-3"><label class="form-label">Ends</label><input id="ends" type="number" class="form-control"></div>
+        <div class="col-md-3" id="targetsContainer" style="display:none"><label class="form-label">Number of Targets</label><input id="targets" type="number" class="form-control"></div>
         <div class="col-md-4"><label class="form-label">Distance (m)</label><input id="distance" type="number" class="form-control"></div>
         <div class="col-md-4"><label class="form-label">Organization</label>
           <select id="organization" class="form-select">
@@ -105,7 +106,21 @@
     <div class="card mt-3 p-3">
       <h5 class="mb-2">Session Equipment Details</h5>
       <div class="row g-2">
-        <div class="col-md-6"><label class="form-label">Bow</label><input id="session_bow" class="form-control"></div>
+        <div class="col-md-4">
+          <label class="form-label">Bow (saved)</label>
+          <div class="d-flex gap-2">
+            <select id="session_bow_select" class="form-select"></select>
+            <button id="addEquipmentBtn" type="button" class="btn btn-outline-secondary">＋</button>
+          </div>
+        </div>
+        <div class="col-md-4"><label class="form-label">Sight (saved)</label>
+          <select id="session_sight_select" class="form-select"></select>
+        </div>
+        <div class="col-md-4"><label class="form-label">Arrows (saved)</label>
+          <select id="session_arrows_select" class="form-select"></select>
+        </div>
+
+        <div class="col-md-6"><label class="form-label">Bow (override)</label><input id="session_bow" class="form-control"></div>
         <div class="col-md-6"><label class="form-label">Sight - Pin count</label><input id="session_sight_pins" type="number" class="form-control"></div>
         <div class="col-md-6"><label class="form-label">Sight - Type</label>
           <select id="session_sight_type" class="form-select"><option value="slider">Slider</option><option value="fixed">Fixed</option></select>
@@ -124,6 +139,8 @@
     </div>
   </div>
 </main>
+
+<a class="fab" id="saveFab" href="#" title="Continue to Score Entry" onclick="document.getElementById('save').click();return false">→</a>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
@@ -145,8 +162,24 @@
     document.getElementById('name').value = p.name;
     if(p.ends>0){ document.getElementById('ends').value=p.ends; document.getElementById('arrowCount').value=p.arrowCount; }
     else { document.getElementById('ends').value=''; document.getElementById('arrowCount').value=''; }
-    if(v==='3d'){ document.getElementById('totalScore').placeholder='Enter total points (no arrows)'; }
-    else { document.getElementById('totalScore').placeholder='leave blank to estimate'; }
+    if(v==='3d'){ 
+      document.getElementById('totalScore').placeholder='Enter total points (no arrows)';
+      // Show targets field, hide/disable arrow/ends fields
+      document.getElementById('targetsContainer').style.display='block';
+      document.getElementById('arrowCount').disabled=true;
+      document.getElementById('arrowCount').style.opacity='0.5';
+      document.getElementById('ends').disabled=true;
+      document.getElementById('ends').style.opacity='0.5';
+    }
+    else { 
+      document.getElementById('totalScore').placeholder='leave blank to estimate';
+      // Hide targets field, enable arrow/ends fields
+      document.getElementById('targetsContainer').style.display='none';
+      document.getElementById('arrowCount').disabled=false;
+      document.getElementById('arrowCount').style.opacity='1';
+      document.getElementById('ends').disabled=false;
+      document.getElementById('ends').style.opacity='1';
+    }
   }
   style.addEventListener('change',applyPreset);
   applyPreset();
@@ -194,13 +227,69 @@
       p.totalScore = arrowsNow>0? Math.round(avgPerArrow*arrowsNow): (style.value==='3d'? 0:0);
     }
     const arr=getPractices(); arr.push(p); savePractices(arr);
-    window.location.href='practice_detail.html?id='+p.id;
+    window.location.href='score_entry.html?id='+p.id;
   });
   // attach chosen equipment snapshot if present
   (function(){
     const sel=document.getElementById('equipmentSetup');
     const arr = JSON.parse(localStorage.getItem('equipmentSetups')||'[]');
     arr.forEach(s=>{ const opt=document.createElement('option'); opt.value=s.id; opt.textContent=s.name; sel.appendChild(opt); });
+
+    // Populate session equipment selects (bow, sight, arrows) from equipmentSetups
+    function populateEquipmentSelects(){
+      const setups = JSON.parse(localStorage.getItem('equipmentSetups')||'[]');
+      const bowSel = document.getElementById('session_bow_select');
+      const sightSel = document.getElementById('session_sight_select');
+      const arrowsSel = document.getElementById('session_arrows_select');
+      if(!bowSel || !sightSel || !arrowsSel) return;
+      bowSel.innerHTML = '<option value="">(none)</option>';
+      sightSel.innerHTML = '<option value="">(none)</option>';
+      arrowsSel.innerHTML = '<option value="">(none)</option>';
+      setups.forEach(su=>{
+        const o = document.createElement('option'); o.value = su.id; o.textContent = su.name;
+        if(su.type==='bow') bowSel.appendChild(o.cloneNode(true));
+        if(su.type==='sight') sightSel.appendChild(o.cloneNode(true));
+        if(su.type==='arrows') arrowsSel.appendChild(o.cloneNode(true));
+      });
+    }
+
+    populateEquipmentSelects();
+
+    // Auto-refresh equipment selects when the page regains focus or storage changes
+    window.addEventListener('focus', populateEquipmentSelects);
+    window.addEventListener('storage', (e)=>{ if(e.key==='equipmentSetups') populateEquipmentSelects(); });
+
+    // When a saved equipment is chosen, populate the session fields with its snapshot
+    function applyEquipmentToSession(setupId){
+      const setups = JSON.parse(localStorage.getItem('equipmentSetups')||'[]');
+      const s = setups.find(x=>String(x.id)===String(setupId));
+      if(!s) return;
+      if(s.type==='bow'){
+        if(s.data && s.data.drawWeight) document.getElementById('session_bow').value = s.name + (s.data.drawWeight?(' - '+s.data.drawWeight+' lbs'):'');
+        else document.getElementById('session_bow').value = s.name;
+      }
+      if(s.type==='sight'){
+        // approximate: if pins saved, set sight pins and type
+        if(Array.isArray(s.data?.pins) && s.data.pins.length){
+          document.getElementById('session_sight_pins').value = s.data.pins.length;
+        }
+        if(s.data?.sightType) document.getElementById('session_sight_type').value = s.data.sightType;
+      }
+      if(s.type==='arrows'){
+        if(s.data?.material) document.getElementById('session_arrow_model').value = s.data.material;
+        if(s.data?.vanes) document.getElementById('session_arrow_vanes').value = s.data.vanes;
+        if(s.data?.spine) document.getElementById('session_arrow_spine').value = s.data.spine;
+        if(s.data?.diameter) document.getElementById('session_arrow_diameter').value = s.data.diameter;
+      }
+    }
+
+    document.getElementById('session_bow_select')?.addEventListener('change', (e)=>{ applyEquipmentToSession(e.target.value); });
+    document.getElementById('session_sight_select')?.addEventListener('change', (e)=>{ applyEquipmentToSession(e.target.value); });
+    document.getElementById('session_arrows_select')?.addEventListener('change', (e)=>{ applyEquipmentToSession(e.target.value); });
+
+    // Add button opens equipment management page (user can add new setup there)
+    document.getElementById('addEquipmentBtn')?.addEventListener('click', ()=>{ window.location.href='equipment.html'; });
+
     // When saving, include snapshot (ensure listener wraps after this)
     const saveBtn = document.getElementById('save');
     saveBtn.addEventListener('click', ()=>{

@@ -10,6 +10,20 @@
 <body>
   <!-- Top-left back button: tries history.back(), falls back to index.html -->
   <a class="back-btn" href="index.html" onclick="if(history.length>1){history.back();return false;}">← Back</a>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="nav nav-pills ms-auto" role="tablist">
+          <li class="nav-item"><a class="nav-link" href="index.html"><span class="nav-icon">📈</span>History</a></li>
+          <li class="nav-item"><a class="nav-link" href="AI_Coach.html"><span class="nav-icon">🤖</span>AI Coach</a></li>
+          <li class="nav-item"><a class="nav-link" href="equipment.html"><span class="nav-icon">🏹</span>Equipment</a></li>
+          <li class="nav-item"><a class="nav-link" href="statistics.html"><span class="nav-icon">📊</span>Statistics</a></li>
+          <li class="nav-item"><a class="nav-link" href="competition.html"><span class="nav-icon">🏆</span>Competition</a></li>
+          <li class="nav-item"><a class="nav-link active" href="menu.html"><span class="nav-icon">☰</span>Menu</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
   <div class="container py-4">
     <div class="page-header"><div class="container"><h1>Settings</h1></div></div>
 
@@ -29,6 +43,7 @@
           <div class="col-12 mt-3 d-flex gap-2">
             <button id="saveTheme" class="btn btn-primary">Save Theme</button>
             <button id="resetTheme" class="btn btn-outline-secondary">Reset</button>
+            <button id="orderEquipment" class="btn btn-outline-primary">Order new equipment</button>
           </div>
         </div>
       </div>
@@ -45,14 +60,34 @@
 
     function apply(obj){ Object.keys(obj).forEach(k=>document.documentElement.style.setProperty(k,obj[k])); }
 
-    // load stored theme
-    try{ const t = JSON.parse(localStorage.getItem('theme')||'{}'); if(t['--accent']) accent.value = t['--accent']; if(t['--bg']) bg.value = t['--bg']; if(t['--card']) card.value = t['--card']; apply(t); }catch(e){}
+    const defaultTheme = {'--accent':'#0d6efd','--bg':'#f4f6f8','--card':'#ffffff'};
+
+    // load stored theme (or defaults)
+    try{
+      const t = JSON.parse(localStorage.getItem('theme')||JSON.stringify(defaultTheme));
+      if(t['--accent']) accent.value = t['--accent']; if(t['--bg']) bg.value = t['--bg']; if(t['--card']) card.value = t['--card']; apply(t);
+    }catch(e){ apply(defaultTheme); }
+
+    // Live preview when selecting colors
+    accent.addEventListener('input', ()=>{ apply({'--accent':accent.value}); });
+    bg.addEventListener('input', ()=>{ apply({'--bg':bg.value}); });
+    card.addEventListener('input', ()=>{ apply({'--card':card.value}); });
 
     save.addEventListener('click',()=>{
       const obj={'--accent':accent.value,'--bg':bg.value,'--card':card.value}; localStorage.setItem('theme',JSON.stringify(obj)); apply(obj); alert('Theme saved.');
     });
 
-    reset.addEventListener('click',()=>{ localStorage.removeItem('theme'); document.documentElement.style.removeProperty('--accent'); document.documentElement.style.removeProperty('--bg'); document.documentElement.style.removeProperty('--card'); alert('Theme reset to defaults.'); });
+    reset.addEventListener('click',()=>{
+      // restore defaults and save
+      accent.value = defaultTheme['--accent'];
+      bg.value = defaultTheme['--bg'];
+      card.value = defaultTheme['--card'];
+      apply(defaultTheme);
+      localStorage.setItem('theme', JSON.stringify(defaultTheme));
+      alert('Theme reset to defaults.');
+    });
+
+    document.getElementById('orderEquipment')?.addEventListener('click', ()=>{ alert('Ordering is not available in this demo.'); });
   })();
   </script>
 </body>

@@ -76,6 +76,7 @@ main h2{
 
 /* Make main content comfortable */
 main p{color:var(--muted);font-size:1rem}
+main{padding-bottom:180px !important}
 
 /* Responsive */
 @media (max-width:576px){
@@ -86,7 +87,8 @@ main p{color:var(--muted);font-size:1rem}
 .py-4{padding-top:1.5rem;padding-bottom:1.5rem}
 
 /* Ensure main content isn't hidden behind fixed bottom nav */
-.site-main{padding-bottom:84px}
+.site-main{padding-bottom:180px}
+main > .container{padding-bottom:180px}
 
 /* Slightly taller fixed nav handling */
 .navbar.fixed-bottom{height:auto}
@@ -241,6 +243,14 @@ main p{color:var(--muted);font-size:1rem}
 	margin-right:auto;
 }
 .mobile-simulate .site-main{box-shadow:0 6px 24px rgba(16,24,40,0.06);border-radius:8px;overflow:hidden;background:transparent}
+
+/* When simulating mobile, increase bottom nav touch targets and font size for demo */
+.mobile-simulate .navbar .nav .nav-link,
+.mobile-simulate .navbar .nav .btn{
+	font-size:1.15rem;
+	padding:1rem 0.6rem;
+}
+.mobile-simulate .navbar{border-top:4px solid rgba(0,0,0,0.04)}
 
 /* Force bottom navbar to expand inline on small screens (Option A)
 	 - Hide the toggler, always show the collapsed nav, allow wrapping

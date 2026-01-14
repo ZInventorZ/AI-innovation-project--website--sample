@@ -16,75 +16,366 @@
 		</div>
 	</header>
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
-    	<div class="container-fluid">
-      		<div class="collapse navbar-collapse" id="navbarNav">
-				<ul class="nav nav-pills ms-auto" role="tablist">
-					<li class="nav-item" role="presentation">
-						<a class="nav-link" href="index.html" title="History"><span class="nav-icon">📈</span>History</a>
-					</li>
-					<li class="nav-item" role="presentation">
-						<a class="nav-link active" href="AI_Coach.html" title="AI Coach"><span class="nav-icon">🤖</span>AI Coach</a>
-					</li>
-					<li class="nav-item" role="presentation">
-						<a class="nav-link" href="equipment.html" title="Equipment"><span class="nav-icon">🏹</span>Equipment</a>
-					</li>
-					<li class="nav-item" role="presentation">
-						<a class="nav-link" href="Scores.html" title="Statistics"><span class="nav-icon">📊</span>Statistics</a>
-					</li>
-                    
-					<li class="nav-item" role="presentation">
-						<a class="nav-link" href="competition.html" title="Competition"><span class="nav-icon">🏆</span>Competition</a>
-					</li>
-					<li class="nav-item" role="presentation">
-						<a class="nav-link" href="menu.html">Menu</a>
-					</li>
-					<!-- floating action button placed separately -->
-				</ul>
-			</div>
-		</div>
-	</nav>
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="nav nav-pills ms-auto" role="tablist">
+          <li class="nav-item"><a class="nav-link" href="index.html"><span class="nav-icon">📈</span>History</a></li>
+          <li class="nav-item"><a class="nav-link active" href="AI_Coach.html"><span class="nav-icon">🤖</span>AI Coach</a></li>
+          <li class="nav-item"><a class="nav-link" href="equipment.html"><span class="nav-icon">🏹</span>Equipment</a></li>
+          <li class="nav-item"><a class="nav-link" href="statistics.html"><span class="nav-icon">📊</span>Statistics</a></li>
+          <li class="nav-item"><a class="nav-link" href="competition.html"><span class="nav-icon">🏆</span>Competition</a></li>
+          <li class="nav-item"><a class="nav-link" href="menu.html"><span class="nav-icon">☰</span>Menu</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
 	<main class="site-main container py-4">
 		<h2>AI Coach</h2>
-		<p>AI Coach controls and presets.</p>
-			<div class="card p-3">
-			<div class="mb-2"><strong>Coaching Mode</strong></div>
-			<div class="btn-group mb-3 stack-sm" role="group">
-				<button class="btn btn-outline-primary">Guided</button>
-				<button class="btn btn-outline-primary">Practice</button>
-				<button class="btn btn-outline-primary">Drills</button>
+		
+		<!-- DRILLS SECTION -->
+		<div class="card p-3 mb-3 border-primary">
+			<div class="card-header bg-primary text-white mb-3" style="margin:-12px -12px 0 -12px;padding:12px">
+				<strong>⚡ Drills & Training</strong>
 			</div>
-			<div class="mb-2"><strong>Feedback</strong></div>
+			
+			<div class="mb-3"><strong>Training Objectives</strong></div>
+			<div class="row g-2 mb-3">
+				<div class="col-6">
+					<button id="objStrength" class="btn btn-outline-warning w-100 active" data-objective="strength">💪 Strength</button>
+				</div>
+				<div class="col-6">
+					<button id="objEndurance" class="btn btn-outline-warning w-100" data-objective="endurance">🏃 Endurance</button>
+				</div>
+				<div class="col-12">
+					<button id="objConsistency" class="btn btn-outline-warning w-100" data-objective="consistency">🎯 Consistency</button>
+				</div>
+			</div>
+
+			<div class="mb-3"><strong>Difficulty Level</strong></div>
+			<div class="btn-group mb-3 w-100" role="group">
+				<button id="diffbegin" class="btn btn-outline-info">Beginner</button>
+				<button id="diffinter" class="btn btn-outline-info active">Intermediate</button>
+				<button id="diffadv" class="btn btn-outline-info">Advanced</button>
+			</div>
+			
+			<div class="mb-3"><strong>Preset Drills</strong></div>
+			<div class="row g-2">
+				<div class="col-6">
+					<button id="presetShort" class="btn btn-sm btn-secondary w-100">Short Range</button>
+				</div>
+				<div class="col-6">
+					<button id="presetComp" class="btn btn-sm btn-secondary w-100">Competition</button>
+				</div>
+				<div class="col-6">
+					<button id="presetEnd" class="btn btn-sm btn-secondary w-100">Endurance</button>
+				</div>
+				<div class="col-6">
+					<button id="presetWarm" class="btn btn-sm btn-secondary w-100">Warm-up</button>
+				</div>
+			</div>
+
+			<div class="d-grid gap-2 mt-3">
+				<button id="scheduleBtn" class="btn btn-lg btn-info">📅 Weekly Practice Schedule</button>
+			</div>
+		</div>
+
+		<!-- FORM ANALYSIS SECTION -->
+		<div class="card p-3 mb-3 border-success">
+			<div class="card-header bg-success text-white mb-3" style="margin:-12px -12px 0 -12px;padding:12px">
+				<strong>🎥 Form Analysis</strong>
+			</div>
+
+			<div class="mb-3"><strong>Experience Level</strong></div>
+			<div class="btn-group mb-3 w-100" role="group">
+				<button id="expBeginner" class="btn btn-outline-success">Beginner</button>
+				<button id="expIntermediate" class="btn btn-outline-success active">Intermediate</button>
+				<button id="expAdvanced" class="btn btn-outline-success">Advanced</button>
+			</div>
+
+			<div class="mb-3"><strong>Feedback Settings</strong></div>
 			<div class="form-check form-switch mb-2">
 				<input class="form-check-input" type="checkbox" id="liveFeedback" checked>
 				<label class="form-check-label" for="liveFeedback">Live feedback during shooting</label>
 			</div>
-			<div class="mb-2"><strong>Presets</strong></div>
-			<div class="d-flex gap-2">
-				<button class="btn btn-sm btn-secondary">Short Range</button>
-				<button class="btn btn-sm btn-secondary">Competition</button>
-				<button class="btn btn-sm btn-secondary">Endurance</button>
+			<div class="form-check form-switch mb-3">
+				<input class="form-check-input" type="checkbox" id="soundEnabled" checked>
+				<label class="form-check-label" for="soundEnabled">Sound notifications</label>
 			</div>
-			<div class="mt-3">
-				<button id="analyseForm" class="btn btn-warning">Analyse form</button>
+
+			<div class="d-grid gap-2">
+				<button id="analyseForm" class="btn btn-lg btn-warning">📸 Start Form Analysis</button>
+				<div class="d-flex gap-2 mt-2">
+					<button id="newPracticeNameBtn" class="btn btn-outline-primary">＋ New Practice Name</button>
+					<button id="createUnidentifiedBtn" class="btn btn-outline-danger">Create Unidentified Practice</button>
+				</div>
+				<button id="viewStats" class="btn btn-info">📊 View Session Stats</button>
+				<button id="getTips" class="btn btn-success">💡 Get Tips</button>
 			</div>
+		</div>
+
+		<div id="feedback-display" class="alert alert-info" style="display:none;margin-top:2rem">
+			<strong>AI Coach Feedback:</strong>
+			<div id="feedback-content"></div>
 		</div>
 	</main>
 
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 	<script>
 	(function(){
-		const btn = document.getElementById('analyseForm');
-		if(btn){
-			btn.addEventListener('click',()=>{
-				const mdl = document.createElement('div');
-				mdl.innerHTML = '<div class="modal fade" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Analyse form</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body">Analysis not available: no camera input present. (This feature requires camera access and server-side processing.)</div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div></div></div></div>';
-				document.body.appendChild(mdl);
-				const bsModal = new bootstrap.Modal(mdl.querySelector('.modal'));
-				bsModal.show();
-				mdl.querySelector('.modal').addEventListener('hidden.bs.modal', ()=> mdl.remove());
-			});
+		// AI Coach state
+		const coachState = {
+			objective: 'strength',
+			difficulty: 'intermediate',
+			experienceLevel: 'intermediate',
+			liveFeedbackEnabled: true,
+			soundEnabled: true
+		};
+
+		// Save state to localStorage
+		function saveState(){
+			localStorage.setItem('aiCoachState', JSON.stringify(coachState));
 		}
+
+		// Load state from localStorage
+		function loadState(){
+			const saved = localStorage.getItem('aiCoachState');
+			if(saved){
+				Object.assign(coachState, JSON.parse(saved));
+			}
+		}
+
+		// Initialize UI based on state
+		function initializeUI(){
+			loadState();
+			
+			// Set objective buttons
+			document.querySelectorAll('[data-objective]').forEach(btn=>{
+				btn.classList.toggle('active', btn.dataset.objective === coachState.objective);
+			});
+			
+			// Set difficulty buttons
+			document.getElementById('diffbegin').classList.toggle('active', coachState.difficulty === 'beginner');
+			document.getElementById('diffinter').classList.toggle('active', coachState.difficulty === 'intermediate');
+			document.getElementById('diffadv').classList.toggle('active', coachState.difficulty === 'advanced');
+			
+			// Set experience level buttons
+			document.getElementById('expBeginner').classList.toggle('active', coachState.experienceLevel === 'beginner');
+			document.getElementById('expIntermediate').classList.toggle('active', coachState.experienceLevel === 'intermediate');
+			document.getElementById('expAdvanced').classList.toggle('active', coachState.experienceLevel === 'advanced');
+			
+			// Set checkboxes
+			document.getElementById('liveFeedback').checked = coachState.liveFeedbackEnabled;
+			document.getElementById('soundEnabled').checked = coachState.soundEnabled;
+		}
+
+		// Training Objectives
+		document.getElementById('objStrength').addEventListener('click', ()=>{
+			coachState.objective = 'strength';
+			document.querySelectorAll('[data-objective]').forEach(b=>b.classList.remove('active'));
+			document.getElementById('objStrength').classList.add('active');
+			saveState();
+			showFeedback('💪 Strength Focus: Building power and draw consistency. Focus on maintaining tension in core and back muscles.');
+		});
+		document.getElementById('objEndurance').addEventListener('click', ()=>{
+			coachState.objective = 'endurance';
+			document.querySelectorAll('[data-objective]').forEach(b=>b.classList.remove('active'));
+			document.getElementById('objEndurance').classList.add('active');
+			saveState();
+			showFeedback('🏃 Endurance Focus: Building stamina for longer sessions. Practice multiple rounds with shorter rest periods.');
+		});
+		document.getElementById('objConsistency').addEventListener('click', ()=>{
+			coachState.objective = 'consistency';
+			document.querySelectorAll('[data-objective]').forEach(b=>b.classList.remove('active'));
+			document.getElementById('objConsistency').classList.add('active');
+			saveState();
+			showFeedback('🎯 Consistency Focus: Improving shot-to-shot consistency. Standardize your technique for every arrow.');
+		});
+
+		// Difficulty selection
+		document.getElementById('diffbegin').addEventListener('click', ()=>{
+			coachState.difficulty = 'beginner';
+			document.querySelectorAll('[id^="diff"]').forEach(b=>b.classList.remove('active'));
+			document.getElementById('diffbegin').classList.add('active');
+			saveState();
+		});
+		document.getElementById('diffinter').addEventListener('click', ()=>{
+			coachState.difficulty = 'intermediate';
+			document.querySelectorAll('[id^="diff"]').forEach(b=>b.classList.remove('active'));
+			document.getElementById('diffinter').classList.add('active');
+			saveState();
+		});
+		document.getElementById('diffadv').addEventListener('click', ()=>{
+			coachState.difficulty = 'advanced';
+			document.querySelectorAll('[id^="diff"]').forEach(b=>b.classList.remove('active'));
+			document.getElementById('diffadv').classList.add('active');
+			saveState();
+		});
+
+		// Experience Level selection
+		document.getElementById('expBeginner').addEventListener('click', ()=>{
+			coachState.experienceLevel = 'beginner';
+			document.querySelectorAll('[id^="exp"]').forEach(b=>b.classList.remove('active'));
+			document.getElementById('expBeginner').classList.add('active');
+			saveState();
+			showFeedback('🔰 Beginner Mode: Focus on fundamental techniques and basic form corrections.');
+		});
+		document.getElementById('expIntermediate').addEventListener('click', ()=>{
+			coachState.experienceLevel = 'intermediate';
+			document.querySelectorAll('[id^="exp"]').forEach(b=>b.classList.remove('active'));
+			document.getElementById('expIntermediate').classList.add('active');
+			saveState();
+			showFeedback('📈 Intermediate Mode: Refined technique improvements and advanced form feedback.');
+		});
+		document.getElementById('expAdvanced').addEventListener('click', ()=>{
+			coachState.experienceLevel = 'advanced';
+			document.querySelectorAll('[id^="exp"]').forEach(b=>b.classList.remove('active'));
+			document.getElementById('expAdvanced').classList.add('active');
+			saveState();
+			showFeedback('🏆 Advanced Mode: Competitive-level analysis with detailed micro-adjustments.');
+		});
+
+		// Checkbox listeners
+		document.getElementById('liveFeedback').addEventListener('change', (e)=>{
+			coachState.liveFeedbackEnabled = e.target.checked;
+			saveState();
+		});
+		document.getElementById('soundEnabled').addEventListener('change', (e)=>{
+			coachState.soundEnabled = e.target.checked;
+			saveState();
+		});
+
+		// Preset drills
+		document.getElementById('presetShort').addEventListener('click', ()=>{
+			showFeedback('Short Range Preset loaded: 3 ends of 3 arrows at 18m - Perfect for warm-ups and quick drills.');
+		});
+		document.getElementById('presetComp').addEventListener('click', ()=>{
+			showFeedback('Competition Preset loaded: 10 ends of 3 arrows at 50m (Vegas 300 format) - Full competition simulation.');
+		});
+		document.getElementById('presetEnd').addEventListener('click', ()=>{
+			showFeedback('Endurance Preset loaded: 20 ends of 6 arrows at 25m - Build stamina and consistency.');
+		});
+		document.getElementById('presetWarm').addEventListener('click', ()=>{
+			showFeedback('Warm-up Preset loaded: 2 ends of 3 arrows at multiple distances - Prepare for main practice session.');
+		});
+
+		// Practice Schedule Button
+		document.getElementById('scheduleBtn').addEventListener('click', ()=>{
+			const schedule = {
+				'Monday': '💪 Strength Training (30 min) - Focus on form and power building',
+				'Tuesday': 'Rest or Light Practice',
+				'Wednesday': '🎯 Consistency Drills (45 min) - Shot-to-shot repeatability',
+				'Thursday': 'Rest or Light Practice', 
+				'Friday': '🏃 Endurance Session (60 min) - Multiple rounds, building stamina',
+				'Saturday': '🏆 Competition Simulation (90 min) - Full rounds under pressure',
+				'Sunday': '📊 Analysis & Recovery - Review footage and plan improvements'
+			};
+			
+			let scheduleHtml = '<div style="max-height:400px;overflow-y:auto">';
+			for(const [day, activity] of Object.entries(schedule)){
+				scheduleHtml += `<div style="padding:8px;border-bottom:1px solid #ddd"><strong>${day}:</strong> ${activity}</div>`;
+			}
+			scheduleHtml += '</div>';
+			
+			const mdl = document.createElement('div');
+			mdl.innerHTML = `<div class="modal fade" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">📅 Weekly Practice Schedule</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body">${scheduleHtml}</div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div></div></div></div>`;
+			document.body.appendChild(mdl);
+			const bsModal = new bootstrap.Modal(mdl.querySelector('.modal'));
+			bsModal.show();
+			mdl.querySelector('.modal').addEventListener('hidden.bs.modal', ()=> mdl.remove());
+		});
+
+		// Tools
+		document.getElementById('analyseForm').addEventListener('click', ()=>{
+			const mdl = document.createElement('div');
+			const expLevel = coachState.experienceLevel.charAt(0).toUpperCase() + coachState.experienceLevel.slice(1);
+			const analysis = {
+				'beginner': '<ul><li>Stance and foot position</li><li>Basic anchor point consistency</li><li>Draw length uniformity</li><li>Follow-through stability</li></ul>',
+				'intermediate': '<ul><li>Advanced anchor consistency and micro-movements</li><li>Back/shoulder tension balance</li><li>Release technique refinement</li><li>Head/neck position during execution</li><li>Draw curve smoothness</li></ul>',
+				'advanced': '<ul><li>Micro-adjustments in hip rotation</li><li>Precision bow arm tracking</li><li>Advanced release timing analysis</li><li>Load/transfer efficiency</li><li>Competitive-level form optimization</li></ul>'
+			};
+			mdl.innerHTML = `<div class="modal fade" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">📸 Form Analysis - ${expLevel}</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><p><strong>Analysis will evaluate:</strong></p>${analysis[coachState.experienceLevel]}<p class="text-muted mt-3">📱 Position device at 45° angle for best results. Ensure adequate lighting.</p></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button><button id="startRecordingBtn" class="btn btn-primary">Start Recording</button></div></div></div></div>`;
+			document.body.appendChild(mdl);
+			const bsModal = new bootstrap.Modal(mdl.querySelector('.modal'));
+			bsModal.show();
+			// hook up Start Recording to display an error (feature not available)
+			const startBtn = mdl.querySelector('#startRecordingBtn');
+			if(startBtn){
+				startBtn.addEventListener('click', ()=>{
+					// show an error modal explaining recording is unavailable
+					const err = document.createElement('div');
+					err.innerHTML = `<div class="modal fade" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header bg-danger text-white"><h5 class="modal-title">Recording Unavailable</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body">Recording is not available in this demo. Please use a device-enabled version or grant camera permissions in your browser.</div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div></div></div></div>`;
+					document.body.appendChild(err);
+					const bsErr = new bootstrap.Modal(err.querySelector('.modal'));
+					bsErr.show();
+					err.querySelector('.modal').addEventListener('hidden.bs.modal', ()=> err.remove());
+				});
+			}
+			mdl.querySelector('.modal').addEventListener('hidden.bs.modal', ()=> mdl.remove());
+		});
+
+		// New Practice Name button: add a practice template
+		document.getElementById('newPracticeNameBtn').addEventListener('click', ()=>{
+			const name = prompt('New practice/template name:');
+			if(!name) return;
+			const tpl = { id: Date.now(), name: name, distances: [], weather: 'indoor', equipmentSetupId: null };
+			const tpls = JSON.parse(localStorage.getItem('practiceTemplates')||'[]');
+			tpls.unshift(tpl);
+			localStorage.setItem('practiceTemplates', JSON.stringify(tpls));
+			showFeedback('Template saved: ' + name);
+		});
+
+		// Create an 'Unidentified Practice' placeholder saved to practices
+		document.getElementById('createUnidentifiedBtn').addEventListener('click', ()=>{
+			if(!confirm('Create an "Unidentified Practice" placeholder session?')) return;
+			const practices = JSON.parse(localStorage.getItem('practices')||'[]');
+			const p = { id: Date.now(), name: 'Unidentified Practice', created: new Date().toISOString(), notes: 'Auto-created unidentified practice', totalScore: null };
+			practices.push(p);
+			localStorage.setItem('practices', JSON.stringify(practices));
+			showFeedback('Unidentified Practice created');
+		});
+
+		document.getElementById('viewStats').addEventListener('click', ()=>{
+			const practices = JSON.parse(localStorage.getItem('practices')||'[]');
+			const scored = practices.filter(p=>p.totalScore!=null);
+			if(!scored.length){
+				showFeedback('No practice sessions recorded yet. Start a session to see stats!');
+				return;
+			}
+			const avgScore = (scored.reduce((a,b)=>a+b.totalScore, 0)/scored.length).toFixed(0);
+			const bestScore = Math.max(...scored.map(p=>p.totalScore));
+			showFeedback(`Session Stats:<br/>• Average Score: ${avgScore}<br/>• Best Score: ${bestScore}<br/>• Total Sessions: ${scored.length}`);
+		});
+
+		document.getElementById('getTips').addEventListener('click', ()=>{
+			const tips = [
+				'Focus on consistency: Shoot the same routine every time.',
+				'Maintain a steady anchor point throughout your draw.',
+				'Practice your breathing: Exhale during the release for stability.',
+				'Keep your bow arm relaxed and let the string push it away.',
+				'Practice distance shooting regularly to build confidence.',
+				'Record your sessions to analyze form improvements over time.',
+				'Warm up properly before competing or practicing.',
+				'Mental preparation is as important as physical technique.',
+				'Consistency drills build muscle memory - practice the same distance repeatedly.',
+				'Film yourself from different angles to catch form issues early.'
+			];
+			const tip = tips[Math.floor(Math.random() * tips.length)];
+			showFeedback('💡 Tip: ' + tip);
+		});
+
+		function showFeedback(message){
+			const display = document.getElementById('feedback-display');
+			const content = document.getElementById('feedback-content');
+			content.innerHTML = message;
+			display.style.display = 'block';
+			setTimeout(()=>{
+				display.style.display = 'none';
+			}, 5000);
+		}
+
+		// Initialize on load
+		initializeUI();
 	})();
 	</script>
 </body>

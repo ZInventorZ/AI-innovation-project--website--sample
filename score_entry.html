@@ -10,21 +10,35 @@
 <body>
 <!-- Top-left back button: tries history.back(), falls back to index.html -->
 <a class="back-btn" href="index.html" onclick="if(history.length>1){history.back();return false;}">← Back</a>
-<header class="page-header"><div class="container"><h1>New Score</h1></div></header>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
-    	<div class="container-fluid">
-      		<div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="nav nav-pills ms-auto">
-        <li class="nav-item"><a class="nav-link" href="index.html"><span class="nav-icon">📈</span>History</a></li>
-        <li class="nav-item"><a class="nav-link" href="AI_Coach.html"><span class="nav-icon">🤖</span>AI Coach</a></li>
-        <li class="nav-item"><a class="nav-link" href="equipment.html"><span class="nav-icon">🏹</span>Equipment</a></li>
-        <li class="nav-item"><a class="nav-link" href="Scores.html"><span class="nav-icon">📊</span>Statistics</a></li>
-        <li class="nav-item"><a class="nav-link" href="score_history.html"><span class="nav-icon">📈</span>History</a></li>
-        <li class="nav-item"><a class="nav-link" href="profile_edit.html"><span class="nav-icon">👤</span>Profile</a></li>
-      </ul>
+<header class="page-header"><div class="container"><h1 id="pageTitle">New Score</h1></div></header>
+
+<!-- Dynamic score header/info matching mobile layout -->
+<div id="scoreInfo" class="container my-2" style="background:#fdeeea;border-radius:8px;padding:12px;">
+  <div style="display:flex;align-items:center;justify-content:space-between;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div id="infoDistance" style="font-weight:600;color:#333">Distance: --</div>
+      <div id="infoGolds" style="background:#f0a31a;color:#fff;padding:6px 12px;border-radius:20px;font-weight:600">Golds: 0</div>
+    </div>
+    <div style="text-align:right;color:#666;">
+      <div id="infoAvg">Avg: 0.0</div>
+      <div id="infoTotal">Total: 0</div>
     </div>
   </div>
-</nav>
+</div>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="nav nav-pills ms-auto" role="tablist">
+          <li class="nav-item"><a class="nav-link active" href="index.html"><span class="nav-icon">📈</span>History</a></li>
+          <li class="nav-item"><a class="nav-link" href="AI_Coach.html"><span class="nav-icon">🤖</span>AI Coach</a></li>
+          <li class="nav-item"><a class="nav-link" href="equipment.html"><span class="nav-icon">🏹</span>Equipment</a></li>
+          <li class="nav-item"><a class="nav-link" href="statistics.html"><span class="nav-icon">📊</span>Statistics</a></li>
+          <li class="nav-item"><a class="nav-link" href="competition.html"><span class="nav-icon">🏆</span>Competition</a></li>
+          <li class="nav-item"><a class="nav-link" href="menu.html"><span class="nav-icon">☰</span>Menu</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
 <main class="site-main container py-4">
   <div class="card p-3">
@@ -148,8 +162,55 @@
     if(v==='3d'){ document.getElementById('totalScore').placeholder='Enter total points (no arrows)'; }
     else { document.getElementById('totalScore').placeholder='leave blank to estimate'; }
   }
+  
+  // Update page header and info panel to reflect the practice/round
+  function updateHeaderInfo(practice){
+    try{
+      const titleEl = document.getElementById('pageTitle');
+      const distanceEl = document.getElementById('infoDistance');
+      const goldsEl = document.getElementById('infoGolds');
+      const avgEl = document.getElementById('infoAvg');
+      const totalEl = document.getElementById('infoTotal');
+      if(!titleEl) return;
+      const name = (practice && (practice.name || practice.roundName)) || (map[style.value] && map[style.value].name) || 'Practice';
+      titleEl.textContent = name;
+
+      // Distance: prefer single distance field, then first distances entry
+      let distance = '--';
+      if(practice){
+        if(practice.distance) distance = practice.distance;
+        else if(practice.distances && practice.distances.length) distance = practice.distances[0].distance || '--';
+      }
+      if(distance==='--'){
+        const d = document.getElementById('distance')?.value; if(d) distance = d;
+      }
+      distanceEl.textContent = 'Distance: ' + (distance || '--') + (distance && distance!=='--' ? 'yd' : '');
+
+      const golds = (practice && (practice.golds || 0)) || 0;
+      goldsEl.textContent = 'Golds: ' + golds;
+
+      // compute total and avg if available
+      let total = (practice && (practice.totalScore || 0)) || Number(document.getElementById('totalScore')?.value) || 0;
+      totalEl.textContent = 'Total: ' + total;
+      // compute avg per arrow if we can estimate arrows
+      function estimateArrows(p){
+        if(!p) p = {};
+        if(p.distances && p.distances.length){ let a=0; p.distances.forEach(d=> a += (Number(d.ends)||0)*(Number(d.arrowsPerEnd)||0)); return a; }
+        const perEnd = Number(p.arrowCount || document.getElementById('arrowCount')?.value) || 0;
+        const ends = Number(p.ends || document.getElementById('ends')?.value) || 0;
+        return perEnd * ends;
+      }
+      const arrows = estimateArrows(practice);
+      const avg = arrows>0 ? (total / arrows) : 0;
+      avgEl.textContent = 'Avg: ' + (avg? avg.toFixed(1) : '0.0');
+    }catch(e){ console.warn('updateHeaderInfo error',e); }
+  }
   style.addEventListener('change',applyPreset);
   applyPreset();
+
+  // initial header/info update and update on preset changes
+  updateHeaderInfo(null);
+  style.addEventListener('change', ()=> updateHeaderInfo(null));
 
   // Templates and multi-distance helpers
   const tplSelect = document.getElementById('name');
@@ -170,6 +231,41 @@
   document.getElementById('btnClearTemplates').addEventListener('click', ()=>{ if(!confirm('Clear saved templates?')) return; saveTemplates([]); populateTemplates(); document.getElementById('m_status') && (document.getElementById('m_status').textContent='Templates cleared'); setTimeout(()=>{ document.getElementById('m_status') && (document.getElementById('m_status').textContent=''); },1500); });
 
   populateTemplates();
+
+  // Load data from URL parameter if coming from score_entry_setup
+  (function(){
+    const urlParams = new URLSearchParams(window.location.search);
+    const practiceId = urlParams.get('id');
+    if(practiceId){
+      const practices = getPractices();
+      const practice = practices.find(p => p.id == practiceId);
+      if(practice){
+        // Populate form with the practice data
+        document.getElementById('name').value = practice.name || '';
+        document.getElementById('roundStyle').value = (Object.keys(map).find(k => map[k].name === practice.name)) || 'generic';
+        if(practice.arrowCount) document.getElementById('arrowCount').value = practice.arrowCount;
+        if(practice.ends) document.getElementById('ends').value = practice.ends;
+        if(practice.distance) document.getElementById('distance').value = practice.distance;
+        if(practice.totalScore) document.getElementById('totalScore').value = practice.totalScore;
+        if(practice.notes) document.getElementById('notes').value = practice.notes;
+        if(practice.weather) document.getElementById('weather').value = practice.weather;
+        if(practice.organization) document.getElementById('organization').value = practice.organization;
+        if(practice.targetFace) document.getElementById('targetFace').value = practice.targetFace;
+        // Load session equipment if present
+        if(practice.sessionEquipment){
+          if(practice.sessionEquipment.bow) document.getElementById('session_bow').value = practice.sessionEquipment.bow;
+          if(practice.sessionEquipment.sight?.pins) document.getElementById('session_sight_pins').value = practice.sessionEquipment.sight.pins;
+          if(practice.sessionEquipment.sight?.type) document.getElementById('session_sight_type').value = practice.sessionEquipment.sight.type;
+          if(practice.sessionEquipment.arrow?.model) document.getElementById('session_arrow_model').value = practice.sessionEquipment.arrow.model;
+          if(practice.sessionEquipment.arrow?.vanes) document.getElementById('session_arrow_vanes').value = practice.sessionEquipment.arrow.vanes;
+          if(practice.sessionEquipment.arrow?.spine) document.getElementById('session_arrow_spine').value = practice.sessionEquipment.arrow.spine;
+          if(practice.sessionEquipment.arrow?.diameter) document.getElementById('session_arrow_diameter').value = practice.sessionEquipment.arrow.diameter;
+        }
+        // update header/info panel for this loaded practice
+        updateHeaderInfo(practice);
+      }
+    }
+  })();
 
     document.getElementById('save').addEventListener('click',function(e){
     e.preventDefault();

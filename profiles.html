@@ -11,32 +11,19 @@
 	<!-- Top-left back button: tries history.back(), falls back to index.html -->
 	<a class="back-btn" href="index.html" onclick="if(history.length>1){history.back();return false;}">← Back</a>
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
-    	<div class="container-fluid">
-      		<div class="collapse navbar-collapse" id="navbarNav">
-				<ul class="nav nav-pills ms-auto" role="tablist">
-					<li class="nav-item" role="presentation">
-						<a class="nav-link" href="index.html" title="History"><span class="nav-icon">📈</span>History</a>
-					</li>
-					<li class="nav-item" role="presentation">
-						<a class="nav-link" href="AI_Coach.html" title="AI Coach"><span class="nav-icon">🤖</span>AI Coach</a>
-					</li>
-					<li class="nav-item" role="presentation">
-						<a class="nav-link" href="equipment.html" title="Equipment"><span class="nav-icon">🏹</span>Equipment</a>
-					</li>
-					<li class="nav-item" role="presentation">
-						<a class="nav-link" href="Scores.html" title="Statistics"><span class="nav-icon">📊</span>Statistics</a>
-					</li>
-                    
-					<li class="nav-item" role="presentation">
-						<a class="nav-link" href="score_history.html" title="History"><span class="nav-icon">📈</span>History</a>
-					</li>
-					<li class="nav-item" role="presentation">
-						<a class="nav-link" href="menu.html"><span class="nav-icon">☰</span>Menu</a>
-					</li>
-				</ul>
-			</div>
-		</div>
-	</nav>
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="nav nav-pills ms-auto" role="tablist">
+          <li class="nav-item"><a class="nav-link active" href="index.html"><span class="nav-icon">📈</span>History</a></li>
+          <li class="nav-item"><a class="nav-link" href="AI_Coach.html"><span class="nav-icon">🤖</span>AI Coach</a></li>
+          <li class="nav-item"><a class="nav-link" href="equipment.html"><span class="nav-icon">🏹</span>Equipment</a></li>
+          <li class="nav-item"><a class="nav-link" href="statistics.html"><span class="nav-icon">📊</span>Statistics</a></li>
+          <li class="nav-item"><a class="nav-link" href="competition.html"><span class="nav-icon">🏆</span>Competition</a></li>
+          <li class="nav-item"><a class="nav-link" href="menu.html"><span class="nav-icon">☰</span>Menu</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
 	<header class="page-header">
 		<div class="container">
