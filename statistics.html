@@ -26,6 +26,12 @@
     </div>
   </nav>
 
+	<header class="page-header">
+		<div class="container">
+			<img src="images/AIchery_logo_full_sized.png" alt="AIchery Logo" style="max-width: 150px; height: auto;">
+		</div>
+	</header>
+
 	<main class="site-main container py-4">
 		<h2>Statistics</h2>
 		<p>Performance averages over time.</p>
@@ -114,6 +120,18 @@
 		const overallPercent = (overallPossible>0) ? ((overallScore/overallPossible)*100).toFixed(1) + '%' : '—';
 		document.getElementById('statsSummary').innerHTML = `<div class="card p-3">Overall average per arrow: <strong style="color:var(--accent)">${avg}</strong> (based on ${nums.length} sessions)<div style="margin-top:.5rem">Overall percent of possible score: <strong>${overallPercent}</strong></div></div>`;
 	})();
+	</script>
+	<script>
+		// Catch unhandled button clicks and show error
+		document.addEventListener('click', (e) => {
+			const btn = e.target.closest('button:not([data-bs-dismiss])'); 
+			if(!btn) return;
+			if(btn.onclick || btn.getAttribute('onclick')) return;
+			if(!btn.id && !btn.getAttribute('data-action')) {
+				e.preventDefault();
+				alert('This feature is not yet implemented.');
+			}
+		});
 	</script>
 </body>
 </html>

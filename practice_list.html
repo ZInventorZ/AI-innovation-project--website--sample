@@ -26,7 +26,9 @@
   </nav>
 
     <header class="page-header">
-        <div class="container"><h1>Practices</h1></div>
+        <div class="container">
+            <img src="images/AIchery_logo_full_sized.png" alt="AIchery Logo" style="max-width: 150px; height: auto;">
+        </div>
     </header>
 
 <main class="site-main container py-4">
@@ -52,6 +54,16 @@ function render(){
     })
 }
 render();
+// Catch unhandled button clicks and show error
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('button:not([data-bs-dismiss])'); 
+  if(!btn) return;
+  if(btn.onclick || btn.getAttribute('onclick')) return;
+  if(!btn.id && !btn.getAttribute('data-action')) {
+    e.preventDefault();
+    alert('This feature is not yet implemented.');
+  }
+});
 </script>
 </body>
 </html>

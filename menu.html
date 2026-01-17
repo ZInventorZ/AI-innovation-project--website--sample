@@ -25,12 +25,12 @@
     </div>
   </nav>
 
-	<main class="site-main container py-4">
-		<div class="page-header">
-			<div class="container">
-				<h1>Menu</h1>
-			</div>
+	<header class="page-header">
+		<div class="container">
+			<img src="images/AIchery_logo_full_sized.png" alt="AIchery Logo" style="max-width: 150px; height: auto;">
 		</div>
+	</header>
+	<main class="site-main container py-4">
 
 		<section class="mt-3">
 			<div class="row g-3">
@@ -58,6 +58,24 @@
 					</div>
 					<div class="col-12 mt-2"><div id="m_status" class="text-success"></div></div>
 				</div>
+			</div>
+		</section>
+
+		<section class="mt-4">
+			<h5>🚀 Upcoming Features</h5>
+			<div class="card p-3">
+				<ul class="mb-0">
+					<li><strong>AI Video Analysis:</strong> Analyze form using device camera</li>
+					<li><strong>Weather Integration:</strong> Pull live weather data for practice sessions</li>
+					<li><strong>Advanced Statistics:</strong> Trend analysis and performance metrics</li>
+					<li><strong>Coach Directory:</strong> Find and connect with certified archery coaches</li>
+					<li><strong>Practice Scheduling:</strong> Calendar integration and reminders</li>
+					<li><strong>Equipment Database:</strong> Browse and compare popular archery equipment</li>
+					<li><strong>Leaderboards:</strong> Compete with other archers</li>
+					<li><strong>Export Reports:</strong> Download session data and statistics</li>
+					<li><strong>Dark Mode:</strong> Eye-friendly theme option</li>
+					<li><strong>Offline Mode:</strong> Full functionality without internet</li>
+				</ul>
 			</div>
 		</section>
 
@@ -158,6 +176,16 @@
 			}
 		});
 	})();
+	// Catch unhandled button clicks and show error
+	document.addEventListener('click', (e) => {
+		const btn = e.target.closest('button:not([data-bs-dismiss])'); 
+		if(!btn) return;
+		if(btn.onclick || btn.getAttribute('onclick')) return;
+		if(!btn.id && !btn.getAttribute('data-action')) {
+			e.preventDefault();
+			alert('This feature is not yet implemented.');
+		}
+	});
 	</script>
 </body>
 </html>

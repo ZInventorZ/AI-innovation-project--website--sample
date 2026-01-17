@@ -25,8 +25,13 @@
       </div>
     </div>
   </nav>
+	<header class="page-header">
+		<div class="container">
+			<img src="images/AIchery_logo_full_sized.png" alt="AIchery Logo" style="max-width: 150px; height: auto;">
+		</div>
+	</header>
 	<main class="container py-4">
-		<h1>Equipment Setup</h1>
+		<h2>Equipment Setup</h2>
 		<!-- Page purpose: create and persist equipment setups (arrows, sight, bow)
 		     Saved setups stored in localStorage under key 'equipmentSetups'.
 		     Edit the UI templates below to add/remove fields. -->
@@ -296,7 +301,59 @@
 		btnSight.addEventListener('click', ()=>{ showSight(); });
 		btnBow.addEventListener('click', ()=>{ showBow(); });
 
-		// init
+		// init - load pre-loaded setups if first time
+		function initializeDefaultSetups(){
+			const existing = getSetups();
+			if(existing.length === 0){
+				const defaults = [
+					{
+						id: 1,
+						name: "Prime Ronan",
+						type: "bow",
+						data: {
+							bowType: "compound",
+							drawWeight: "55",
+							riserLength: "29.5",
+							limbMaterial: "",
+							bowNotes: "Prime Ronan - Main bow"
+						}
+					},
+					{
+						id: 2,
+						name: "My Arrows",
+						type: "arrows",
+						data: {
+							length: "30",
+							fletchType: "Airrazr vanes",
+							fletchCount: "4",
+							material: "carbon",
+							diameter: "0.25",
+							spine: "",
+							weight: ""
+						}
+					},
+					{
+						id: 3,
+						name: "Redline RL-3",
+						type: "sight",
+						data: {
+							sightType: "multi-pin",
+							hasLens: false,
+							lensPower: "",
+							clarifier: "",
+							pins: [
+								{ color: "#FF0000", distance: "20" },
+								{ color: "#FFA500", distance: "30" },
+								{ color: "#FFFF00", distance: "40" },
+								{ color: "#00FF00", distance: "50" }
+							]
+						}
+					}
+				];
+				saveSetups(defaults);
+			}
+		}
+		initializeDefaultSetups();
 		showArrows(); renderSaved();
 			// populate combo selects and saved combos
 			function getCombos(){ return JSON.parse(localStorage.getItem('setups')||'[]'); }
@@ -323,6 +380,18 @@
 
 			function showPreview(obj){ document.getElementById('preview').textContent = JSON.stringify(obj, null, 2); }
 	})();
+	</script>
+	<script>
+		// Catch unhandled button clicks and show error
+		document.addEventListener('click', (e) => {
+			const btn = e.target.closest('button:not([data-bs-dismiss])'); 
+			if(!btn) return;
+			if(btn.onclick || btn.getAttribute('onclick')) return;
+			if(!btn.id && !btn.getAttribute('data-action')) {
+				e.preventDefault();
+				alert('This feature is not yet implemented.');
+			}
+		});
 	</script>
 </body>
 </html>

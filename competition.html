@@ -11,7 +11,11 @@
   <!-- Back button -->
   <a class="back-btn" href="index.html" onclick="if(history.length>1){history.back();return false;}">← Back</a>
 
-  <header class="page-header"><div class="container"><h1>Competitions</h1></div></header>
+  <header class="page-header">
+    <div class="container">
+      <img src="images/AIchery_logo_full_sized.png" alt="AIchery Logo" style="max-width: 150px; height: auto;">
+    </div>
+  </header>
 
   <!-- Bottom nav -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
@@ -21,7 +25,7 @@
           <li class="nav-item"><a class="nav-link" href="index.html"><span class="nav-icon">📈</span>History</a></li>
           <li class="nav-item"><a class="nav-link" href="AI_Coach.html"><span class="nav-icon">🤖</span>AI Coach</a></li>
           <li class="nav-item"><a class="nav-link" href="equipment.html"><span class="nav-icon">🏹</span>Equipment</a></li>
-          <li class="nav-item"><a class="nav-link" href="statisitics.html"><span class="nav-icon">📊</span>Statistics</a></li>
+          <li class="nav-item"><a class="nav-link" href="statistics.html"><span class="nav-icon">📊</span>Statistics</a></li>
           <li class="nav-item"><a class="nav-link active" href="competition.html"><span class="nav-icon">🏆</span>Competition</a></li>
           <li class="nav-item"><a class="nav-link" href="menu.html"><span class="nav-icon">☰</span>Menu</a></li>
         </ul>
@@ -47,11 +51,33 @@
         <div class="modal-header"><h5 class="modal-title">Add Competition</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
         <div class="modal-body">
           <div class="mb-2"><label class="form-label">Event name</label><input id="c_name" class="form-control"/></div>
-          <div class="row g-2"><div class="col-6"><label class="form-label">Score</label><input id="c_score" type="number" class="form-control"/></div><div class="col-6"><label class="form-label">X Count</label><input id="c_x" type="number" class="form-control"/></div></div>
+          <div class="row g-2"><div class="col-6"><label class="form-label">Competition Style</label><select id="c_style" class="form-select"><option value="">Select...</option><option value="Indoor">Indoor</option><option value="Outdoor">Outdoor</option><option value="3D">3D</option><option value="Field">Field</option></select></div><div class="col-6"><label class="form-label">Number of Shots</label><input id="c_shots" type="number" class="form-control" placeholder="e.g. 60"/></div></div>
+          <div class="row g-2"><div class="col-6"><label class="form-label">Score</label><input id="c_score" type="number" class="form-control"/></div><div class="col-6"><label class="form-label">Max Score</label><input id="c_maxScore" type="number" class="form-control"/></div></div>
+          <div class="row g-2"><div class="col-6"><label class="form-label">X Count</label><input id="c_x" type="number" class="form-control"/></div><div class="col-6"><label class="form-label">Max X Count</label><input id="c_maxX" type="number" class="form-control"/></div></div>
           <div class="row g-2 mt-2"><div class="col-6"><label class="form-label">Place</label><input id="c_place" type="number" class="form-control"/></div><div class="col-6"><label class="form-label">Distance (m)</label><input id="c_distance" type="number" class="form-control"/></div></div>
+          <div class="row g-2 mt-2"><div class="col-12"><label class="form-label">Duration (days)</label><input id="c_duration" type="number" class="form-control" placeholder="e.g. 2"/></div></div>
           <div class="mt-2"><label class="form-label">Date</label><input id="c_date" type="date" class="form-control"/></div>
         </div>
         <div class="modal-footer"><button id="c_save" class="btn btn-primary">Save</button><button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit competition modal -->
+  <div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title">Edit Competition</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <div class="mb-2"><label class="form-label">Event name</label><input id="e_name" class="form-control"/></div>
+          <div class="row g-2"><div class="col-6"><label class="form-label">Competition Style</label><select id="e_style" class="form-select"><option value="">Select...</option><option value="Indoor">Indoor</option><option value="Outdoor">Outdoor</option><option value="3D">3D</option><option value="Field">Field</option></select></div><div class="col-6"><label class="form-label">Number of Shots</label><input id="e_shots" type="number" class="form-control" placeholder="e.g. 60"/></div></div>
+          <div class="row g-2"><div class="col-6"><label class="form-label">Score</label><input id="e_score" type="number" class="form-control"/></div><div class="col-6"><label class="form-label">Max Score</label><input id="e_maxScore" type="number" class="form-control"/></div></div>
+          <div class="row g-2"><div class="col-6"><label class="form-label">X Count</label><input id="e_x" type="number" class="form-control"/></div><div class="col-6"><label class="form-label">Max X Count</label><input id="e_maxX" type="number" class="form-control"/></div></div>
+          <div class="row g-2 mt-2"><div class="col-6"><label class="form-label">Place</label><input id="e_place" type="number" class="form-control"/></div><div class="col-6"><label class="form-label">Distance (m)</label><input id="e_distance" type="number" class="form-control"/></div></div>
+          <div class="row g-2 mt-2"><div class="col-12"><label class="form-label">Duration (days)</label><input id="e_duration" type="number" class="form-control" placeholder="e.g. 2"/></div></div>
+          <div class="mt-2"><label class="form-label">Date</label><input id="e_date" type="date" class="form-control"/></div>
+        </div>
+        <div class="modal-footer"><button id="e_delete" class="btn btn-danger">Delete</button><button id="e_save" class="btn btn-primary">Save Changes</button><button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button></div>
       </div>
     </div>
   </div>
@@ -61,30 +87,101 @@
   (function(){
     function getComps(){return JSON.parse(localStorage.getItem('competitions')||'[]');}
     function saveComps(a){localStorage.setItem('competitions',JSON.stringify(a));}
+    
+    // Initialize with default competitions if empty
+    function initializeDefaultComps(){
+      // Clear localStorage to reload defaults on first visit
+      localStorage.removeItem('competitions');
+      const defaults = [
+        {
+          id: 1,
+          name: "S3DA Indoor State 20yd",
+          style: "Indoor",
+          shots: 60,
+          score: 278,
+          maxScore: 300,
+          xCount: 19,
+          maxX: 60,
+          place: 2,
+          distance: 20,
+          duration: 2,
+          date: new Date(2025, 0, 1).toISOString(),
+          created: new Date().toISOString(),
+          notes: "Over two days (60 arrows)"
+        },
+        {
+          id: 2,
+          name: "Indoor Nationals",
+          style: "Indoor",
+          shots: 60,
+          score: 289,
+          maxScore: 300,
+          xCount: 30,
+          maxX: 60,
+          place: 8,
+          distance: 20,
+          duration: 2,
+          date: new Date(2025, 1, 1).toISOString(),
+          created: new Date().toISOString(),
+          notes: "Two days of shooting (60 arrows)"
+        }
+      ];
+      saveComps(defaults);
+    }
+    initializeDefaultComps();
+    
     const listArea = document.getElementById('listArea');
     const addModal = new bootstrap.Modal(document.getElementById('addModal'));
+    const editModal = new bootstrap.Modal(document.getElementById('editModal'));
 
     function render(){
       const arr = getComps();
       listArea.innerHTML='';
       if(!arr.length){ listArea.innerHTML='<div class="alert alert-secondary">No competitions yet. Add one with the button.</div>'; return; }
       arr.slice().reverse().forEach(c=>{
-        const card = document.createElement('div'); card.className='card p-3 mb-2';
-        card.innerHTML = `<div class="d-flex justify-content-between align-items-start"><div><strong>${c.name||'Competition'}</strong><div class="small text-muted">${new Date(c.date||c.created).toLocaleDateString()}</div></div><div style="text-align:right"><div>Score: <strong>${c.score}</strong></div><div>X: <strong>${c.xCount||0}</strong></div><div>Place: <strong>${c.place||'-'}</strong></div></div></div>`;
-        const del = document.createElement('button'); del.className='btn btn-sm btn-outline-danger mt-2'; del.textContent='Delete'; del.addEventListener('click',()=>{ const arr=getComps().filter(x=>x.id!==c.id); saveComps(arr); render(); });
-        card.appendChild(del);
+        const card = document.createElement('div'); card.className='card p-3 mb-2'; card.style.cursor='pointer';
+        card.innerHTML = `<div class="d-flex justify-content-between align-items-start"><div><strong>${c.name||'Competition'}</strong><div class="small text-muted">${c.style ? c.style + ' • ' : ''}${c.shots ? c.shots + ' shots • ' : ''}${new Date(c.date||c.created).toLocaleDateString()}${c.duration ? ' • ' + c.duration + ' day(s)' : ''}</div></div><div style="text-align:right"><div>Score: <strong>${c.score}${c.maxScore ? '/' + c.maxScore : ''}</strong></div><div>X: <strong>${c.xCount||0}${c.maxX ? '/' + c.maxX : ''}</strong></div><div>Place: <strong>${c.place||'-'}</strong></div></div></div>`;
+        card.addEventListener('click',()=>{
+          document.getElementById('e_name').value = c.name || '';
+          document.getElementById('e_style').value = c.style || '';
+          document.getElementById('e_shots').value = c.shots || '';
+          document.getElementById('e_score').value = c.score || '';
+          document.getElementById('e_maxScore').value = c.maxScore || '';
+          document.getElementById('e_x').value = c.xCount || '';
+          document.getElementById('e_maxX').value = c.maxX || '';
+          document.getElementById('e_place').value = c.place || '';
+          document.getElementById('e_distance').value = c.distance || '';
+          document.getElementById('e_duration').value = c.duration || '';
+          document.getElementById('e_date').value = c.date ? c.date.split('T')[0] : '';
+          document.getElementById('e_delete').onclick = ()=>{ const arr=getComps().filter(x=>x.id!==c.id); saveComps(arr); editModal.hide(); render(); };
+          document.getElementById('e_save').onclick = ()=>{
+            const updatedObj = { id: c.id, name: document.getElementById('e_name').value||'Competition', style: document.getElementById('e_style').value||null, shots: Number(document.getElementById('e_shots').value)||null, score: Number(document.getElementById('e_score').value)||0, maxScore: Number(document.getElementById('e_maxScore').value)||null, xCount: Number(document.getElementById('e_x').value)||0, maxX: Number(document.getElementById('e_maxX').value)||null, place: Number(document.getElementById('e_place').value)||null, distance: Number(document.getElementById('e_distance').value)||null, duration: Number(document.getElementById('e_duration').value)||null, date: document.getElementById('e_date').value||c.date, created: c.created };
+            const arr = getComps().map(x=>x.id===c.id ? updatedObj : x); saveComps(arr); editModal.hide(); render();
+          };
+          editModal.show();
+        });
         listArea.appendChild(card);
       });
     }
 
-    document.getElementById('btnAdd').addEventListener('click', ()=>{ document.getElementById('c_name').value=''; document.getElementById('c_score').value=''; document.getElementById('c_x').value=''; document.getElementById('c_place').value=''; document.getElementById('c_distance').value=''; document.getElementById('c_date').value=''; addModal.show(); });
+    document.getElementById('btnAdd').addEventListener('click', ()=>{ document.getElementById('c_name').value=''; document.getElementById('c_style').value=''; document.getElementById('c_shots').value=''; document.getElementById('c_score').value=''; document.getElementById('c_maxScore').value=''; document.getElementById('c_x').value=''; document.getElementById('c_maxX').value=''; document.getElementById('c_place').value=''; document.getElementById('c_distance').value=''; document.getElementById('c_duration').value=''; document.getElementById('c_date').value=''; addModal.show(); });
     document.getElementById('c_save').addEventListener('click', ()=>{
-      const obj = { id: Date.now(), name: document.getElementById('c_name').value||'Competition', score: Number(document.getElementById('c_score').value)||0, xCount: Number(document.getElementById('c_x').value)||0, place: Number(document.getElementById('c_place').value)||null, distance: Number(document.getElementById('c_distance').value)||null, date: document.getElementById('c_date').value||new Date().toISOString(), created: new Date().toISOString() };
+      const obj = { id: Date.now(), name: document.getElementById('c_name').value||'Competition', style: document.getElementById('c_style').value||null, shots: Number(document.getElementById('c_shots').value)||null, score: Number(document.getElementById('c_score').value)||0, maxScore: Number(document.getElementById('c_maxScore').value)||null, xCount: Number(document.getElementById('c_x').value)||0, maxX: Number(document.getElementById('c_maxX').value)||null, place: Number(document.getElementById('c_place').value)||null, distance: Number(document.getElementById('c_distance').value)||null, duration: Number(document.getElementById('c_duration').value)||null, date: document.getElementById('c_date').value||new Date().toISOString(), created: new Date().toISOString() };
       const arr = getComps(); arr.push(obj); saveComps(arr); addModal.hide(); render();
     });
 
     render();
   })();
+  // Catch unhandled button clicks and show error
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('button:not([data-bs-dismiss])'); 
+    if(!btn) return;
+    if(btn.onclick || btn.getAttribute('onclick')) return;
+    if(!btn.id && !btn.getAttribute('data-action')) {
+      e.preventDefault();
+      alert('This feature is not yet implemented.');
+    }
+  });
   </script>
 </body>
 </html>

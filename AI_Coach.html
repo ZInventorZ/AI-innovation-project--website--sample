@@ -12,7 +12,12 @@
 	<a class="back-btn" href="index.html" onclick="if(history.length>1){history.back();return false;}">← Back</a>
 	<header class="page-header">
 		<div class="container">
-			<h1>AI Coach</h1>
+			<div class="d-flex align-items-center gap-3">
+				<img src="images/AIchery_logo_full_sized.png" alt="AIchery Logo" style="max-width: 150px; height: auto;">
+				<div>
+					<h1 style="margin: 0;">AI Coach</h1>
+				</div>
+			</div>
 		</div>
 	</header>
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
@@ -285,30 +290,69 @@
 			mdl.querySelector('.modal').addEventListener('hidden.bs.modal', ()=> mdl.remove());
 		});
 
+		// Available images for feedback
+		const feedbackImages = [
+			'images/ready_to_fire.jpg',
+			'images/full_draw_setting anchor.jpg',
+			'images/back_angled.webp',
+			'images/center_X_target.jpg'
+		];
+
+		// Fake feedback based on experience level
+		const feedbackData = {
+			'beginner': [
+				'Good foot positioning! Keep your shoulders relaxed and avoid tension.',
+				'Your draw length looks consistent. Maintain this position for better accuracy.',
+				'Nice anchor point! Try to keep your elbow slightly higher for better alignment.',
+				'Your stance is solid. Focus on keeping your head still during the release.'
+			],
+			'intermediate': [
+				'Excellent back tension! You\'re maintaining good load throughout the draw.',
+				'Very consistent form. Minor adjustment: rotate your hips slightly more for better energy transfer.',
+				'Your release is smooth, but try to minimize wrist motion for better follow-through.',
+				'Great shoulder engagement! Keep this level of tension for competition-ready form.'
+			],
+			'advanced': [
+				'Excellent micro-load execution! Your load-transfer phase is highly efficient.',
+				'Precise bow arm tracking detected. Minimal oscillation - competitive-level consistency.',
+				'Outstanding release timing. Your arrow departure velocity signature is optimal.',
+				'Hip rotation perfectly synchronized with draw curve. Professional-level mechanics detected.'
+			]
+		};
+
 		// Tools
 		document.getElementById('analyseForm').addEventListener('click', ()=>{
 			const mdl = document.createElement('div');
 			const expLevel = coachState.experienceLevel.charAt(0).toUpperCase() + coachState.experienceLevel.slice(1);
+			const randomImage = feedbackImages[Math.floor(Math.random() * feedbackImages.length)];
+			const feedbackList = feedbackData[coachState.experienceLevel];
+			const randomFeedback = feedbackList[Math.floor(Math.random() * feedbackList.length)];
+			
 			const analysis = {
 				'beginner': '<ul><li>Stance and foot position</li><li>Basic anchor point consistency</li><li>Draw length uniformity</li><li>Follow-through stability</li></ul>',
 				'intermediate': '<ul><li>Advanced anchor consistency and micro-movements</li><li>Back/shoulder tension balance</li><li>Release technique refinement</li><li>Head/neck position during execution</li><li>Draw curve smoothness</li></ul>',
 				'advanced': '<ul><li>Micro-adjustments in hip rotation</li><li>Precision bow arm tracking</li><li>Advanced release timing analysis</li><li>Load/transfer efficiency</li><li>Competitive-level form optimization</li></ul>'
 			};
-			mdl.innerHTML = `<div class="modal fade" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">📸 Form Analysis - ${expLevel}</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><p><strong>Analysis will evaluate:</strong></p>${analysis[coachState.experienceLevel]}<p class="text-muted mt-3">📱 Position device at 45° angle for best results. Ensure adequate lighting.</p></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button><button id="startRecordingBtn" class="btn btn-primary">Start Recording</button></div></div></div></div>`;
+			mdl.innerHTML = `<div class="modal fade" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">📸 Form Analysis - ${expLevel}</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><p><strong>Analysis will evaluate:</strong></p>${analysis[coachState.experienceLevel]}<p class="text-muted mt-3">📱 Position device at 45° angle for best results. Ensure adequate lighting.</p></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button><button id="startRecordingBtn" class="btn btn-primary">Analyze Sample</button></div></div></div></div>`;
 			document.body.appendChild(mdl);
 			const bsModal = new bootstrap.Modal(mdl.querySelector('.modal'));
 			bsModal.show();
-			// hook up Start Recording to display an error (feature not available)
+			// hook up button to show analysis
 			const startBtn = mdl.querySelector('#startRecordingBtn');
 			if(startBtn){
 				startBtn.addEventListener('click', ()=>{
-					// show an error modal explaining recording is unavailable
-					const err = document.createElement('div');
-					err.innerHTML = `<div class="modal fade" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header bg-danger text-white"><h5 class="modal-title">Recording Unavailable</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body">Recording is not available in this demo. Please use a device-enabled version or grant camera permissions in your browser.</div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div></div></div></div>`;
-					document.body.appendChild(err);
-					const bsErr = new bootstrap.Modal(err.querySelector('.modal'));
-					bsErr.show();
-					err.querySelector('.modal').addEventListener('hidden.bs.modal', ()=> err.remove());
+					bsModal.hide();
+					// show analysis modal with image and feedback
+					const analysis = document.createElement('div');
+					analysis.innerHTML = `<div class="modal fade" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header bg-success text-white"><h5 class="modal-title">✅ Analysis Complete - ${expLevel} Level</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="row"><div class="col-md-6"><h6>Sample Form Image</h6><img src="${randomImage}" alt="Form Analysis" style="max-width:100%;border-radius:8px;border:2px solid #28a745;"></div><div class="col-md-6"><h6>AI Coach Feedback</h6><div class="alert alert-info"><p style="margin:0;"><strong>💡 Analysis Result:</strong></p><p style="margin:0.5rem 0 0 0;">${randomFeedback}</p></div><div class="alert alert-light"><strong>Recommendations:</strong><ul><li>Maintain this form consistency across all shots</li><li>Practice this technique in varied conditions</li><li>Record more sessions to track improvement</li></ul></div></div></div></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button><button id="saveAnalysisBtn" class="btn btn-success">Save to Session</button></div></div></div></div>`;
+					document.body.appendChild(analysis);
+					const bsAnalysis = new bootstrap.Modal(analysis.querySelector('.modal'));
+					bsAnalysis.show();
+					analysis.querySelector('#saveAnalysisBtn').addEventListener('click', ()=>{
+						showFeedback('✅ Analysis saved to current session!');
+						bsAnalysis.hide();
+					});
+					analysis.querySelector('.modal').addEventListener('hidden.bs.modal', ()=> analysis.remove());
 				});
 			}
 			mdl.querySelector('.modal').addEventListener('hidden.bs.modal', ()=> mdl.remove());
@@ -377,6 +421,18 @@
 		// Initialize on load
 		initializeUI();
 	})();
+	</script>
+	<script>
+		// Catch unhandled button clicks and show error
+		document.addEventListener('click', (e) => {
+			const btn = e.target.closest('button:not([data-bs-dismiss])'); 
+			if(!btn) return;
+			if(btn.onclick || btn.getAttribute('onclick')) return;
+			if(!btn.id && !btn.getAttribute('data-action')) {
+				e.preventDefault();
+				alert('This feature is not yet implemented.');
+			}
+		});
 	</script>
 </body>
 </html>

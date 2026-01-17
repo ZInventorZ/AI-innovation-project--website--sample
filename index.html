@@ -12,9 +12,12 @@
     <a class="back-btn" href="index.html" onclick="if(history.length>1){history.back();return false;}">← Back</a>
     <header class="page-header">
         <div class="container">
-            <h1>History</h1>
-        </div>
-    </header>
+            <div class="d-flex align-items-center gap-3">
+                <img src="images/AIchery_logo_full_sized.png" alt="AIchery Logo" style="max-width: 150px; height: auto;">
+                <div>
+                    <h1 style="margin: 0;">History</h1>
+                </div>
+            </div>
     
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
     <div class="container-fluid">
@@ -182,6 +185,16 @@
 
                 renderScores();
     })();
+    // Catch unhandled button clicks and show error
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('button:not([data-bs-dismiss])'); 
+      if(!btn) return;
+      if(btn.onclick || btn.getAttribute('onclick')) return;
+      if(!btn.id && !btn.getAttribute('data-action')) {
+        e.preventDefault();
+        alert('This feature is not yet implemented.');
+      }
+    });
     </script>
 </body>
 </html>
