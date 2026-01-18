@@ -36,15 +36,14 @@
 
     <main class="site-main container py-4">
         <div class="sessions-header">
-            <div class="container">
-                <div class="d-flex justify-content-between align-items-center">
+            <div class="container-fluid px-0">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                     <div class="title">Sessions</div>
-                    <div class="ms-2"> </div>
                 </div>
-                <div class="filter-pills mt-2">
+                <div class="filter-pills mt-2 d-flex gap-2 flex-wrap">
                     <button id="pillRounds" class="pill active" type="button">All Rounds</button>
                     <button id="pillBows" class="pill" type="button">All Bows</button>
-                    <button id="pillSort" class="pill" type="button">Sort by: Date</button>
+                    <button id="pillSort" class="pill" type="button">Sort: Date</button>
                 </div>
                 <div id="pillMenuContainer" style="display:none;margin-top:.5rem"></div>
                 <div class="result-count">40 Results</div>

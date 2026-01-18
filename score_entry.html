@@ -29,111 +29,122 @@
     </div>
   </div>
 </div>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom py-1">
     <div class="container-fluid">
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="nav nav-pills ms-auto" role="tablist">
-          <li class="nav-item"><a class="nav-link active" href="index.html"><span class="nav-icon">📈</span>History</a></li>
-          <li class="nav-item"><a class="nav-link" href="AI_Coach.html"><span class="nav-icon">🤖</span>AI Coach</a></li>
-          <li class="nav-item"><a class="nav-link" href="equipment.html"><span class="nav-icon">🏹</span>Equipment</a></li>
-          <li class="nav-item"><a class="nav-link" href="statistics.html"><span class="nav-icon">📊</span>Statistics</a></li>
-          <li class="nav-item"><a class="nav-link" href="competition.html"><span class="nav-icon">🏆</span>Competition</a></li>
-          <li class="nav-item"><a class="nav-link" href="menu.html"><span class="nav-icon">☰</span>Menu</a></li>
+          <li class="nav-item"><a class="nav-link active" href="index.html"><span class="nav-icon" style="font-size:0.9rem">📈</span><span style="font-size:0.7rem">History</span></a></li>
+          <li class="nav-item"><a class="nav-link" href="AI_Coach.html"><span class="nav-icon" style="font-size:0.9rem">🤖</span><span style="font-size:0.7rem">Coach</span></a></li>
+          <li class="nav-item"><a class="nav-link" href="equipment.html"><span class="nav-icon" style="font-size:0.9rem">🏹</span><span style="font-size:0.7rem">Equip</span></a></li>
+          <li class="nav-item"><a class="nav-link" href="statistics.html"><span class="nav-icon" style="font-size:0.9rem">📊</span><span style="font-size:0.7rem">Stats</span></a></li>
+          <li class="nav-item"><a class="nav-link" href="competition.html"><span class="nav-icon" style="font-size:0.9rem">🏆</span><span style="font-size:0.7rem">Comp</span></a></li>
+          <li class="nav-item"><a class="nav-link" href="menu.html"><span class="nav-icon" style="font-size:0.9rem">☰</span><span style="font-size:0.7rem">Menu</span></a></li>
         </ul>
       </div>
     </div>
   </nav>
 
-<main class="site-main container py-4">
+<main class="site-main container py-3">
+  <!-- Score Keyboard -->
+  <div class="card p-2 mb-3" id="scoreKeyboardCard">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <strong>Score Input</strong>
+      <button id="toggleScoreKeyboard" class="btn btn-sm btn-outline-secondary">Hide</button>
+    </div>
+    <div id="scoreKeyboard" class="d-grid gap-2" style="grid-template-columns: repeat(auto-fit, minmax(50px, 1fr))">
+      <!-- Buttons generated dynamically -->
+    </div>
+  </div>
+
+  <!-- Scoring Grid (Main Focus) -->
   <div class="card p-3">
-    <label class="form-label">Round Style</label>
-    <select id="roundStyle" class="form-select mb-3">
-      <option value="generic">Generic Practice</option>
-      <option value="vegas300">Vegas 300</option>
-      <option value="vegas450">Vegas 450</option>
-      <option value="nfaa5">NFAA 5-Spot</option>
-      <option value="3d">3D Shoot (score only)</option>
-    </select>
+    <h5 class="mb-2">Arrow Scores</h5>
+    <div id="scoringGridContainer"></div>
+  </div>
 
-    <div id="roundFields">
-        <div class="row g-2">
-        <div class="col-md-6">
-          <label class="form-label">Practice Name (choose template)</label>
-          <div class="d-flex gap-2">
-            <select id="name" class="form-select"></select>
-            <button id="btnAddTemplate" type="button" class="btn btn-outline-secondary">Save</button>
-            <button id="btnClearTemplates" type="button" class="btn btn-outline-danger">Clear</button>
+  <div class="mt-3 d-flex gap-2 flex-column flex-sm-row">
+    <button id="save" class="btn btn-primary flex-grow-1">Save Round</button>
+    <button id="configBtn" class="btn btn-outline-secondary flex-grow-1">⚙️ Setup</button>
+  </div>
+
+  <!-- Hidden config panel that slides out -->
+  <div id="configPanel" class="card mt-3" style="display:none;max-height:400px;overflow-y:auto;">
+    <div class="card-header p-3 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#configCollapse">
+      <h5 class="mb-0" style="cursor:pointer">Configuration</h5>
+    </div>
+    <div id="configCollapse" class="collapse show">
+      <div class="card-body p-3">
+        <div class="mb-2">
+          <label class="form-label"><strong>Round Style</strong></label>
+          <select id="roundStyle" class="form-select mb-3">
+            <option value="generic">Generic Practice</option>
+            <option value="vegas300">Vegas 300</option>
+            <option value="vegas450">Vegas 450</option>
+            <option value="nfaa5">NFAA 5-Spot</option>
+            <option value="3d">3D Shoot</option>
+          </select>
+        </div>
+
+        <div id="roundFields">
+          <div class="row g-2">
+            <div class="col-12">
+              <label class="form-label">Practice Name (choose template)</label>
+              <div class="d-flex gap-2 flex-column flex-sm-row">
+                <select id="name" class="form-select"></select>
+                <button id="btnAddTemplate" type="button" class="btn btn-outline-secondary btn-sm">Save</button>
+                <button id="btnClearTemplates" type="button" class="btn btn-outline-danger btn-sm">Clear</button>
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Distances</label>
+              <div id="distances" class="mb-2"></div>
+              <button id="addDistance" type="button" class="btn btn-sm btn-outline-primary">+ Add distance</button>
+            </div>
+            <div class="col-12"><label class="form-label">Arrows per end</label><input id="arrowCount" type="number" class="form-control"></div>
+            <div class="col-12"><label class="form-label">Ends</label><input id="ends" type="number" class="form-control"></div>
+            <div class="col-12"><label class="form-label">Distance (m)</label><input id="distance" type="number" class="form-control"></div>
+            <div class="col-12"><label class="form-label">Organization</label>
+              <select id="organization" class="form-select">
+                <option value="">(none)</option>
+                <option value="ASA">ASA</option>
+                <option value="NFAA">NFAA</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="col-12"><label class="form-label">Target Face</label>
+              <select id="targetFace" class="form-select">
+                <option value="standard">Standard</option>
+                <option value="blue">Blue-faced (NFAA)</option>
+              </select>
+            </div>
+            <div class="col-12"><label class="form-label">Total Score (optional)</label><input id="totalScore" type="number" class="form-control"></div>
+            <div class="col-12"><label class="form-label">Notes</label><input id="notes" class="form-control"></div>
+            <div class="col-12">
+              <label class="form-label">Weather</label>
+              <div class="d-flex gap-2 flex-column flex-sm-row">
+                <select id="weather" class="form-select">
+                  <option value="indoor">Indoor</option>
+                  <option value="outdoor">Outdoor</option>
+                </select>
+                <button id="pullWeather" type="button" class="btn btn-outline-secondary btn-sm">Pull</button>
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Equipment Setup</label>
+              <select id="equipmentSetup" class="form-select">
+                <option value="">(none)</option>
+              </select>
+            </div>
           </div>
-        </div>
-        <div class="col-12">
-          <label class="form-label">Distances (add multiple distances or use the single Distance/Ends fields below)</label>
-          <div id="distances" class="mb-2"></div>
-          <button id="addDistance" type="button" class="btn btn-sm btn-outline-primary">+ Add distance</button>
-        </div>
-        <div class="col-md-3"><label class="form-label">Arrows per end</label><input id="arrowCount" type="number" class="form-control"></div>
-        <div class="col-md-3"><label class="form-label">Ends</label><input id="ends" type="number" class="form-control"></div>
-        <div class="col-md-4"><label class="form-label">Distance (m)</label><input id="distance" type="number" class="form-control"></div>
-        <div class="col-md-4"><label class="form-label">Organization</label>
-          <select id="organization" class="form-select">
-            <option value="">(none)</option>
-            <option value="ASA">ASA</option>
-            <option value="NFAA">NFAA</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-        <div class="col-md-4"><label class="form-label">Target Face</label>
-          <select id="targetFace" class="form-select">
-            <option value="standard">Standard</option>
-            <option value="blue">Blue-faced (NFAA)</option>
-          </select>
-        </div>
-        <div class="col-md-4"><label class="form-label">Total Score (optional)</label><input id="totalScore" type="number" class="form-control"></div>
-        <div class="col-md-4"><label class="form-label">Notes</label><input id="notes" class="form-control"></div>
-        <div class="col-md-4">
-          <label class="form-label">Weather</label>
-          <div class="d-flex gap-2">
-            <select id="weather" class="form-select">
-              <option value="indoor">Indoor</option>
-              <option value="outdoor">Outdoor</option>
-            </select>
-            <button id="pullWeather" type="button" class="btn btn-outline-secondary">Pull</button>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <label class="form-label">Equipment Setup</label>
-          <select id="equipmentSetup" class="form-select">
-            <option value="">(none)</option>
-          </select>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Scan scoresheet -->
-    <div class="card mt-3 p-3">
-      <h5 class="mb-2">Scan Scoresheet</h5>
-      <div class="d-flex gap-2 align-items-center">
-        <input id="scanFile" type="file" accept="image/*,application/pdf" class="form-control w-auto">
-        <button id="takePhoto" type="button" class="btn btn-outline-secondary">Take picture</button>
-        <button id="scanTarget" type="button" class="btn btn-outline-secondary">Scan target</button>
-        <div id="scanStatus" class="ms-2 text-muted">No file selected</div>
-      </div>
-    </div>
-
-    <!-- Session equipment details -->
-    <div class="card mt-3 p-3">
-      <h5 class="mb-2">Session Equipment Details</h5>
-      <div class="row g-2">
-        <div class="col-md-6"><label class="form-label">Bow</label><input id="session_bow" class="form-control"></div>
-        <div class="col-md-6"><label class="form-label">Sight - Pin count</label><input id="session_sight_pins" type="number" class="form-control"></div>
-        <div class="col-md-6"><label class="form-label">Sight - Type</label>
-          <select id="session_sight_type" class="form-select"><option value="slider">Slider</option><option value="fixed">Fixed</option></select>
-        </div>
-        <div class="col-md-6"><label class="form-label">Arrow Model</label><input id="session_arrow_model" class="form-control"></div>
-        <div class="col-md-4"><label class="form-label">Vanes</label><input id="session_arrow_vanes" class="form-control" placeholder="e.g., 4 AirRazer"></div>
-        <div class="col-md-4"><label class="form-label">Spine</label><input id="session_arrow_spine" class="form-control" placeholder="e.g., 300"></div>
-        <div class="col-md-4"><label class="form-label">Diameter</label><input id="session_arrow_diameter" class="form-control" placeholder="e.g., 25"></div>
-      </div>
-      <div class="mt-2"><button id="fillVictory" class="btn btn-sm btn-secondary">Fill Victory V-TAC</button></div>
+    <!-- Scoring Grid (Main Focus) -->
+    <div class="card p-3">
+      <h5 class="mb-2">Arrow Scores</h5>
+      <div id="scoringGridContainer"></div>
     </div>
 
     <div class="mt-3">
@@ -165,9 +176,267 @@
     else { document.getElementById('ends').value=''; document.getElementById('arrowCount').value=''; }
     if(v==='3d'){ document.getElementById('totalScore').placeholder='Enter total points (no arrows)'; }
     else { document.getElementById('totalScore').placeholder='leave blank to estimate'; }
+    renderScoringGrid();
+    updateScoreKeyboard();
+  }
+
+  // Score Keyboard Management
+  function getScoreOptions(){
+    const style_val = style.value;
+    if(style_val === '3d'){
+      // Check for shootoff or ASA 3D
+      const org = document.getElementById('organization')?.value;
+      if(org === 'ASA') return [12, 10, 8, 5, 0];
+      // Check if shootoff (you can add a checkbox or detect from notes)
+      const notes = document.getElementById('notes')?.value || '';
+      if(notes.toLowerCase().includes('shootoff')) return [14, 10, 8, 5, 0];
+      return [11, 10, 8, 5, 0]; // Default 3D
+    } else {
+      // Regular rounds: 0-10
+      return [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0];
+    }
+  }
+
+  function updateScoreKeyboard(){
+    const keyboard = document.getElementById('scoreKeyboard');
+    const options = getScoreOptions();
+    keyboard.innerHTML = '';
+    keyboard.style.gridTemplateColumns = `repeat(auto-fit, minmax(50px, 1fr))`;
+    options.forEach(score => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'btn btn-outline-primary btn-sm';
+      btn.textContent = score;
+      btn.addEventListener('click', () => insertScore(score));
+      keyboard.appendChild(btn);
+    });
+  }
+
+  function insertScore(score){
+    // Find the last focused input or the first empty one
+    const inputs = document.querySelectorAll('.arrow-score, .target-score');
+    if(!inputs.length) return;
+    let targetInput = null;
+    for(let inp of inputs){
+      if(!inp.value){
+        targetInput = inp;
+        break;
+      }
+    }
+    if(!targetInput) targetInput = inputs[inputs.length - 1];
+    if(targetInput){
+      targetInput.value = score;
+      targetInput.focus();
+      targetInput.dispatchEvent(new Event('change'));
+    }
+  }
+
+  // Toggle config panel visibility
+  document.getElementById('configBtn')?.addEventListener('click', () => {
+    const panel = document.getElementById('configPanel');
+    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  });
+
+  // Toggle score keyboard visibility
+  document.getElementById('toggleScoreKeyboard')?.addEventListener('click', function(){
+    const card = this.closest('.card');
+    const content = card.querySelector('#scoreKeyboard');
+    const isHidden = content.style.display === 'none';
+    content.style.display = isHidden ? 'grid' : 'none';
+    this.textContent = isHidden ? 'Hide' : 'Show';
+  });
+
+  style.addEventListener('change',applyPreset);
+  function renderScoringGrid(){
+    const container = document.getElementById('scoringGridContainer');
+    const roundStyle = style.value;
+    const ends = Number(document.getElementById('ends').value) || 0;
+    const arrowCount = Number(document.getElementById('arrowCount').value) || 0;
+    
+    container.innerHTML = '';
+    
+    if(roundStyle === '3d'){
+      // 3D shoot: single column with multiple rows (targets)
+      const targetsInput = document.getElementById('targets');
+      const targets = Number(targetsInput?.value) || 10;
+      renderTargetGrid(container, targets);
+    } else if(ends > 0 && arrowCount > 0){
+      // Regular shoot: grid with ends as rows, arrows as columns
+      renderEndGrid(container, ends, arrowCount);
+    } else {
+      container.innerHTML = '<p class="text-muted">Enter number of ends and arrows per end to display scoring grid</p>';
+    }
+  }
+
+  function renderEndGrid(container, ends, arrowCount){
+    const table = document.createElement('table');
+    table.className = 'table table-bordered table-sm';
+    table.style.maxWidth = '600px';
+    
+    // Header row
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+    const endHeader = document.createElement('th');
+    endHeader.textContent = 'End';
+    endHeader.style.width = '50px';
+    headerRow.appendChild(endHeader);
+    
+    for(let a = 1; a <= arrowCount; a++){
+      const th = document.createElement('th');
+      th.textContent = `Arrow ${a}`;
+      th.style.textAlign = 'center';
+      th.style.width = '60px';
+      headerRow.appendChild(th);
+    }
+    
+    const totalHeader = document.createElement('th');
+    totalHeader.textContent = 'Total';
+    totalHeader.style.width = '60px';
+    totalHeader.style.textAlign = 'center';
+    headerRow.appendChild(totalHeader);
+    
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+    
+    // Data rows
+    const tbody = document.createElement('tbody');
+    for(let e = 1; e <= ends; e++){
+      const row = document.createElement('tr');
+      const endCell = document.createElement('td');
+      endCell.textContent = `End ${e}`;
+      endCell.style.fontWeight = '600';
+      row.appendChild(endCell);
+      
+      let endTotal = 0;
+      for(let a = 1; a <= arrowCount; a++){
+        const td = document.createElement('td');
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.className = 'form-control form-control-sm arrow-score';
+        input.placeholder = '0-10';
+        input.min = '0';
+        input.max = '10';
+        input.dataset.end = e;
+        input.dataset.arrow = a;
+        input.style.textAlign = 'center';
+        input.addEventListener('change', updateEndTotal);
+        input.addEventListener('input', updateEndTotal);
+        td.appendChild(input);
+        row.appendChild(td);
+      }
+      
+      const totalCell = document.createElement('td');
+      totalCell.className = 'end-total';
+      totalCell.style.textAlign = 'center';
+      totalCell.style.fontWeight = '600';
+      totalCell.textContent = '0';
+      row.appendChild(totalCell);
+      
+      tbody.appendChild(row);
+    }
+    table.appendChild(tbody);
+    container.appendChild(table);
+    
+    // Overall total
+    const totalDiv = document.createElement('div');
+    totalDiv.className = 'mt-2 p-2 bg-light rounded';
+    totalDiv.innerHTML = '<strong>Round Total: <span id="roundTotal">0</span></strong>';
+    container.appendChild(totalDiv);
+  }
+
+  function renderTargetGrid(container, targets){
+    const table = document.createElement('table');
+    table.className = 'table table-bordered table-sm';
+    table.style.maxWidth = '300px';
+    
+    // Header row
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+    const th = document.createElement('th');
+    th.textContent = 'Target';
+    th.style.width = '100px';
+    headerRow.appendChild(th);
+    
+    const scoreHeader = document.createElement('th');
+    scoreHeader.textContent = 'Score';
+    scoreHeader.style.width = '80px';
+    scoreHeader.style.textAlign = 'center';
+    headerRow.appendChild(scoreHeader);
+    
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+    
+    // Data rows
+    const tbody = document.createElement('tbody');
+    for(let t = 1; t <= targets; t++){
+      const row = document.createElement('tr');
+      const targetCell = document.createElement('td');
+      targetCell.textContent = `Target ${t}`;
+      targetCell.style.fontWeight = '600';
+      row.appendChild(targetCell);
+      
+      const scoreCell = document.createElement('td');
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.className = 'form-control form-control-sm target-score';
+      input.placeholder = '0-20';
+      input.min = '0';
+      input.max = '20';
+      input.dataset.target = t;
+      input.style.textAlign = 'center';
+      input.addEventListener('change', updateTargetTotal);
+      input.addEventListener('input', updateTargetTotal);
+      scoreCell.appendChild(input);
+      row.appendChild(scoreCell);
+      
+      tbody.appendChild(row);
+    }
+    table.appendChild(tbody);
+    container.appendChild(table);
+    
+    // Overall total
+    const totalDiv = document.createElement('div');
+    totalDiv.className = 'mt-2 p-2 bg-light rounded';
+    totalDiv.innerHTML = '<strong>Shoot Total: <span id="shootTotal">0</span></strong>';
+    container.appendChild(totalDiv);
+  }
+
+  function updateEndTotal(){
+    const ends = new Set();
+    document.querySelectorAll('.arrow-score').forEach(input => ends.add(input.dataset.end));
+    
+    let roundTotal = 0;
+    ends.forEach(endNum => {
+      const inputs = document.querySelectorAll(`.arrow-score[data-end="${endNum}"]`);
+      let endSum = 0;
+      inputs.forEach(input => {
+        endSum += Number(input.value) || 0;
+      });
+      roundTotal += endSum;
+      const endRow = inputs[0].closest('tr');
+      endRow.querySelector('.end-total').textContent = endSum;
+    });
+    
+    const roundTotalEl = document.getElementById('roundTotal');
+    if(roundTotalEl) roundTotalEl.textContent = roundTotal;
+    
+    document.getElementById('totalScore').value = roundTotal;
+  }
+
+  function updateTargetTotal(){
+    let shootTotal = 0;
+    document.querySelectorAll('.target-score').forEach(input => {
+      shootTotal += Number(input.value) || 0;
+    });
+    
+    const shootTotalEl = document.getElementById('shootTotal');
+    if(shootTotalEl) shootTotalEl.textContent = shootTotal;
+    
+    document.getElementById('totalScore').value = shootTotal;
   }
   
-  // Update page header and info panel to reflect the practice/round
+  style.addEventListener('change',applyPreset);
+  applyPreset();
   function updateHeaderInfo(practice){
     try{
       const titleEl = document.getElementById('pageTitle');
@@ -209,8 +478,19 @@
       avgEl.textContent = 'Avg: ' + (avg? avg.toFixed(1) : '0.0');
     }catch(e){ console.warn('updateHeaderInfo error',e); }
   }
+
   style.addEventListener('change',applyPreset);
   applyPreset();
+
+  // Re-render grid when ends or arrows per end changes
+  document.getElementById('ends').addEventListener('change', renderScoringGrid);
+  document.getElementById('arrowCount').addEventListener('change', renderScoringGrid);
+  const targetsInput = document.getElementById('targets');
+  if(targetsInput) targetsInput.addEventListener('change', renderScoringGrid);
+  
+  // Update score keyboard when organization changes
+  const orgSelect = document.getElementById('organization');
+  if(orgSelect) orgSelect.addEventListener('change', updateScoreKeyboard);
 
   // initial header/info update and update on preset changes
   updateHeaderInfo(null);
@@ -275,6 +555,25 @@
     e.preventDefault();
     // build practice object, supporting multi-distance rows if present
     const p = { id:Date.now(), name: (document.getElementById('name').selectedOptions ? (document.getElementById('name').selectedOptions[0].textContent||'') : document.getElementById('name').value) || map[style.value].name, distances: null, endCount: 0, arrowCount:0, ends:0, distance:0, totalScore:(function(){const v=document.getElementById('totalScore').value; return v!==''?Number(v):null})(), notes:document.getElementById('notes').value||'', weather: document.getElementById('weather')? document.getElementById('weather').value : null, equipmentSetupId: (function(){const v=document.getElementById('equipmentSetup')?.value; return v? Number(v): null})(), equipmentSetup: null, sessionEquipment: { bow: document.getElementById('session_bow')?document.getElementById('session_bow').value:null, sight: { pins: Number(document.getElementById('session_sight_pins')?.value)||0, type: document.getElementById('session_sight_type')?.value||null }, arrow: { model: document.getElementById('session_arrow_model')?.value||null, vanes: document.getElementById('session_arrow_vanes')?.value||null, spine: document.getElementById('session_arrow_spine')?.value||null, diameter: document.getElementById('session_arrow_diameter')?.value||null } }, created:new Date().toISOString(), organization: (document.getElementById('organization')?.value) || null, targetFace: (document.getElementById('targetFace')?.value) || null };
+    
+    // Capture arrow scores
+    if(style.value === '3d'){
+      const scores = [];
+      document.querySelectorAll('.target-score').forEach(input => {
+        scores.push(Number(input.value) || 0);
+      });
+      p.targetScores = scores;
+    } else {
+      const endScores = {};
+      document.querySelectorAll('.arrow-score').forEach(input => {
+        const endNum = input.dataset.end;
+        const arrowNum = input.dataset.arrow;
+        if(!endScores[endNum]) endScores[endNum] = [];
+        endScores[endNum][arrowNum - 1] = Number(input.value) || 0;
+      });
+      p.arrowScores = endScores;
+    }
+    
     // if distances rows exist, use them
     const rows = document.querySelectorAll('#distances > div');
     if(rows && rows.length){ p.distances = []; rows.forEach(div=>{ const inputs = div.querySelectorAll('input'); p.distances.push({ distance: Number(inputs[0].value)||0, ends: Number(inputs[1].value)||0, arrowsPerEnd: Number(inputs[2].value)||0 }); });

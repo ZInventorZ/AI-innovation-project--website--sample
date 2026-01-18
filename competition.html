@@ -34,11 +34,9 @@
   </nav>
 
   <main class="site-main container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h2>Competition Results</h2>
-      <div>
-        <button id="btnAdd" class="btn btn-primary">+ Add Competition</button>
-      </div>
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+      <h2 class="m-0">Competition Results</h2>
+      <button id="btnAdd" class="btn btn-primary">+ Add</button>
     </div>
 
     <div id="listArea"></div>
@@ -51,12 +49,16 @@
         <div class="modal-header"><h5 class="modal-title">Add Competition</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
         <div class="modal-body">
           <div class="mb-2"><label class="form-label">Event name</label><input id="c_name" class="form-control"/></div>
-          <div class="row g-2"><div class="col-6"><label class="form-label">Competition Style</label><select id="c_style" class="form-select"><option value="">Select...</option><option value="Indoor">Indoor</option><option value="Outdoor">Outdoor</option><option value="3D">3D</option><option value="Field">Field</option></select></div><div class="col-6"><label class="form-label">Number of Shots</label><input id="c_shots" type="number" class="form-control" placeholder="e.g. 60"/></div></div>
-          <div class="row g-2"><div class="col-6"><label class="form-label">Score</label><input id="c_score" type="number" class="form-control"/></div><div class="col-6"><label class="form-label">Max Score</label><input id="c_maxScore" type="number" class="form-control"/></div></div>
-          <div class="row g-2"><div class="col-6"><label class="form-label">X Count</label><input id="c_x" type="number" class="form-control"/></div><div class="col-6"><label class="form-label">Max X Count</label><input id="c_maxX" type="number" class="form-control"/></div></div>
-          <div class="row g-2 mt-2"><div class="col-6"><label class="form-label">Place</label><input id="c_place" type="number" class="form-control"/></div><div class="col-6"><label class="form-label">Distance (m)</label><input id="c_distance" type="number" class="form-control"/></div></div>
-          <div class="row g-2 mt-2"><div class="col-12"><label class="form-label">Duration (days)</label><input id="c_duration" type="number" class="form-control" placeholder="e.g. 2"/></div></div>
-          <div class="mt-2"><label class="form-label">Date</label><input id="c_date" type="date" class="form-control"/></div>
+          <div class="mb-2"><label class="form-label">Competition Style</label><select id="c_style" class="form-select"><option value="">Select...</option><option value="Indoor">Indoor</option><option value="Outdoor">Outdoor</option><option value="3D">3D</option><option value="Field">Field</option></select></div>
+          <div class="mb-2"><label class="form-label">Number of Shots</label><input id="c_shots" type="number" class="form-control" placeholder="e.g. 60"/></div>
+          <div class="mb-2"><label class="form-label">Score</label><input id="c_score" type="number" class="form-control"/></div>
+          <div class="mb-2"><label class="form-label">Max Score</label><input id="c_maxScore" type="number" class="form-control"/></div>
+          <div class="mb-2"><label class="form-label">X Count</label><input id="c_x" type="number" class="form-control"/></div>
+          <div class="mb-2"><label class="form-label">Max X Count</label><input id="c_maxX" type="number" class="form-control"/></div>
+          <div class="mb-2"><label class="form-label">Place</label><input id="c_place" type="number" class="form-control"/></div>
+          <div class="mb-2"><label class="form-label">Distance (m)</label><input id="c_distance" type="number" class="form-control"/></div>
+          <div class="mb-2"><label class="form-label">Duration (days)</label><input id="c_duration" type="number" class="form-control" placeholder="e.g. 2"/></div>
+          <div class="mb-2"><label class="form-label">Date</label><input id="c_date" type="date" class="form-control"/></div>
         </div>
         <div class="modal-footer"><button id="c_save" class="btn btn-primary">Save</button><button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button></div>
       </div>
@@ -70,12 +72,16 @@
         <div class="modal-header"><h5 class="modal-title">Edit Competition</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
         <div class="modal-body">
           <div class="mb-2"><label class="form-label">Event name</label><input id="e_name" class="form-control"/></div>
-          <div class="row g-2"><div class="col-6"><label class="form-label">Competition Style</label><select id="e_style" class="form-select"><option value="">Select...</option><option value="Indoor">Indoor</option><option value="Outdoor">Outdoor</option><option value="3D">3D</option><option value="Field">Field</option></select></div><div class="col-6"><label class="form-label">Number of Shots</label><input id="e_shots" type="number" class="form-control" placeholder="e.g. 60"/></div></div>
-          <div class="row g-2"><div class="col-6"><label class="form-label">Score</label><input id="e_score" type="number" class="form-control"/></div><div class="col-6"><label class="form-label">Max Score</label><input id="e_maxScore" type="number" class="form-control"/></div></div>
-          <div class="row g-2"><div class="col-6"><label class="form-label">X Count</label><input id="e_x" type="number" class="form-control"/></div><div class="col-6"><label class="form-label">Max X Count</label><input id="e_maxX" type="number" class="form-control"/></div></div>
-          <div class="row g-2 mt-2"><div class="col-6"><label class="form-label">Place</label><input id="e_place" type="number" class="form-control"/></div><div class="col-6"><label class="form-label">Distance (m)</label><input id="e_distance" type="number" class="form-control"/></div></div>
-          <div class="row g-2 mt-2"><div class="col-12"><label class="form-label">Duration (days)</label><input id="e_duration" type="number" class="form-control" placeholder="e.g. 2"/></div></div>
-          <div class="mt-2"><label class="form-label">Date</label><input id="e_date" type="date" class="form-control"/></div>
+          <div class="mb-2"><label class="form-label">Competition Style</label><select id="e_style" class="form-select"><option value="">Select...</option><option value="Indoor">Indoor</option><option value="Outdoor">Outdoor</option><option value="3D">3D</option><option value="Field">Field</option></select></div>
+          <div class="mb-2"><label class="form-label">Number of Shots</label><input id="e_shots" type="number" class="form-control" placeholder="e.g. 60"/></div>
+          <div class="mb-2"><label class="form-label">Score</label><input id="e_score" type="number" class="form-control"/></div>
+          <div class="mb-2"><label class="form-label">Max Score</label><input id="e_maxScore" type="number" class="form-control"/></div>
+          <div class="mb-2"><label class="form-label">X Count</label><input id="e_x" type="number" class="form-control"/></div>
+          <div class="mb-2"><label class="form-label">Max X Count</label><input id="e_maxX" type="number" class="form-control"/></div>
+          <div class="mb-2"><label class="form-label">Place</label><input id="e_place" type="number" class="form-control"/></div>
+          <div class="mb-2"><label class="form-label">Distance (m)</label><input id="e_distance" type="number" class="form-control"/></div>
+          <div class="mb-2"><label class="form-label">Duration (days)</label><input id="e_duration" type="number" class="form-control" placeholder="e.g. 2"/></div>
+          <div class="mb-2"><label class="form-label">Date</label><input id="e_date" type="date" class="form-control"/></div>
         </div>
         <div class="modal-footer"><button id="e_delete" class="btn btn-danger">Delete</button><button id="e_save" class="btn btn-primary">Save Changes</button><button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button></div>
       </div>

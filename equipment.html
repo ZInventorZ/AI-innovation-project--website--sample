@@ -38,10 +38,10 @@
 		<p class="text-muted">Create and save equipment setups for quick use.</p>
 
 		<!-- Buttons to choose equipment category -->
-		<div class="btn-group mb-3" role="group" aria-label="Equipment type">
-			<button id="btnArrows" class="btn btn-outline-primary">Arrows</button>
-			<button id="btnSight" class="btn btn-outline-primary">Sight</button>
-			<button id="btnBow" class="btn btn-outline-primary">Bow</button>
+		<div class="d-flex gap-2 mb-3 flex-wrap">
+			<button id="btnArrows" class="btn btn-outline-primary flex-grow-1">Arrows</button>
+			<button id="btnSight" class="btn btn-outline-primary flex-grow-1">Sight</button>
+			<button id="btnBow" class="btn btn-outline-primary flex-grow-1">Bow</button>
 		</div>
 
 		<!-- Setup form: fields change depending on selected type -->
@@ -56,33 +56,37 @@
 				<div id="dynamicFields"></div>
 			</form>
 
-			<div class="mt-3 d-flex gap-2">
-				<button id="saveEquipment" class="btn btn-success">Save Equipment</button>
-				<button id="previewSetup" class="btn btn-secondary">Preview</button>
-				<button id="clearSetup" class="btn btn-outline-danger">Clear</button>
+			<div class="mt-3 d-flex gap-2 flex-column flex-sm-row">
+				<button id="saveEquipment" class="btn btn-success flex-grow-1">Save Equipment</button>
+				<button id="previewSetup" class="btn btn-secondary flex-grow-1">Preview</button>
+				<button id="clearSetup" class="btn btn-outline-danger flex-grow-1">Clear</button>
 			</div>
 		</div>
 
 		<!-- Preview / saved list -->
 			<div class="row g-3">
-				<div class="col-md-6">
+				<div class="col-12">
 					<h5>Saved Equipment</h5>
 					<ul id="savedList" class="list-group"></ul>
 				</div>
-				<div class="col-md-6">
+				<div class="col-12">
 					<h5>Preview</h5>
 					<pre id="preview" class="p-2 bg-light border" style="white-space:pre-wrap"></pre>
 				</div>
 			</div>
 
-			<!-- Section: Setups (bow + sight + arrows) -->
-			<div class="card mt-3 p-3">
-				<h5 class="mb-2">Setups (Bow + Sight + Arrows)</h5>
+			<!-- Section: Setups (bow + sight + arrows) (Collapsible) -->
+			<div class="card mt-3">
+				<div class="card-header p-3 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#setupsCollapse">
+					<h5 class="mb-0" style="cursor:pointer">🎯 Combined Setups (Bow + Sight + Arrows)</h5>
+				</div>
+				<div id="setupsCollapse" class="collapse show" data-bs-parent=".site-main">
+					<div class="card-body p-3">
 				<div class="row g-2 align-items-center">
-					<div class="col-md-4"><label class="form-label">Bow</label><select id="combo_bow" class="form-select"></select></div>
-					<div class="col-md-4"><label class="form-label">Sight</label><select id="combo_sight" class="form-select"></select></div>
-					<div class="col-md-4"><label class="form-label">Arrows</label><select id="combo_arrows" class="form-select"></select></div>
-					<div class="col-12 mt-2 d-flex gap-2">
+					<div class="col-12"><label class="form-label">Bow</label><select id="combo_bow" class="form-select"></select></div>
+					<div class="col-12"><label class="form-label">Sight</label><select id="combo_sight" class="form-select"></select></div>
+					<div class="col-12"><label class="form-label">Arrows</label><select id="combo_arrows" class="form-select"></select></div>
+					<div class="col-12 mt-2 d-flex gap-2 flex-column flex-sm-row">
 						<input id="comboName" class="form-control" placeholder="Setup name (e.g. 'Competition Setup')" />
 						<button id="saveCombo" class="btn btn-primary">Save Setup</button>
 					</div>
@@ -90,6 +94,8 @@
 				<div class="mt-3">
 					<h6>Saved Setups</h6>
 					<ul id="savedCombos" class="list-group"></ul>
+				</div>
+					</div>
 				</div>
 			</div>
 
