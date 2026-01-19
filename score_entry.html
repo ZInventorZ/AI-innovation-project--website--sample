@@ -21,7 +21,7 @@
   <div style="display:flex;align-items:center;justify-content:space-between;">
     <div style="display:flex;align-items:center;gap:12px;">
       <div id="infoDistance" style="font-weight:600;color:#333">Distance: --</div>
-      <div id="infoGolds" style="background:#f0a31a;color:#fff;padding:6px 12px;border-radius:20px;font-weight:600">Golds: 0</div>
+      <div id="infoXCount" style="background:#ffc107;color:#000;padding:6px 12px;border-radius:20px;font-weight:600">X Count: 0</div>
     </div>
     <div style="text-align:right;color:#666;">
       <div id="infoAvg">Avg: 0.0</div>
@@ -45,19 +45,13 @@
   </nav>
 
 <main class="site-main container py-3">
-  <!-- Score Keyboard -->
-  <div class="card p-2 mb-3" id="scoreKeyboardCard">
-    <div class="d-flex justify-content-between align-items-center mb-2">
-      <strong>Score Input</strong>
-      <button id="toggleScoreKeyboard" class="btn btn-sm btn-outline-secondary">Hide</button>
-    </div>
-    <div id="scoreKeyboard" class="d-grid gap-2" style="grid-template-columns: repeat(auto-fit, minmax(50px, 1fr))">
-      <!-- Buttons generated dynamically -->
-    </div>
+  <!-- Button to pull up score keyboard -->
+  <div class="mb-2">
+    <button id="pullUpKeyboard" class="btn btn-sm btn-outline-primary w-100">⌨️ Show Score Keyboard</button>
   </div>
 
   <!-- Scoring Grid (Main Focus) -->
-  <div class="card p-3">
+  <div class="card p-3 mb-3">
     <h5 class="mb-2">Arrow Scores</h5>
     <div id="scoringGridContainer"></div>
   </div>
@@ -141,15 +135,17 @@
     </div>
   </div>
 
-    <!-- Scoring Grid (Main Focus) -->
-    <div class="card p-3">
-      <h5 class="mb-2">Arrow Scores</h5>
-      <div id="scoringGridContainer"></div>
+  <!-- Score Keyboard (Bottom Fixed) -->
+  <div class="card p-2" id="scoreKeyboardCard" style="display:none;position:fixed;bottom:120px;left:0;right:0;max-height:280px;overflow-y:auto;z-index:1000;margin:0;border-radius:0;border:1px solid rgba(0,0,0,0.1);border-bottom:none;">
+    <div class="d-flex justify-content-between align-items-center mb-2" style="padding:0.5rem 0.75rem;border-bottom:1px solid rgba(0,0,0,0.06);">
+      <strong style="font-size:0.9rem">Score Keyboard</strong>
+      <div style="display:flex;gap:0.5rem;">
+        <button id="undoScore" class="btn btn-sm btn-link p-0" style="font-size:1rem;line-height:1" title="Undo">↶</button>
+        <button id="closeKeyboard" class="btn btn-sm btn-link p-0" style="font-size:1.2rem;line-height:1">✕</button>
+      </div>
     </div>
-
-    <div class="mt-3">
-      <button id="save" class="btn btn-primary">Save Round</button>
-      <a href="practice_list.html" class="btn btn-link">View Practices</a>
+    <div id="scoreKeyboard" class="d-grid gap-2" style="grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));padding:0 0.75rem 0.75rem;">
+      <!-- Buttons generated dynamically -->
     </div>
   </div>
 </main>
@@ -181,32 +177,132 @@
   }
 
   // Score Keyboard Management
+  function getScoreColor(value){
+    // Returns background and text color for a score value
+    if(value === 'X') return { bg: '#ffc107', text: '#000' };
+    if(value === 'M' || value === '' || value === 0 || value === '0') return { bg: '#28a745', text: '#fff' };
+    
+    const num = Number(value);
+    if(isNaN(num)) return { bg: '#fff', text: '#000' };
+    
+    // Archery scoring zones
+    if(num === 10 || num === 9) return { bg: '#ffc107', text: '#000' }; // Yellow
+    if(num === 8 || num === 7) return { bg: '#dc3545', text: '#fff' }; // Red
+    if(num === 6 || num === 5) return { bg: '#0069d9', text: '#fff' }; // Blue
+    if(num === 4 || num === 3) return { bg: '#000', text: '#fff' }; // Black
+    if(num === 2 || num === 1) return { bg: '#f8f9fa', text: '#000' }; // White
+    
+    return { bg: '#fff', text: '#000' };
+  }
+  
+  function applyScoreColor(input){
+    const colors = getScoreColor(input.value);
+    input.style.backgroundColor = colors.bg;
+    input.style.color = colors.text;
+    input.style.border = colors.bg === '#f8f9fa' ? '1px solid #dee2e6' : 'none';
+  }
+    const style_val = style.value;
+    if(style_val === '3d'){
+      // Check for shootoff or ASA 3D
+      const org = document.getElementById('organization')?.value;
+      if(org === 'ASA') return [12, 10, 8, 5, 'M'];
+      // Check if shootoff (you can add a checkbox or detect from notes)
+      const notes = document.getElementById('notes')?.value || '';
+      if(notes.toLowerCase().includes('shootoff')) return [14, 10, 8, 5, 'M'];
+      return [11, 10, 8, 5, 'M']; // Default 3D
+    } else {
+      // Regular rounds: 0-10
+      return [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 'M'];
+    }
+  }
+
   function getScoreOptions(){
     const style_val = style.value;
     if(style_val === '3d'){
       // Check for shootoff or ASA 3D
       const org = document.getElementById('organization')?.value;
-      if(org === 'ASA') return [12, 10, 8, 5, 0];
+      if(org === 'ASA') return [12, 10, 8, 5, 'M'];
       // Check if shootoff (you can add a checkbox or detect from notes)
       const notes = document.getElementById('notes')?.value || '';
-      if(notes.toLowerCase().includes('shootoff')) return [14, 10, 8, 5, 0];
-      return [11, 10, 8, 5, 0]; // Default 3D
+      if(notes.toLowerCase().includes('shootoff')) return [14, 10, 8, 5, 'M'];
+      return [11, 10, 8, 5, 'M']; // Default 3D
     } else {
       // Regular rounds: 0-10
-      return [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0];
+      return [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 'M'];
     }
   }
 
   function updateScoreKeyboard(){
     const keyboard = document.getElementById('scoreKeyboard');
     const options = getScoreOptions();
+    const roundStyle = document.getElementById('roundStyle')?.value || '';
+    const targetFace = document.getElementById('targetFace')?.value || 'standard';
+    
     keyboard.innerHTML = '';
     keyboard.style.gridTemplateColumns = `repeat(auto-fit, minmax(50px, 1fr))`;
+    
+    // Add X button first
+    const xBtn = document.createElement('button');
+    xBtn.type = 'button';
+    xBtn.className = 'btn btn-sm';
+    xBtn.style.fontWeight = '600';
+    xBtn.textContent = 'X';
+    xBtn.style.backgroundColor = '#ffc107';
+    xBtn.style.color = '#000';
+    xBtn.style.border = '1px solid #ffc107';
+    xBtn.addEventListener('click', () => insertScore('X'));
+    keyboard.appendChild(xBtn);
+    
     options.forEach(score => {
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'btn btn-outline-primary btn-sm';
+      btn.className = 'btn btn-sm';
+      btn.style.fontWeight = '600';
       btn.textContent = score;
+      
+      // Determine button color based on score and round type
+      let bgColor = '#e9ecef', textColor = '#000';
+      
+      if(score === 'M') {
+        bgColor = '#28a745'; // Green for miss
+        textColor = '#fff';
+      } else if(score === 'X' || score === 10 || score === 12 || score === 14) {
+        bgColor = '#ffc107'; // Yellow for X/10
+        textColor = '#000';
+      } else if(roundStyle === 'nfaa5' || targetFace === 'blue') {
+        // NFAA 5-Spot: X-5 white, 4-1 blue
+        if((score === 'X' || score === 10) || score >= 5) {
+          bgColor = '#f8f9fa'; // White
+          textColor = '#000';
+          bgColor = score >= 5 ? '#f8f9fa' : bgColor;
+        }
+        if(score >= 4 && score <= 1) {
+          bgColor = '#0069d9'; // Blue
+          textColor = '#fff';
+        }
+      } else {
+        // Regular scoring: X-9 yellow, 8-7 red, 6-5 blue, 4-3 black, 2-1 white
+        if(score === 'X' || score === 10 || score === 9) {
+          bgColor = '#ffc107'; // Yellow
+          textColor = '#000';
+        } else if(score === 8 || score === 7) {
+          bgColor = '#dc3545'; // Red
+          textColor = '#fff';
+        } else if(score === 6 || score === 5) {
+          bgColor = '#0069d9'; // Blue
+          textColor = '#fff';
+        } else if(score === 4 || score === 3) {
+          bgColor = '#000'; // Black
+          textColor = '#fff';
+        } else if(score === 2 || score === 1) {
+          bgColor = '#f8f9fa'; // White
+          textColor = '#000';
+        }
+      }
+      
+      btn.style.backgroundColor = bgColor;
+      btn.style.color = textColor;
+      btn.style.border = `1px solid ${bgColor === '#f8f9fa' ? '#dee2e6' : bgColor}`;
       btn.addEventListener('click', () => insertScore(score));
       keyboard.appendChild(btn);
     });
@@ -225,10 +321,51 @@
     }
     if(!targetInput) targetInput = inputs[inputs.length - 1];
     if(targetInput){
-      targetInput.value = score;
+      // Set display and data value based on score type
+      let displayVal = score;
+      let dataVal = score;
+      
+      if(score === 'M') {
+        displayVal = 'M';
+        dataVal = 0;
+      } else if(score === 'X') {
+        displayVal = 'X';
+        dataVal = 10;
+      } else {
+        // For numbers (like 10, 9, 8, etc.)
+        displayVal = score;
+        dataVal = Number(score);
+      }
+      
+      targetInput.value = displayVal;
+      targetInput.dataset.value = dataVal;
+      applyScoreColor(targetInput);
       targetInput.focus();
       targetInput.dispatchEvent(new Event('change'));
+      
+      // Update X count
+      updateXCount();
+      
+      // Scroll keyboard area to show more content/increase buffer
+      const keyboardCard = document.getElementById('scoreKeyboardCard');
+      if(keyboardCard && keyboardCard.style.display !== 'none') {
+        // Expand keyboard view slightly
+        setTimeout(() => {
+          keyboardCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 50);
+      }
     }
+  }
+  
+  function updateXCount(){
+    const inputs = document.querySelectorAll('.arrow-score, .target-score');
+    let xCount = 0;
+    inputs.forEach(inp => {
+      // Only count actual X's, not 10's
+      if(inp.value === 'X') xCount++;
+    });
+    const xCountEl = document.getElementById('infoXCount');
+    if(xCountEl) xCountEl.textContent = 'X Count: ' + xCount;
   }
 
   // Toggle config panel visibility
@@ -237,13 +374,32 @@
     panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
   });
 
-  // Toggle score keyboard visibility
-  document.getElementById('toggleScoreKeyboard')?.addEventListener('click', function(){
-    const card = this.closest('.card');
-    const content = card.querySelector('#scoreKeyboard');
-    const isHidden = content.style.display === 'none';
-    content.style.display = isHidden ? 'grid' : 'none';
-    this.textContent = isHidden ? 'Hide' : 'Show';
+  // Pull up score keyboard
+  document.getElementById('pullUpKeyboard')?.addEventListener('click', function(){
+    const card = document.getElementById('scoreKeyboardCard');
+    card.style.display = 'block';
+  });
+
+  // Close score keyboard
+  document.getElementById('closeKeyboard')?.addEventListener('click', function(){
+    const card = document.getElementById('scoreKeyboardCard');
+    card.style.display = 'none';
+  });
+
+  // Undo last score
+  document.getElementById('undoScore')?.addEventListener('click', function(){
+    const inputs = document.querySelectorAll('.arrow-score, .target-score');
+    if(!inputs.length) return;
+    // Find last filled input and clear it
+    for(let i = inputs.length - 1; i >= 0; i--){
+      if(inputs[i].value){
+        inputs[i].value = '';
+        inputs[i].focus();
+        inputs[i].dispatchEvent(new Event('change'));
+        updateXCount();
+        break;
+      }
+    }
   });
 
   style.addEventListener('change',applyPreset);
@@ -311,16 +467,41 @@
       for(let a = 1; a <= arrowCount; a++){
         const td = document.createElement('td');
         const input = document.createElement('input');
-        input.type = 'number';
+        input.type = 'text';
         input.className = 'form-control form-control-sm arrow-score';
         input.placeholder = '0-10';
-        input.min = '0';
-        input.max = '10';
         input.dataset.end = e;
         input.dataset.arrow = a;
         input.style.textAlign = 'center';
-        input.addEventListener('change', updateEndTotal);
-        input.addEventListener('input', updateEndTotal);
+        input.style.fontWeight = '600';
+        input.addEventListener('change', (ev) => {
+          // Validate and format input
+          const val = ev.target.value.trim().toUpperCase();
+          if(val === 'X') {
+            ev.target.dataset.value = '10';
+            ev.target.value = 'X';
+          } else if(val === 'M' || val === '') {
+            ev.target.dataset.value = '0';
+            ev.target.value = 'M';
+          } else {
+            const num = Number(val);
+            if(!isNaN(num) && num >= 0 && num <= 10) {
+              ev.target.dataset.value = num.toString();
+              ev.target.value = num.toString();
+            }
+          }
+          applyScoreColor(ev.target);
+          updateEndTotal();
+        });
+        input.addEventListener('input', (ev) => {
+          // Allow typing, will be formatted on change
+          const val = ev.target.value.trim().toUpperCase();
+          if(val === 'X') {
+            ev.target.dataset.value = '10';
+          } else if(val === 'M') {
+            ev.target.dataset.value = '0';
+          }
+        });
         td.appendChild(input);
         row.appendChild(td);
       }
@@ -377,15 +558,40 @@
       
       const scoreCell = document.createElement('td');
       const input = document.createElement('input');
-      input.type = 'number';
+      input.type = 'text';
       input.className = 'form-control form-control-sm target-score';
       input.placeholder = '0-20';
-      input.min = '0';
-      input.max = '20';
       input.dataset.target = t;
       input.style.textAlign = 'center';
-      input.addEventListener('change', updateTargetTotal);
-      input.addEventListener('input', updateTargetTotal);
+      input.style.fontWeight = '600';
+      input.addEventListener('change', (ev) => {
+        // Validate and format input
+        const val = ev.target.value.trim().toUpperCase();
+        if(val === 'X') {
+          ev.target.dataset.value = '10';
+          ev.target.value = 'X';
+        } else if(val === 'M' || val === '') {
+          ev.target.dataset.value = '0';
+          ev.target.value = 'M';
+        } else {
+          const num = Number(val);
+          if(!isNaN(num) && num >= 0 && num <= 20) {
+            ev.target.dataset.value = num.toString();
+            ev.target.value = num.toString();
+          }
+        }
+        applyScoreColor(ev.target);
+        updateTargetTotal();
+      });
+      input.addEventListener('input', (ev) => {
+        // Allow typing, will be formatted on change
+        const val = ev.target.value.trim().toUpperCase();
+        if(val === 'X') {
+          ev.target.dataset.value = '10';
+        } else if(val === 'M') {
+          ev.target.dataset.value = '0';
+        }
+      });
       scoreCell.appendChild(input);
       row.appendChild(scoreCell);
       
@@ -410,7 +616,11 @@
       const inputs = document.querySelectorAll(`.arrow-score[data-end="${endNum}"]`);
       let endSum = 0;
       inputs.forEach(input => {
-        endSum += Number(input.value) || 0;
+        // Use data-value if available, otherwise try to parse from display value
+        let val = input.dataset.value || input.value || '0';
+        if(val === 'X') val = 10;
+        else if(val === 'M') val = 0;
+        endSum += Number(val) || 0;
       });
       roundTotal += endSum;
       const endRow = inputs[0].closest('tr');
@@ -426,7 +636,11 @@
   function updateTargetTotal(){
     let shootTotal = 0;
     document.querySelectorAll('.target-score').forEach(input => {
-      shootTotal += Number(input.value) || 0;
+      // Use data-value if available, otherwise try to parse from display value
+      let val = input.dataset.value || input.value || '0';
+      if(val === 'X') val = 10;
+      else if(val === 'M') val = 0;
+      shootTotal += Number(val) || 0;
     });
     
     const shootTotalEl = document.getElementById('shootTotal');
@@ -441,7 +655,7 @@
     try{
       const titleEl = document.getElementById('pageTitle');
       const distanceEl = document.getElementById('infoDistance');
-      const goldsEl = document.getElementById('infoGolds');
+      const xCountEl = document.getElementById('infoXCount');
       const avgEl = document.getElementById('infoAvg');
       const totalEl = document.getElementById('infoTotal');
       if(!titleEl) return;
@@ -459,8 +673,8 @@
       }
       distanceEl.textContent = 'Distance: ' + (distance || '--') + (distance && distance!=='--' ? 'yd' : '');
 
-      const golds = (practice && (practice.golds || 0)) || 0;
-      goldsEl.textContent = 'Golds: ' + golds;
+      // Update X count from current scoring grid
+      updateXCount();
 
       // compute total and avg if available
       let total = (practice && (practice.totalScore || 0)) || Number(document.getElementById('totalScore')?.value) || 0;
