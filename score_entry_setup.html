@@ -40,6 +40,12 @@
       <option value="nfaa5">NFAA 5-Spot</option>
       <option value="3d">3D Shoot (score only)</option>
     </select>
+    
+      <!-- target face preview for selected round style -->
+      <div class="d-flex align-items-center gap-2 mt-2">
+        <img id="roundStyleFace" src="images/target_standard.png" alt="Target face" style="width:56px;height:auto;border:1px solid #ccc;border-radius:4px;display:inline-block">
+        <div id="roundStyleFaceName" class="small text-muted"></div>
+      </div>
 
     <div id="roundFields">
         <div class="row g-2">
@@ -69,10 +75,13 @@
           </select>
         </div>
         <div class="col-12"><label class="form-label">Target Face</label>
-          <select id="targetFace" class="form-select">
-            <option value="standard">Standard</option>
-            <option value="blue">Blue-faced (NFAA)</option>
-          </select>
+          <div class="d-flex gap-2 align-items-center">
+            <input type="hidden" id="targetFace" value="vegas_single">
+            <button id="chooseTargetFace" type="button" class="btn btn-outline-secondary d-flex align-items-center gap-2">
+              <img id="targetFacePreview" src="images/Target_images/Vegas_face_single_spot.webp" alt="target" style="width:40px;height:auto;border:1px solid #ccc;border-radius:4px;">
+              <span id="targetFaceName" class="text-start">Vegas Single Spot</span>
+            </button>
+          </div>
         </div>
         <div class="col-12"><label class="form-label">Total Score (optional)</label><input id="totalScore" type="number" class="form-control"></div>
         <div class="col-12"><label class="form-label">Notes</label><input id="notes" class="form-control"></div>
@@ -183,6 +192,30 @@
     '3d':{ends:0,arrowCount:0,name:'3D Shoot'},
     generic:{ends:6,arrowCount:6,name:'Practice'}
   };
+    // map round styles to target-face ids (these keys match entries in faceOptions below)
+    const faceMap = {
+      vegas300: 'vegas_3',
+      vegas450: 'vegas_3',
+      nfaa5: 'nfaa_5',
+      '3d': 'worcester',
+      generic: 'vegas_single'
+    };
+
+    // available target face options (id -> metadata)
+    const faceOptions = {
+      standard: { name: 'Metric', zones: '10 Zone', desc: 'X, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1', img: 'images/center_X_target.jpg' },
+      imperial: { name: 'Imperial', zones: '5 Zone', desc: '9, 7, 5, 3, 1', img: 'images/5_arrows_in_target_2.jpg' },
+      vegas: { name: 'Vegas', zones: '10 Zone', desc: 'X, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1', img: 'images/5_arrows_in_target.jpg' },
+      vegas_imp: { name: 'Vegas Imperial', zones: '5 Zone', desc: 'X, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1', img: 'images/5_arrows_in_target_2.jpg' },
+      worcester: { name: 'Worcester', zones: '5 Zone', desc: 'Black concentric target', img: 'images/white score-card.jpg' },
+      compound: { name: 'Compound', zones: '6 Zone', desc: 'X, 10, 9, 8, 7, 6', img: 'images/zoomed_in_center_X.jpg' },
+      fieldfita: { name: 'Field Fita', zones: '6 Zone', desc: 'X, 10, 9, 8, 7, 6', img: 'images/white score-card.jpg' },
+      '3d': { name: '3D', zones: 'score only', desc: 'Enter total points', img: 'images/white score-card.jpg' }
+      vegas_single: { name: 'Vegas Single Spot', zones: '10 Zone', desc: 'X, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1', img: 'images/Target_images/Vegas_face_single_spot.webp' },
+      vegas_3: { name: 'Vegas 3-Spot', zones: '10 Zone', desc: 'X, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1', img: 'images/Target_images/Vegas_face_3_spot.webp' },
+      nfaa_single: { name: 'NFAA Single Spot', zones: '5 Zone', desc: '9, 7, 5, 3, 1', img: 'images/Target_images/NFAA_face_single_spot.webp' },
+      nfaa_5: { name: 'NFAA 5-Spot', zones: '5 Zone', desc: '9, 7, 5, 3, 1', img: 'images/Target_images/NFAA_face_5_spot.webp' }
+    };
   function applyPreset(){
     const v=style.value; const p=map[v]||map.generic;
     document.getElementById('name').value = p.name;
@@ -209,6 +242,54 @@
   }
   style.addEventListener('change',applyPreset);
   applyPreset();
+
+    // update preview image/label for selected round style
+    function updateRoundStylePreview(){
+      const v = style.value;
+      const p = map[v] || map.generic;
+      const faceEl = document.getElementById('roundStyleFace');
+      const faceLabel = document.getElementById('roundStyleFaceName');
+      // prefer explicit selected targetFace if present, otherwise use mapping from style
+      const targetHidden = document.getElementById('targetFace');
+      const selectedFaceId = (targetHidden && targetHidden.value) ? targetHidden.value : (faceMap[v] || faceMap.generic || 'standard');
+      const faceMeta = (typeof faceOptions !== 'undefined' && faceOptions[selectedFaceId]) ? faceOptions[selectedFaceId] : null;
+      if(faceEl){ faceEl.src = faceMeta ? faceMeta.img : (faceMap[v] || faceMap.generic || ''); faceEl.alt = (p.name ? p.name + ' target face' : 'Target face'); }
+      if(faceLabel){ faceLabel.textContent = p.name ? p.name : ''; }
+      // Update chooser preview (button) to match selected face
+      const chooserImg = document.getElementById('targetFacePreview');
+      const chooserName = document.getElementById('targetFaceName');
+      if(chooserImg && faceMeta){ chooserImg.src = faceMeta.img; chooserImg.alt = faceMeta.name; }
+      if(chooserName && faceMeta){ chooserName.textContent = faceMeta.name; }
+    }
+    style.addEventListener('change', updateRoundStylePreview);
+    updateRoundStylePreview();
+
+    // Target Face chooser modal: build and open when button clicked
+    document.getElementById('chooseTargetFace')?.addEventListener('click', ()=>{
+      const mdl = document.createElement('div'); mdl.innerHTML = '<div class="modal fade" tabindex="-1"><div class="modal-dialog modal-dialog-centered modal-md"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Select Target Face</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body p-0"></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div></div></div></div>';
+      const body = mdl.querySelector('.modal-body');
+      const list = document.createElement('div'); list.className = 'list-group list-group-flush';
+      Object.keys(faceOptions).forEach(id=>{
+        const f = faceOptions[id];
+        const item = document.createElement('button'); item.type='button'; item.className='list-group-item list-group-item-action d-flex align-items-center gap-3';
+        item.innerHTML = `<img src="${f.img}" onerror="this.src='images/target_standard.png'" style="width:56px;height:auto;border-radius:6px;border:1px solid #eee"><div class="flex-grow-1 text-start"><div><strong>${f.name}</strong> <small class="text-muted">${f.zones||''}</small></div><div class="text-muted small">${f.desc||''}</div></div>`;
+        item.addEventListener('click', ()=>{
+          // set hidden input and update chooser preview + roundStyle preview
+          const hidden = document.getElementById('targetFace'); if(hidden) hidden.value = id;
+          const chooserImg = document.getElementById('targetFacePreview'); const chooserName = document.getElementById('targetFaceName');
+          if(chooserImg) chooserImg.src = f.img; if(chooserName) chooserName.textContent = f.name;
+          updateRoundStylePreview();
+          const bs = bootstrap.Modal.getInstance(mdl.querySelector('.modal'));
+          if(bs) bs.hide();
+        });
+        list.appendChild(item);
+      });
+      body.appendChild(list);
+      document.body.appendChild(mdl);
+      const bsModal = new bootstrap.Modal(mdl.querySelector('.modal'));
+      bsModal.show();
+      mdl.querySelector('.modal').addEventListener('hidden.bs.modal', ()=> mdl.remove());
+    });
 
   // Templates and multi-distance helpers
   const tplSelect = document.getElementById('name');
