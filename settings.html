@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!doctype html>
 <html lang="en">
 <head>
@@ -57,3 +58,103 @@
   </script>
 </body>
 </html>
+=======
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Settings</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body>
+  <!-- Top-left back button: tries history.back(), falls back to index.html -->
+  <a class="back-btn" href="index.html" onclick="if(history.length>1){history.back();return false;}">← Back</a>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="nav nav-pills ms-auto" role="tablist">
+          <li class="nav-item"><a class="nav-link" href="index.html"><span class="nav-icon">📈</span>History</a></li>
+          <li class="nav-item"><a class="nav-link" href="AI_Coach.html"><span class="nav-icon">🤖</span>AI Coach</a></li>
+          <li class="nav-item"><a class="nav-link" href="equipment.html"><span class="nav-icon">🏹</span>Equipment</a></li>
+          <li class="nav-item"><a class="nav-link" href="statistics.html"><span class="nav-icon">📊</span>Statistics</a></li>
+          <li class="nav-item"><a class="nav-link" href="competition.html"><span class="nav-icon">🏆</span>Competition</a></li>
+          <li class="nav-item"><a class="nav-link active" href="menu.html"><span class="nav-icon">☰</span>Menu</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <header class="page-header">
+    <div class="container">
+      <img src="images/AIchery_logo_full_sized.png" alt="AIchery Logo" style="max-width: 150px; height: auto;">
+    </div>
+  </header>
+  <div class="container py-4">
+
+    <div class="mt-3">
+      <h5>Theme Colors</h5>
+      <div class="card p-3">
+        <div class="row g-2 align-items-center">
+          <div class="col-6 col-md-3">Primary Accent</div>
+          <div class="col-6 col-md-3"><input id="color_accent" type="color" class="form-control form-control-color" value="#0d6efd"></div>
+
+          <div class="col-6 col-md-3">Background</div>
+          <div class="col-6 col-md-3"><input id="color_bg" type="color" class="form-control form-control-color" value="#f4f6f8"></div>
+
+          <div class="col-6 col-md-3">Card</div>
+          <div class="col-6 col-md-3"><input id="color_card" type="color" class="form-control form-control-color" value="#ffffff"></div>
+
+          <div class="col-12 mt-3 d-flex gap-2">
+            <button id="saveTheme" class="btn btn-primary">Save Theme</button>
+            <button id="resetTheme" class="btn btn-outline-secondary">Reset</button>
+            <button id="orderEquipment" class="btn btn-outline-primary">Order new equipment</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (function(){
+    const accent=document.getElementById('color_accent');
+    const bg=document.getElementById('color_bg');
+    const card=document.getElementById('color_card');
+    const save=document.getElementById('saveTheme');
+    const reset=document.getElementById('resetTheme');
+
+    function apply(obj){ Object.keys(obj).forEach(k=>document.documentElement.style.setProperty(k,obj[k])); }
+
+    const defaultTheme = {'--accent':'#0d6efd','--bg':'#f4f6f8','--card':'#ffffff'};
+
+    // load stored theme (or defaults)
+    try{
+      const t = JSON.parse(localStorage.getItem('theme')||JSON.stringify(defaultTheme));
+      if(t['--accent']) accent.value = t['--accent']; if(t['--bg']) bg.value = t['--bg']; if(t['--card']) card.value = t['--card']; apply(t);
+    }catch(e){ apply(defaultTheme); }
+
+    // Live preview when selecting colors
+    accent.addEventListener('input', ()=>{ apply({'--accent':accent.value}); });
+    bg.addEventListener('input', ()=>{ apply({'--bg':bg.value}); });
+    card.addEventListener('input', ()=>{ apply({'--card':card.value}); });
+
+    save.addEventListener('click',()=>{
+      const obj={'--accent':accent.value,'--bg':bg.value,'--card':card.value}; localStorage.setItem('theme',JSON.stringify(obj)); apply(obj); alert('Theme saved.');
+    });
+
+    reset.addEventListener('click',()=>{
+      // restore defaults and save
+      accent.value = defaultTheme['--accent'];
+      bg.value = defaultTheme['--bg'];
+      card.value = defaultTheme['--card'];
+      apply(defaultTheme);
+      localStorage.setItem('theme', JSON.stringify(defaultTheme));
+      alert('Theme reset to defaults.');
+    });
+
+    document.getElementById('orderEquipment')?.addEventListener('click', ()=>{ alert('Ordering is not available in this demo.'); });
+  })();
+  </script>
+</body>
+</html>
+>>>>>>> bd8dde3f9a6c70645d940c1966abc52415c74ac7

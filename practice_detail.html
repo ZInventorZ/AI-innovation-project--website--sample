@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!doctype html>
 <html lang="en">
 <head>
@@ -145,4 +146,155 @@ else{
 }
 </script>
 </body>
+=======
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Practice Detail</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body>
+<!-- Top-left back button: tries history.back(), falls back to index.html -->
+<a class="back-btn" href="index.html" onclick="if(history.length>1){history.back();return false;}">← Back</a>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="nav nav-pills ms-auto" role="tablist">
+          <li class="nav-item"><a class="nav-link active" href="index.html"><span class="nav-icon">📈</span>History</a></li>
+          <li class="nav-item"><a class="nav-link" href="AI_Coach.html"><span class="nav-icon">🤖</span>AI Coach</a></li>
+          <li class="nav-item"><a class="nav-link" href="equipment.html"><span class="nav-icon">🏹</span>Equipment</a></li>
+          <li class="nav-item"><a class="nav-link" href="statistics.html"><span class="nav-icon">📊</span>Statistics</a></li>
+          <li class="nav-item"><a class="nav-link" href="competition.html"><span class="nav-icon">🏆</span>Competition</a></li>
+          <li class="nav-item"><a class="nav-link" href="menu.html"><span class="nav-icon">☰</span>Menu</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+    <header class="page-header">
+        <div class="container">
+            <img src="images/AIchery_logo_full_sized.png" alt="AIchery Logo" style="max-width: 150px; height: auto;">
+        </div>
+    </header>
+
+<main class="site-main container py-4">
+    <div id="content"></div>
+    <div class="mt-3 d-flex gap-2 align-items-center flex-column flex-sm-row">
+      <strong>Units:</strong>
+      <select id="unitsSelect" class="form-select">
+        <option value="m">Meters</option>
+        <option value="yd">Yards</option>
+      </select>
+    </div>
+
+    <div class="card mt-3" id="weatherCard" style="display:none;">
+      <div class="card-header p-3 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#weatherCollapse">
+        <h5 class="mb-0" style="cursor:pointer">🌤️ Weather / Session</h5>
+      </div>
+      <div id="weatherCollapse" class="collapse" data-bs-parent=".site-main">
+        <div class="card-body p-3">
+          <div class="d-flex gap-2 align-items-center flex-column flex-sm-row">
+            <select id="weatherType" class="form-select">
+              <option value="indoor">Indoor</option>
+              <option value="outdoor">Outdoor</option>
+            </select>
+            <button id="pullWeather" class="btn btn-outline-secondary">Pull weather</button>
+            <button id="saveWeather" class="btn btn-primary">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="mt-3"><a id="backLink" href="practice_list.html">← Back to list</a></p>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function getPractices(){return JSON.parse(localStorage.getItem('practices')||'[]');}
+function qs(name){
+    const params=new URLSearchParams(location.search);
+    return params.get(name);
+}
+const id=Number(qs('id'));
+const list=getPractices();
+const p=list.find(x=>x.id===id);
+const content=document.getElementById('content');
+if(!p){content.innerHTML='<div class="alert alert-warning">Practice not found.</div>';} 
+else{
+        content.innerHTML=`<h2>${p.name}</h2>
+        <ul class="list-group">
+            <li class="list-group-item"><strong>End Count:</strong> ${p.endCount}</li>
+            <li class="list-group-item"><strong>Arrow Count:</strong> ${p.arrowCount}</li>
+            <li class="list-group-item"><strong>Distance:</strong> <span id="distanceVal">${p.distance}</span> <span id="distanceUnit">m</span></li>
+            <li class="list-group-item"><strong>Ends:</strong> ${p.ends}</li>
+            <li class="list-group-item"><strong>Equipment:</strong> ${p.equipmentSetup? (p.equipmentSetup.name || 'Setup') : '<em>None</em>'}
+                ${p.equipmentSetup? '<div class="small text-muted mt-1">Bow: '+(p.equipmentSetup.bow||'-')+' • Sight: '+(p.equipmentSetup.sight||'-')+' • Release: '+(p.equipmentSetup.release||'-')+' • Arrows: '+(p.equipmentSetup.arrows||'-')+'</div>' : ''}
+            </li>
+            <li class="list-group-item"><strong>Notes:</strong> ${p.notes||'<em>None</em>'}</li>
+            <li class="list-group-item"><strong>Saved:</strong> ${new Date(p.created).toLocaleString()}</li>
+        </ul>
+        <p class="mt-3"><a href="#" id="delete" class="btn btn-danger">Delete</a></p>`;
+    document.getElementById('delete').addEventListener('click',function(e){
+        e.preventDefault();
+        const filtered=list.filter(x=>x.id!==id);
+        localStorage.setItem('practices',JSON.stringify(filtered));
+        location.href='practice_list.html';
+    });
+
+    // show weather card
+    document.getElementById('weatherCard').style.display='block';
+    const unitsSelect=document.getElementById('unitsSelect');
+    const distanceEl=document.getElementById('distanceVal');
+    const distanceUnitEl=document.getElementById('distanceUnit');
+    const originalMeters = Number(p.distance) || 0;
+    function showUnits(u){
+        if(u==='yd'){
+            const y = (originalMeters * 1.0936133).toFixed(1);
+            distanceEl.textContent = y;
+            distanceUnitEl.textContent = 'yd';
+        } else {
+            distanceEl.textContent = originalMeters;
+            distanceUnitEl.textContent = 'm';
+        }
+    }
+    unitsSelect.addEventListener('change', ()=> showUnits(unitsSelect.value));
+    // initialize
+    showUnits(unitsSelect.value);
+
+    // weather controls
+    const weatherType = document.getElementById('weatherType');
+    const pullBtn = document.getElementById('pullWeather');
+    const saveWeather = document.getElementById('saveWeather');
+    // populate if saved
+    if(p.weather) weatherType.value = p.weather;
+    pullBtn.addEventListener('click', ()=>{
+        // non-functional placeholder
+        const mdl = document.createElement('div'); mdl.innerHTML = '<div class="modal fade" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Not available</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body">Pulling weather from location/time is not yet available.</div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div></div></div></div>';
+        document.body.appendChild(mdl);
+        const bsModal = new bootstrap.Modal(mdl.querySelector('.modal'));
+        bsModal.show();
+        mdl.querySelector('.modal').addEventListener('hidden.bs.modal', ()=> mdl.remove());
+    });
+    saveWeather.addEventListener('click', ()=>{
+        p.weather = weatherType.value;
+        const idx = list.findIndex(x=>x.id===p.id);
+        if(idx>-1){ list[idx]=p; localStorage.setItem('practices',JSON.stringify(list)); alert('Weather saved'); }
+    });
+}
+// Catch unhandled button clicks and show error
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('button:not([data-bs-dismiss])'); 
+  if(!btn) return;
+  if(btn.onclick || btn.getAttribute('onclick')) return;
+  if(!btn.id && !btn.getAttribute('data-action')) {
+    e.preventDefault();
+    alert('This feature is not yet implemented.');
+  }
+});
+</script>
+</body>
+>>>>>>> bd8dde3f9a6c70645d940c1966abc52415c74ac7
 </html>
