@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!doctype html>
 <html lang="en">
 <head>
@@ -261,4 +262,888 @@
 })();
 </script>
 </body>
+=======
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>New Score</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body>
+<!-- Top-left back button: tries history.back(), falls back to index.html -->
+<a class="back-btn" href="index.html" onclick="if(history.length>1){history.back();return false;}">← Back</a>
+<header class="page-header">
+  <div class="container">
+    <img src="images/AIchery_logo_full_sized.png" alt="AIchery Logo" style="max-width: 150px; height: auto;">
+  </div>
+</header>
+
+<!-- Dynamic score header/info matching mobile layout -->
+<div id="scoreInfo" class="container my-2" style="background:#fdeeea;border-radius:8px;padding:12px;">
+  <div style="display:flex;align-items:center;justify-content:space-between;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div id="infoDistance" style="font-weight:600;color:#333">Distance: --</div>
+      <div id="infoXCount" style="background:#ffc107;color:#000;padding:6px 12px;border-radius:20px;font-weight:600">X Count: 0</div>
+    </div>
+    <div style="text-align:right;color:#666;">
+      <div id="infoAvg">Avg: 0.0</div>
+      <div id="infoTotal">Total: 0</div>
+    </div>
+  </div>
+</div>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom py-1">
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="nav nav-pills ms-auto" role="tablist">
+          <li class="nav-item"><a class="nav-link active" href="index.html"><span class="nav-icon" style="font-size:0.9rem">📈</span><span style="font-size:0.7rem">History</span></a></li>
+          <li class="nav-item"><a class="nav-link" href="AI_Coach.html"><span class="nav-icon" style="font-size:0.9rem">🤖</span><span style="font-size:0.7rem">Coach</span></a></li>
+          <li class="nav-item"><a class="nav-link" href="equipment.html"><span class="nav-icon" style="font-size:0.9rem">🏹</span><span style="font-size:0.7rem">Equip</span></a></li>
+          <li class="nav-item"><a class="nav-link" href="statistics.html"><span class="nav-icon" style="font-size:0.9rem">📊</span><span style="font-size:0.7rem">Stats</span></a></li>
+          <li class="nav-item"><a class="nav-link" href="competition.html"><span class="nav-icon" style="font-size:0.9rem">🏆</span><span style="font-size:0.7rem">Comp</span></a></li>
+          <li class="nav-item"><a class="nav-link" href="menu.html"><span class="nav-icon" style="font-size:0.9rem">☰</span><span style="font-size:0.7rem">Menu</span></a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+<main class="site-main container py-3">
+  <!-- Button to pull up score keyboard -->
+  <div class="mb-2">
+    <button id="pullUpKeyboard" class="btn btn-sm btn-outline-primary w-100">⌨️ Show Score Keyboard</button>
+  </div>
+
+  <!-- Scoring Grid (Main Focus) -->
+  <div class="card p-3 mb-3">
+    <h5 class="mb-2">Arrow Scores</h5>
+    <div id="scoringGridContainer"></div>
+  </div>
+
+  <div class="mt-3 d-flex gap-2 flex-column flex-sm-row">
+    <button id="save" class="btn btn-primary flex-grow-1">Save Round</button>
+    <button id="configBtn" class="btn btn-outline-secondary flex-grow-1">⚙️ Setup</button>
+  </div>
+
+  <!-- Hidden config panel that slides out -->
+  <div id="configPanel" class="card mt-3" style="display:none;max-height:400px;overflow-y:auto;">
+    <div class="card-header p-3 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#configCollapse">
+      <h5 class="mb-0" style="cursor:pointer">Configuration</h5>
+    </div>
+    <div id="configCollapse" class="collapse show">
+      <div class="card-body p-3">
+        <div class="mb-2">
+          <label class="form-label"><strong>Round Style</strong></label>
+          <select id="roundStyle" class="form-select mb-3">
+            <option value="generic">Generic Practice</option>
+            <option value="vegas300">Vegas 300</option>
+            <option value="vegas450">Vegas 450</option>
+            <option value="nfaa5">NFAA 5-Spot</option>
+            <option value="3d">3D Shoot</option>
+          </select>
+        </div>
+
+        <div id="roundFields">
+          <div class="row g-2">
+            <div class="col-12">
+              <label class="form-label">Practice Name (choose template)</label>
+              <div class="d-flex gap-2 flex-column flex-sm-row">
+                <select id="name" class="form-select"></select>
+                <button id="btnAddTemplate" type="button" class="btn btn-outline-secondary btn-sm">Save</button>
+                <button id="btnClearTemplates" type="button" class="btn btn-outline-danger btn-sm">Clear</button>
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Distances</label>
+              <div id="distances" class="mb-2"></div>
+              <button id="addDistance" type="button" class="btn btn-sm btn-outline-primary">+ Add distance</button>
+            </div>
+            <div class="col-12"><label class="form-label">Arrows per end</label><input id="arrowCount" type="number" class="form-control"></div>
+            <div class="col-12"><label class="form-label">Ends</label><input id="ends" type="number" class="form-control"></div>
+            <div class="col-12"><label class="form-label">Distance (m)</label><input id="distance" type="number" class="form-control"></div>
+            <div class="col-12"><label class="form-label">Organization</label>
+              <select id="organization" class="form-select">
+                <option value="">(none)</option>
+                <option value="ASA">ASA</option>
+                <option value="NFAA">NFAA</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="col-12"><label class="form-label">Target Face</label>
+              <select id="targetFace" class="form-select">
+                <option value="standard">Standard</option>
+                <option value="blue">Blue-faced (NFAA)</option>
+              </select>
+            </div>
+            <div class="col-12"><label class="form-label">Total Score (optional)</label><input id="totalScore" type="number" class="form-control"></div>
+            <div class="col-12"><label class="form-label">Notes</label><input id="notes" class="form-control"></div>
+            <div class="col-12">
+              <label class="form-label">Weather</label>
+              <div class="d-flex gap-2 flex-column flex-sm-row">
+                <select id="weather" class="form-select">
+                  <option value="indoor">Indoor</option>
+                  <option value="outdoor">Outdoor</option>
+                </select>
+                <button id="pullWeather" type="button" class="btn btn-outline-secondary btn-sm">Pull</button>
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Equipment Setup</label>
+              <select id="equipmentSetup" class="form-select">
+                <option value="">(none)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Score Keyboard (Bottom Fixed) -->
+  <div class="card p-2" id="scoreKeyboardCard" style="display:none;position:fixed;bottom:120px;left:0;right:0;max-height:280px;overflow-y:auto;z-index:1000;margin:0;border-radius:0;border:1px solid rgba(0,0,0,0.1);border-bottom:none;">
+    <div class="d-flex justify-content-between align-items-center mb-2" style="padding:0.5rem 0.75rem;border-bottom:1px solid rgba(0,0,0,0.06);">
+      <strong style="font-size:0.9rem">Score Keyboard</strong>
+      <div style="display:flex;gap:0.5rem;">
+        <button id="undoScore" class="btn btn-sm btn-link p-0" style="font-size:1rem;line-height:1" title="Undo">↶</button>
+        <button id="closeKeyboard" class="btn btn-sm btn-link p-0" style="font-size:1.2rem;line-height:1">✕</button>
+      </div>
+    </div>
+    <div id="scoreKeyboard" class="d-grid gap-2" style="grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));padding:0 0.75rem 0.75rem;">
+      <!-- Buttons generated dynamically -->
+    </div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+(function(){
+  function getPractices(){return JSON.parse(localStorage.getItem('practices')||'[]');}
+  function savePractices(arr){localStorage.setItem('practices',JSON.stringify(arr));}
+  function getTemplates(){return JSON.parse(localStorage.getItem('practiceTemplates')||'[]');}
+  function saveTemplates(arr){localStorage.setItem('practiceTemplates',JSON.stringify(arr));}
+  const style=document.getElementById('roundStyle');
+  const map = {
+    vegas300:{ends:10,arrowCount:3,name:'Vegas 300'},
+    vegas450:{ends:15,arrowCount:3,name:'Vegas 450'},
+    nfaa5:{ends:6,arrowCount:5,name:'NFAA 5-Spot'},
+    '3d':{ends:0,arrowCount:0,name:'3D Shoot'},
+    generic:{ends:6,arrowCount:6,name:'Practice'}
+  };
+  function applyPreset(){
+    const v=style.value; const p=map[v]||map.generic;
+    document.getElementById('name').value = p.name;
+    if(p.ends>0){ document.getElementById('ends').value=p.ends; document.getElementById('arrowCount').value=p.arrowCount; }
+    else { document.getElementById('ends').value=''; document.getElementById('arrowCount').value=''; }
+    if(v==='3d'){ document.getElementById('totalScore').placeholder='Enter total points (no arrows)'; }
+    else { document.getElementById('totalScore').placeholder='leave blank to estimate'; }
+    renderScoringGrid();
+    updateScoreKeyboard();
+  }
+
+  // Score Keyboard Management
+  function getScoreColor(value){
+    // Returns background and text color for a score value
+    if(value === 'X') return { bg: '#ffc107', text: '#000' };
+    if(value === 'M' || value === '' || value === 0 || value === '0') return { bg: '#28a745', text: '#fff' };
+    
+    const num = Number(value);
+    if(isNaN(num)) return { bg: '#fff', text: '#000' };
+    
+    // Archery scoring zones
+    if(num === 10 || num === 9) return { bg: '#ffc107', text: '#000' }; // Yellow
+    if(num === 8 || num === 7) return { bg: '#dc3545', text: '#fff' }; // Red
+    if(num === 6 || num === 5) return { bg: '#0069d9', text: '#fff' }; // Blue
+    if(num === 4 || num === 3) return { bg: '#000', text: '#fff' }; // Black
+    if(num === 2 || num === 1) return { bg: '#f8f9fa', text: '#000' }; // White
+    
+    return { bg: '#fff', text: '#000' };
+  }
+  
+  function applyScoreColor(input){
+    const colors = getScoreColor(input.value);
+    input.style.backgroundColor = colors.bg;
+    input.style.color = colors.text;
+    input.style.border = colors.bg === '#f8f9fa' ? '1px solid #dee2e6' : 'none';
+  }
+    const style_val = style.value;
+    if(style_val === '3d'){
+      // Check for shootoff or ASA 3D
+      const org = document.getElementById('organization')?.value;
+      if(org === 'ASA') return [12, 10, 8, 5, 'M'];
+      // Check if shootoff (you can add a checkbox or detect from notes)
+      const notes = document.getElementById('notes')?.value || '';
+      if(notes.toLowerCase().includes('shootoff')) return [14, 10, 8, 5, 'M'];
+      return [11, 10, 8, 5, 'M']; // Default 3D
+    } else {
+      // Regular rounds: 0-10
+      return [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 'M'];
+    }
+  }
+
+  function getScoreOptions(){
+    const style_val = style.value;
+    if(style_val === '3d'){
+      // Check for shootoff or ASA 3D
+      const org = document.getElementById('organization')?.value;
+      if(org === 'ASA') return [12, 10, 8, 5, 'M'];
+      // Check if shootoff (you can add a checkbox or detect from notes)
+      const notes = document.getElementById('notes')?.value || '';
+      if(notes.toLowerCase().includes('shootoff')) return [14, 10, 8, 5, 'M'];
+      return [11, 10, 8, 5, 'M']; // Default 3D
+    } else {
+      // Regular rounds: 0-10
+      return [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 'M'];
+    }
+  }
+
+  function updateScoreKeyboard(){
+    const keyboard = document.getElementById('scoreKeyboard');
+    const options = getScoreOptions();
+    const roundStyle = document.getElementById('roundStyle')?.value || '';
+    const targetFace = document.getElementById('targetFace')?.value || 'standard';
+    
+    keyboard.innerHTML = '';
+    keyboard.style.gridTemplateColumns = `repeat(auto-fit, minmax(50px, 1fr))`;
+    
+    // Add X button first
+    const xBtn = document.createElement('button');
+    xBtn.type = 'button';
+    xBtn.className = 'btn btn-sm';
+    xBtn.style.fontWeight = '600';
+    xBtn.textContent = 'X';
+    xBtn.style.backgroundColor = '#ffc107';
+    xBtn.style.color = '#000';
+    xBtn.style.border = '1px solid #ffc107';
+    xBtn.addEventListener('click', () => insertScore('X'));
+    keyboard.appendChild(xBtn);
+    
+    options.forEach(score => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'btn btn-sm';
+      btn.style.fontWeight = '600';
+      btn.textContent = score;
+      
+      // Determine button color based on score and round type
+      let bgColor = '#e9ecef', textColor = '#000';
+      
+      if(score === 'M') {
+        bgColor = '#28a745'; // Green for miss
+        textColor = '#fff';
+      } else if(score === 'X' || score === 10 || score === 12 || score === 14) {
+        bgColor = '#ffc107'; // Yellow for X/10
+        textColor = '#000';
+      } else if(roundStyle === 'nfaa5' || targetFace === 'blue') {
+        // NFAA 5-Spot: X-5 white, 4-1 blue
+        if((score === 'X' || score === 10) || score >= 5) {
+          bgColor = '#f8f9fa'; // White
+          textColor = '#000';
+          bgColor = score >= 5 ? '#f8f9fa' : bgColor;
+        }
+        if(score >= 4 && score <= 1) {
+          bgColor = '#0069d9'; // Blue
+          textColor = '#fff';
+        }
+      } else {
+        // Regular scoring: X-9 yellow, 8-7 red, 6-5 blue, 4-3 black, 2-1 white
+        if(score === 'X' || score === 10 || score === 9) {
+          bgColor = '#ffc107'; // Yellow
+          textColor = '#000';
+        } else if(score === 8 || score === 7) {
+          bgColor = '#dc3545'; // Red
+          textColor = '#fff';
+        } else if(score === 6 || score === 5) {
+          bgColor = '#0069d9'; // Blue
+          textColor = '#fff';
+        } else if(score === 4 || score === 3) {
+          bgColor = '#000'; // Black
+          textColor = '#fff';
+        } else if(score === 2 || score === 1) {
+          bgColor = '#f8f9fa'; // White
+          textColor = '#000';
+        }
+      }
+      
+      btn.style.backgroundColor = bgColor;
+      btn.style.color = textColor;
+      btn.style.border = `1px solid ${bgColor === '#f8f9fa' ? '#dee2e6' : bgColor}`;
+      btn.addEventListener('click', () => insertScore(score));
+      keyboard.appendChild(btn);
+    });
+  }
+
+  function insertScore(score){
+    // Find the last focused input or the first empty one
+    const inputs = document.querySelectorAll('.arrow-score, .target-score');
+    if(!inputs.length) return;
+    let targetInput = null;
+    for(let inp of inputs){
+      if(!inp.value){
+        targetInput = inp;
+        break;
+      }
+    }
+    if(!targetInput) targetInput = inputs[inputs.length - 1];
+    if(targetInput){
+      // Set display and data value based on score type
+      let displayVal = score;
+      let dataVal = score;
+      
+      if(score === 'M') {
+        displayVal = 'M';
+        dataVal = 0;
+      } else if(score === 'X') {
+        displayVal = 'X';
+        dataVal = 10;
+      } else {
+        // For numbers (like 10, 9, 8, etc.)
+        displayVal = score;
+        dataVal = Number(score);
+      }
+      
+      targetInput.value = displayVal;
+      targetInput.dataset.value = dataVal;
+      applyScoreColor(targetInput);
+      targetInput.focus();
+      targetInput.dispatchEvent(new Event('change'));
+      
+      // Update X count
+      updateXCount();
+      
+      // Scroll keyboard area to show more content/increase buffer
+      const keyboardCard = document.getElementById('scoreKeyboardCard');
+      if(keyboardCard && keyboardCard.style.display !== 'none') {
+        // Expand keyboard view slightly
+        setTimeout(() => {
+          keyboardCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 50);
+      }
+    }
+  }
+  
+  function updateXCount(){
+    const inputs = document.querySelectorAll('.arrow-score, .target-score');
+    let xCount = 0;
+    inputs.forEach(inp => {
+      // Only count actual X's, not 10's
+      if(inp.value === 'X') xCount++;
+    });
+    const xCountEl = document.getElementById('infoXCount');
+    if(xCountEl) xCountEl.textContent = 'X Count: ' + xCount;
+  }
+
+  // Toggle config panel visibility
+  document.getElementById('configBtn')?.addEventListener('click', () => {
+    const panel = document.getElementById('configPanel');
+    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  });
+
+  // Pull up score keyboard
+  document.getElementById('pullUpKeyboard')?.addEventListener('click', function(){
+    const card = document.getElementById('scoreKeyboardCard');
+    card.style.display = 'block';
+  });
+
+  // Close score keyboard
+  document.getElementById('closeKeyboard')?.addEventListener('click', function(){
+    const card = document.getElementById('scoreKeyboardCard');
+    card.style.display = 'none';
+  });
+
+  // Undo last score
+  document.getElementById('undoScore')?.addEventListener('click', function(){
+    const inputs = document.querySelectorAll('.arrow-score, .target-score');
+    if(!inputs.length) return;
+    // Find last filled input and clear it
+    for(let i = inputs.length - 1; i >= 0; i--){
+      if(inputs[i].value){
+        inputs[i].value = '';
+        inputs[i].focus();
+        inputs[i].dispatchEvent(new Event('change'));
+        updateXCount();
+        break;
+      }
+    }
+  });
+
+  style.addEventListener('change',applyPreset);
+  function renderScoringGrid(){
+    const container = document.getElementById('scoringGridContainer');
+    const roundStyle = style.value;
+    const ends = Number(document.getElementById('ends').value) || 0;
+    const arrowCount = Number(document.getElementById('arrowCount').value) || 0;
+    
+    container.innerHTML = '';
+    
+    if(roundStyle === '3d'){
+      // 3D shoot: single column with multiple rows (targets)
+      const targetsInput = document.getElementById('targets');
+      const targets = Number(targetsInput?.value) || 10;
+      renderTargetGrid(container, targets);
+    } else if(ends > 0 && arrowCount > 0){
+      // Regular shoot: grid with ends as rows, arrows as columns
+      renderEndGrid(container, ends, arrowCount);
+    } else {
+      container.innerHTML = '<p class="text-muted">Enter number of ends and arrows per end to display scoring grid</p>';
+    }
+  }
+
+  function renderEndGrid(container, ends, arrowCount){
+    const table = document.createElement('table');
+    table.className = 'table table-bordered table-sm';
+    table.style.maxWidth = '600px';
+    
+    // Header row
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+    const endHeader = document.createElement('th');
+    endHeader.textContent = 'End';
+    endHeader.style.width = '50px';
+    headerRow.appendChild(endHeader);
+    
+    for(let a = 1; a <= arrowCount; a++){
+      const th = document.createElement('th');
+      th.textContent = `Arrow ${a}`;
+      th.style.textAlign = 'center';
+      th.style.width = '60px';
+      headerRow.appendChild(th);
+    }
+    
+    const totalHeader = document.createElement('th');
+    totalHeader.textContent = 'Total';
+    totalHeader.style.width = '60px';
+    totalHeader.style.textAlign = 'center';
+    headerRow.appendChild(totalHeader);
+    
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+    
+    // Data rows
+    const tbody = document.createElement('tbody');
+    for(let e = 1; e <= ends; e++){
+      const row = document.createElement('tr');
+      const endCell = document.createElement('td');
+      endCell.textContent = `End ${e}`;
+      endCell.style.fontWeight = '600';
+      row.appendChild(endCell);
+      
+      let endTotal = 0;
+      for(let a = 1; a <= arrowCount; a++){
+        const td = document.createElement('td');
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'form-control form-control-sm arrow-score';
+        input.placeholder = '0-10';
+        input.dataset.end = e;
+        input.dataset.arrow = a;
+        input.style.textAlign = 'center';
+        input.style.fontWeight = '600';
+        input.addEventListener('change', (ev) => {
+          // Validate and format input
+          const val = ev.target.value.trim().toUpperCase();
+          if(val === 'X') {
+            ev.target.dataset.value = '10';
+            ev.target.value = 'X';
+          } else if(val === 'M' || val === '') {
+            ev.target.dataset.value = '0';
+            ev.target.value = 'M';
+          } else {
+            const num = Number(val);
+            if(!isNaN(num) && num >= 0 && num <= 10) {
+              ev.target.dataset.value = num.toString();
+              ev.target.value = num.toString();
+            }
+          }
+          applyScoreColor(ev.target);
+          updateEndTotal();
+        });
+        input.addEventListener('input', (ev) => {
+          // Allow typing, will be formatted on change
+          const val = ev.target.value.trim().toUpperCase();
+          if(val === 'X') {
+            ev.target.dataset.value = '10';
+          } else if(val === 'M') {
+            ev.target.dataset.value = '0';
+          }
+        });
+        td.appendChild(input);
+        row.appendChild(td);
+      }
+      
+      const totalCell = document.createElement('td');
+      totalCell.className = 'end-total';
+      totalCell.style.textAlign = 'center';
+      totalCell.style.fontWeight = '600';
+      totalCell.textContent = '0';
+      row.appendChild(totalCell);
+      
+      tbody.appendChild(row);
+    }
+    table.appendChild(tbody);
+    container.appendChild(table);
+    
+    // Overall total
+    const totalDiv = document.createElement('div');
+    totalDiv.className = 'mt-2 p-2 bg-light rounded';
+    totalDiv.innerHTML = '<strong>Round Total: <span id="roundTotal">0</span></strong>';
+    container.appendChild(totalDiv);
+  }
+
+  function renderTargetGrid(container, targets){
+    const table = document.createElement('table');
+    table.className = 'table table-bordered table-sm';
+    table.style.maxWidth = '300px';
+    
+    // Header row
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+    const th = document.createElement('th');
+    th.textContent = 'Target';
+    th.style.width = '100px';
+    headerRow.appendChild(th);
+    
+    const scoreHeader = document.createElement('th');
+    scoreHeader.textContent = 'Score';
+    scoreHeader.style.width = '80px';
+    scoreHeader.style.textAlign = 'center';
+    headerRow.appendChild(scoreHeader);
+    
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+    
+    // Data rows
+    const tbody = document.createElement('tbody');
+    for(let t = 1; t <= targets; t++){
+      const row = document.createElement('tr');
+      const targetCell = document.createElement('td');
+      targetCell.textContent = `Target ${t}`;
+      targetCell.style.fontWeight = '600';
+      row.appendChild(targetCell);
+      
+      const scoreCell = document.createElement('td');
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'form-control form-control-sm target-score';
+      input.placeholder = '0-20';
+      input.dataset.target = t;
+      input.style.textAlign = 'center';
+      input.style.fontWeight = '600';
+      input.addEventListener('change', (ev) => {
+        // Validate and format input
+        const val = ev.target.value.trim().toUpperCase();
+        if(val === 'X') {
+          ev.target.dataset.value = '10';
+          ev.target.value = 'X';
+        } else if(val === 'M' || val === '') {
+          ev.target.dataset.value = '0';
+          ev.target.value = 'M';
+        } else {
+          const num = Number(val);
+          if(!isNaN(num) && num >= 0 && num <= 20) {
+            ev.target.dataset.value = num.toString();
+            ev.target.value = num.toString();
+          }
+        }
+        applyScoreColor(ev.target);
+        updateTargetTotal();
+      });
+      input.addEventListener('input', (ev) => {
+        // Allow typing, will be formatted on change
+        const val = ev.target.value.trim().toUpperCase();
+        if(val === 'X') {
+          ev.target.dataset.value = '10';
+        } else if(val === 'M') {
+          ev.target.dataset.value = '0';
+        }
+      });
+      scoreCell.appendChild(input);
+      row.appendChild(scoreCell);
+      
+      tbody.appendChild(row);
+    }
+    table.appendChild(tbody);
+    container.appendChild(table);
+    
+    // Overall total
+    const totalDiv = document.createElement('div');
+    totalDiv.className = 'mt-2 p-2 bg-light rounded';
+    totalDiv.innerHTML = '<strong>Shoot Total: <span id="shootTotal">0</span></strong>';
+    container.appendChild(totalDiv);
+  }
+
+  function updateEndTotal(){
+    const ends = new Set();
+    document.querySelectorAll('.arrow-score').forEach(input => ends.add(input.dataset.end));
+    
+    let roundTotal = 0;
+    ends.forEach(endNum => {
+      const inputs = document.querySelectorAll(`.arrow-score[data-end="${endNum}"]`);
+      let endSum = 0;
+      inputs.forEach(input => {
+        // Use data-value if available, otherwise try to parse from display value
+        let val = input.dataset.value || input.value || '0';
+        if(val === 'X') val = 10;
+        else if(val === 'M') val = 0;
+        endSum += Number(val) || 0;
+      });
+      roundTotal += endSum;
+      const endRow = inputs[0].closest('tr');
+      endRow.querySelector('.end-total').textContent = endSum;
+    });
+    
+    const roundTotalEl = document.getElementById('roundTotal');
+    if(roundTotalEl) roundTotalEl.textContent = roundTotal;
+    
+    document.getElementById('totalScore').value = roundTotal;
+  }
+
+  function updateTargetTotal(){
+    let shootTotal = 0;
+    document.querySelectorAll('.target-score').forEach(input => {
+      // Use data-value if available, otherwise try to parse from display value
+      let val = input.dataset.value || input.value || '0';
+      if(val === 'X') val = 10;
+      else if(val === 'M') val = 0;
+      shootTotal += Number(val) || 0;
+    });
+    
+    const shootTotalEl = document.getElementById('shootTotal');
+    if(shootTotalEl) shootTotalEl.textContent = shootTotal;
+    
+    document.getElementById('totalScore').value = shootTotal;
+  }
+  
+  style.addEventListener('change',applyPreset);
+  applyPreset();
+  function updateHeaderInfo(practice){
+    try{
+      const titleEl = document.getElementById('pageTitle');
+      const distanceEl = document.getElementById('infoDistance');
+      const xCountEl = document.getElementById('infoXCount');
+      const avgEl = document.getElementById('infoAvg');
+      const totalEl = document.getElementById('infoTotal');
+      if(!titleEl) return;
+      const name = (practice && (practice.name || practice.roundName)) || (map[style.value] && map[style.value].name) || 'Practice';
+      titleEl.textContent = name;
+
+      // Distance: prefer single distance field, then first distances entry
+      let distance = '--';
+      if(practice){
+        if(practice.distance) distance = practice.distance;
+        else if(practice.distances && practice.distances.length) distance = practice.distances[0].distance || '--';
+      }
+      if(distance==='--'){
+        const d = document.getElementById('distance')?.value; if(d) distance = d;
+      }
+      distanceEl.textContent = 'Distance: ' + (distance || '--') + (distance && distance!=='--' ? 'yd' : '');
+
+      // Update X count from current scoring grid
+      updateXCount();
+
+      // compute total and avg if available
+      let total = (practice && (practice.totalScore || 0)) || Number(document.getElementById('totalScore')?.value) || 0;
+      totalEl.textContent = 'Total: ' + total;
+      // compute avg per arrow if we can estimate arrows
+      function estimateArrows(p){
+        if(!p) p = {};
+        if(p.distances && p.distances.length){ let a=0; p.distances.forEach(d=> a += (Number(d.ends)||0)*(Number(d.arrowsPerEnd)||0)); return a; }
+        const perEnd = Number(p.arrowCount || document.getElementById('arrowCount')?.value) || 0;
+        const ends = Number(p.ends || document.getElementById('ends')?.value) || 0;
+        return perEnd * ends;
+      }
+      const arrows = estimateArrows(practice);
+      const avg = arrows>0 ? (total / arrows) : 0;
+      avgEl.textContent = 'Avg: ' + (avg? avg.toFixed(1) : '0.0');
+    }catch(e){ console.warn('updateHeaderInfo error',e); }
+  }
+
+  style.addEventListener('change',applyPreset);
+  applyPreset();
+
+  // Re-render grid when ends or arrows per end changes
+  document.getElementById('ends').addEventListener('change', renderScoringGrid);
+  document.getElementById('arrowCount').addEventListener('change', renderScoringGrid);
+  const targetsInput = document.getElementById('targets');
+  if(targetsInput) targetsInput.addEventListener('change', renderScoringGrid);
+  
+  // Update score keyboard when organization changes
+  const orgSelect = document.getElementById('organization');
+  if(orgSelect) orgSelect.addEventListener('change', updateScoreKeyboard);
+
+  // initial header/info update and update on preset changes
+  updateHeaderInfo(null);
+  style.addEventListener('change', ()=> updateHeaderInfo(null));
+
+  // Templates and multi-distance helpers
+  const tplSelect = document.getElementById('name');
+  function populateTemplates(){ tplSelect.innerHTML=''; const opt0=document.createElement('option'); opt0.value=''; opt0.textContent='(new / none)'; tplSelect.appendChild(opt0); const tpls = getTemplates(); tpls.forEach(t=>{ const o=document.createElement('option'); o.value=t.id; o.textContent=t.name; tplSelect.appendChild(o); }); }
+
+  const distancesEl = document.getElementById('distances');
+  function addDistanceRow(d){ const div=document.createElement('div'); div.className='d-flex gap-2 align-items-center mb-2'; div.innerHTML = `<input class="form-control form-control-sm" type="number" placeholder="Distance (m)" value="${d?.distance||18}" style="width:110px"><input class="form-control form-control-sm" type="number" placeholder="Ends" value="${d?.ends||1}" style="width:90px"><input class="form-control form-control-sm" type="number" placeholder="Arrows/end" value="${d?.arrowsPerEnd||3}" style="width:110px"><button class="btn btn-sm btn-outline-danger">Remove</button>`; div.querySelector('button').addEventListener('click',()=>div.remove()); distancesEl.appendChild(div); }
+  document.getElementById('addDistance').addEventListener('click',()=> addDistanceRow());
+
+  tplSelect.addEventListener('change', function(){ const id=this.value; if(!id){ distancesEl.innerHTML=''; return; } const t = getTemplates().find(x=>String(x.id)===String(id)); if(!t) return; distancesEl.innerHTML=''; (t.distances||[]).forEach(d=>addDistanceRow(d)); document.getElementById('weather').value = t.weather || 'indoor'; document.getElementById('equipmentSetup').value = t.equipmentSetupId || ''; document.getElementById('distance').value=''; document.getElementById('arrowCount').value=''; document.getElementById('ends').value=''; });
+
+  document.getElementById('btnAddTemplate').addEventListener('click', ()=>{
+    const name = prompt('Template name:'); if(!name) return; const tpl = { id: Date.now(), name, distances: [], weather: document.getElementById('weather').value, equipmentSetupId: document.getElementById('equipmentSetup').value || '' };
+    document.querySelectorAll('#distances > div').forEach(div=>{ const inputs=div.querySelectorAll('input'); tpl.distances.push({ distance: Number(inputs[0].value)||0, ends: Number(inputs[1].value)||0, arrowsPerEnd: Number(inputs[2].value)||0 }); });
+    const arr = getTemplates(); arr.unshift(tpl); saveTemplates(arr); populateTemplates(); document.getElementById('m_status') && (document.getElementById('m_status').textContent='Template saved ✓'); setTimeout(()=>{ document.getElementById('m_status') && (document.getElementById('m_status').textContent=''); },1500);
+  });
+
+  document.getElementById('btnClearTemplates').addEventListener('click', ()=>{ if(!confirm('Clear saved templates?')) return; saveTemplates([]); populateTemplates(); document.getElementById('m_status') && (document.getElementById('m_status').textContent='Templates cleared'); setTimeout(()=>{ document.getElementById('m_status') && (document.getElementById('m_status').textContent=''); },1500); });
+
+  populateTemplates();
+
+  // Load data from URL parameter if coming from score_entry_setup
+  (function(){
+    const urlParams = new URLSearchParams(window.location.search);
+    const practiceId = urlParams.get('id');
+    if(practiceId){
+      const practices = getPractices();
+      const practice = practices.find(p => p.id == practiceId);
+      if(practice){
+        // Populate form with the practice data
+        document.getElementById('name').value = practice.name || '';
+        document.getElementById('roundStyle').value = (Object.keys(map).find(k => map[k].name === practice.name)) || 'generic';
+        if(practice.arrowCount) document.getElementById('arrowCount').value = practice.arrowCount;
+        if(practice.ends) document.getElementById('ends').value = practice.ends;
+        if(practice.distance) document.getElementById('distance').value = practice.distance;
+        if(practice.totalScore) document.getElementById('totalScore').value = practice.totalScore;
+        if(practice.notes) document.getElementById('notes').value = practice.notes;
+        if(practice.weather) document.getElementById('weather').value = practice.weather;
+        if(practice.organization) document.getElementById('organization').value = practice.organization;
+        if(practice.targetFace) document.getElementById('targetFace').value = practice.targetFace;
+        // Load session equipment if present
+        if(practice.sessionEquipment){
+          if(practice.sessionEquipment.bow) document.getElementById('session_bow').value = practice.sessionEquipment.bow;
+          if(practice.sessionEquipment.sight?.pins) document.getElementById('session_sight_pins').value = practice.sessionEquipment.sight.pins;
+          if(practice.sessionEquipment.sight?.type) document.getElementById('session_sight_type').value = practice.sessionEquipment.sight.type;
+          if(practice.sessionEquipment.arrow?.model) document.getElementById('session_arrow_model').value = practice.sessionEquipment.arrow.model;
+          if(practice.sessionEquipment.arrow?.vanes) document.getElementById('session_arrow_vanes').value = practice.sessionEquipment.arrow.vanes;
+          if(practice.sessionEquipment.arrow?.spine) document.getElementById('session_arrow_spine').value = practice.sessionEquipment.arrow.spine;
+          if(practice.sessionEquipment.arrow?.diameter) document.getElementById('session_arrow_diameter').value = practice.sessionEquipment.arrow.diameter;
+        }
+        // update header/info panel for this loaded practice
+        updateHeaderInfo(practice);
+      }
+    }
+  })();
+
+    document.getElementById('save').addEventListener('click',function(e){
+    e.preventDefault();
+    // build practice object, supporting multi-distance rows if present
+    const p = { id:Date.now(), name: (document.getElementById('name').selectedOptions ? (document.getElementById('name').selectedOptions[0].textContent||'') : document.getElementById('name').value) || map[style.value].name, distances: null, endCount: 0, arrowCount:0, ends:0, distance:0, totalScore:(function(){const v=document.getElementById('totalScore').value; return v!==''?Number(v):null})(), notes:document.getElementById('notes').value||'', weather: document.getElementById('weather')? document.getElementById('weather').value : null, equipmentSetupId: (function(){const v=document.getElementById('equipmentSetup')?.value; return v? Number(v): null})(), equipmentSetup: null, sessionEquipment: { bow: document.getElementById('session_bow')?document.getElementById('session_bow').value:null, sight: { pins: Number(document.getElementById('session_sight_pins')?.value)||0, type: document.getElementById('session_sight_type')?.value||null }, arrow: { model: document.getElementById('session_arrow_model')?.value||null, vanes: document.getElementById('session_arrow_vanes')?.value||null, spine: document.getElementById('session_arrow_spine')?.value||null, diameter: document.getElementById('session_arrow_diameter')?.value||null } }, created:new Date().toISOString(), organization: (document.getElementById('organization')?.value) || null, targetFace: (document.getElementById('targetFace')?.value) || null };
+    
+    // Capture arrow scores
+    if(style.value === '3d'){
+      const scores = [];
+      document.querySelectorAll('.target-score').forEach(input => {
+        scores.push(Number(input.value) || 0);
+      });
+      p.targetScores = scores;
+    } else {
+      const endScores = {};
+      document.querySelectorAll('.arrow-score').forEach(input => {
+        const endNum = input.dataset.end;
+        const arrowNum = input.dataset.arrow;
+        if(!endScores[endNum]) endScores[endNum] = [];
+        endScores[endNum][arrowNum - 1] = Number(input.value) || 0;
+      });
+      p.arrowScores = endScores;
+    }
+    
+    // if distances rows exist, use them
+    const rows = document.querySelectorAll('#distances > div');
+    if(rows && rows.length){ p.distances = []; rows.forEach(div=>{ const inputs = div.querySelectorAll('input'); p.distances.push({ distance: Number(inputs[0].value)||0, ends: Number(inputs[1].value)||0, arrowsPerEnd: Number(inputs[2].value)||0 }); });
+      // compute simple summary fields
+      let totalArrows=0; p.distances.forEach(d=> totalArrows += (d.ends||0)*(d.arrowsPerEnd||0)); p.totalArrows = totalArrows; }
+    else {
+      p.endCount = Number(document.getElementById('arrowCount').value)||0;
+      p.arrowCount = Number(document.getElementById('arrowCount').value)||0;
+      p.ends = Number(document.getElementById('ends').value)||0;
+      p.distance = Number(document.getElementById('distance').value)||0;
+    }
+    // compute totalScore if blank (same logic as new_practice)
+    function totalArrows(obj){const perEnd = Number(obj.endCount) || Number(obj.arrowCount) || 0; const ends = Number(obj.ends) || 1; return perEnd * ends;}
+    if(p.totalScore==null){
+      const practices=getPractices(); let sumScore=0,sumArrows=0; practices.forEach(pr=>{ if(pr.totalScore!=null){ const arrows = totalArrows(pr); if(arrows>0){ sumScore+=Number(pr.totalScore); sumArrows+=arrows }}});
+      const avgPerArrow = sumArrows>0? (sumScore/sumArrows):8.0; const arrowsNow = totalArrows(p);
+      p.totalScore = arrowsNow>0? Math.round(avgPerArrow*arrowsNow): (style.value==='3d'? 0:0);
+    }
+    const arr=getPractices(); arr.push(p); savePractices(arr);
+    window.location.href='practice_detail.html?id='+p.id;
+  });
+  // attach chosen equipment snapshot if present
+  (function(){
+    const sel=document.getElementById('equipmentSetup');
+    const arr = JSON.parse(localStorage.getItem('equipmentSetups')||'[]');
+    arr.forEach(s=>{ const opt=document.createElement('option'); opt.value=s.id; opt.textContent=s.name; sel.appendChild(opt); });
+    // When saving, include snapshot (ensure listener wraps after this)
+    const saveBtn = document.getElementById('save');
+    saveBtn.addEventListener('click', ()=>{
+      // find last saved practice (just created in same handler) and attach snapshot if selected
+      const setups = JSON.parse(localStorage.getItem('equipmentSetups')||'[]');
+      const list = JSON.parse(localStorage.getItem('practices')||'[]');
+      if(!list.length) return;
+      const last = list[list.length-1];
+      const selId = Number(document.getElementById('equipmentSetup')?.value) || null;
+      if(selId){ const s = setups.find(x=>x.id===selId); if(s){ last.equipmentSetup = s; list[list.length-1]=last; localStorage.setItem('practices',JSON.stringify(list)); }}
+    });
+  })();
+  document.getElementById('pullWeather').addEventListener('click',()=>{
+    const mdl = document.createElement('div'); mdl.innerHTML = '<div class="modal fade" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Not available</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body">Pulling weather from location/time is not yet available.</div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div></div></div></div>';
+    document.body.appendChild(mdl);
+    const bsModal = new bootstrap.Modal(mdl.querySelector('.modal'));
+    bsModal.show();
+    mdl.querySelector('.modal').addEventListener('hidden.bs.modal', ()=> mdl.remove());
+  });
+  // scan file handling
+  const scanFile = document.getElementById('scanFile');
+  const scanStatus = document.getElementById('scanStatus');
+  scanFile.addEventListener('change', (ev)=>{ const f = ev.target.files && ev.target.files[0]; if(f) scanStatus.textContent = f.name; else scanStatus.textContent='No file selected'; });
+  document.getElementById('takePhoto').addEventListener('click', ()=>{
+    const mdl = document.createElement('div'); mdl.innerHTML = '<div class="modal fade" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Camera</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body">Camera not functional at this time.</div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div></div></div></div>';
+    document.body.appendChild(mdl);
+    const bsModal = new bootstrap.Modal(mdl.querySelector('.modal'));
+    bsModal.show();
+    mdl.querySelector('.modal').addEventListener('hidden.bs.modal', ()=> mdl.remove());
+  });
+
+  // scan target placeholder
+  const scanTargetBtn = document.getElementById('scanTarget');
+  if(scanTargetBtn){
+    scanTargetBtn.addEventListener('click', ()=>{
+      const mdl = document.createElement('div'); mdl.innerHTML = '<div class="modal fade" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Target Scan</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body">Target scanning is not available in this demo. Upload an image or use the camera in a real environment.</div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div></div></div></div>';
+      document.body.appendChild(mdl);
+      const bsModal = new bootstrap.Modal(mdl.querySelector('.modal'));
+      bsModal.show();
+      mdl.querySelector('.modal').addEventListener('hidden.bs.modal', ()=> mdl.remove());
+    });
+  }
+
+  // Victory preset
+  document.getElementById('fillVictory').addEventListener('click', ()=>{
+    document.getElementById('session_bow').value = 'My Bow';
+    document.getElementById('session_sight_pins').value = 3;
+    document.getElementById('session_sight_type').value = 'slider';
+    document.getElementById('session_arrow_model').value = 'Victory V-TAC';
+    document.getElementById('session_arrow_vanes').value = '4 AirRazer vanes';
+    document.getElementById('session_arrow_spine').value = '300';
+    document.getElementById('session_arrow_diameter').value = '25';
+  });
+})();
+// Catch unhandled button clicks and show error
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('button:not([data-bs-dismiss])'); 
+  if(!btn) return;
+  if(btn.onclick || btn.getAttribute('onclick')) return;
+  if(!btn.id && !btn.getAttribute('data-action')) {
+    e.preventDefault();
+    alert('This feature is not yet implemented.');
+  }
+});
+</script>
+</body>
+>>>>>>> bd8dde3f9a6c70645d940c1966abc52415c74ac7
 </html>

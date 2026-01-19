@@ -10,13 +10,27 @@
 <body>
 	<!-- Top-left back button: tries history.back(), falls back to index.html -->
 	<a class="back-btn" href="index.html" onclick="if(history.length>1){history.back();return false;}">← Back</a>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="nav nav-pills ms-auto" role="tablist">
+          <li class="nav-item"><a class="nav-link" href="index.html"><span class="nav-icon">📈</span>History</a></li>
+          <li class="nav-item"><a class="nav-link" href="AI_Coach.html"><span class="nav-icon">🤖</span>AI Coach</a></li>
+          <li class="nav-item"><a class="nav-link" href="equipment.html"><span class="nav-icon">🏹</span>Equipment</a></li>
+          <li class="nav-item"><a class="nav-link" href="statistics.html"><span class="nav-icon">📊</span>Statistics</a></li>
+          <li class="nav-item"><a class="nav-link" href="competition.html"><span class="nav-icon">🏆</span>Competition</a></li>
+          <li class="nav-item"><a class="nav-link active" href="menu.html"><span class="nav-icon">☰</span>Menu</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
-	<main class="site-main container py-4">
-		<div class="page-header">
-			<div class="container">
-				<h1>Menu</h1>
-			</div>
+	<header class="page-header">
+		<div class="container">
+			<img src="images/AIchery_logo_full_sized.png" alt="AIchery Logo" style="max-width: 150px; height: auto;">
 		</div>
+	</header>
+	<main class="site-main container py-4">
 
 		<section class="mt-3">
 			<div class="row g-3">
@@ -47,27 +61,56 @@
 			</div>
 		</section>
 
-	</main>
-
-	<!-- Bottom navigation kept simple and consistent with other pages -->
-	<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
-		<div class="container-fluid">
-			<a class="navbar-brand" href="index.html">AI Innovation</a>
-			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-				<span class="navbar-toggler-icon"></span>
-			</button>
-
-			<div class="collapse navbar-collapse" id="navbarNav">
-				<ul class="nav nav-pills ms-auto">
-					<li class="nav-item"><a class="nav-link" href="index.html"><span class="nav-icon">📈</span>History</a></li>
-					<li class="nav-item"><a class="nav-link" href="AI_Coach.html"><span class="nav-icon">🤖</span>AI Coach</a></li>
-					<li class="nav-item"><a class="nav-link" href="equipment.html"><span class="nav-icon">🏹</span>Equipment</a></li>
-					<li class="nav-item"><a class="nav-link" href="Scores.html"><span class="nav-icon">📊</span>Statistics</a></li>
-					<li class="nav-item"><a class="nav-link active" href="menu.html"><span class="nav-icon">☰</span>Menu</a></li>
+		<section class="mt-4">
+			<h5>🚀 Upcoming Features</h5>
+			<div class="card p-3">
+				<ul class="mb-0">
+					<li><strong>AI Video Analysis:</strong> Analyze form using device camera</li>
+					<li><strong>Weather Integration:</strong> Pull live weather data for practice sessions</li>
+					<li><strong>Advanced Statistics:</strong> Trend analysis and performance metrics</li>
+					<li><strong>Coach Directory:</strong> Find and connect with certified archery coaches</li>
+					<li><strong>Practice Scheduling:</strong> Calendar integration and reminders</li>
+					<li><strong>Equipment Database:</strong> Browse and compare popular archery equipment</li>
+					<li><strong>Leaderboards:</strong> Compete with other archers</li>
+					<li><strong>Export Reports:</strong> Download session data and statistics</li>
+					<li><strong>Dark Mode:</strong> Eye-friendly theme option</li>
+					<li><strong>Offline Mode:</strong> Full functionality without internet</li>
 				</ul>
 			</div>
+		</section>
+
+		<section class="mt-4">
+			<h5>About</h5>
+			<div class="card p-3">
+				<p><strong>Disclaimer:</strong> This is a prototype — any bugs are to be expected.</p>
+				<p>If you have feature requests or bug reports, <a href="mailto:you@example.com?subject=Feature%20request%20or%20bug&body=Please%20describe%20the%20issue">email me for feature requests or bug reports</a>.</p>
+				<p><em>Note:</em> yes add auto refresh</p>
+			</div>
+		</section>
+
+		<!-- Mobile preview area used when simulating mobile view -->
+		<div id="mobilePreview" class="card mt-3 p-3" style="display:none">
+			<h5 id="mpTitle">Mobile Preview</h5>
+			<div id="mpContent">Tap a bottom tab to preview its view here.</div>
 		</div>
-	</nav>
+
+	</main>
+
+	<!-- Bottom navigation: mirror other pages for consistent navigation -->
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="nav nav-pills ms-auto" role="tablist">
+          <li class="nav-item"><a class="nav-link" href="index.html"><span class="nav-icon">📈</span>History</a></li>
+          <li class="nav-item"><a class="nav-link" href="AI_Coach.html"><span class="nav-icon">🤖</span>AI Coach</a></li>
+          <li class="nav-item"><a class="nav-link" href="equipment.html"><span class="nav-icon">🏹</span>Equipment</a></li>
+		  <li class="nav-item"><a class="nav-link" href="statistics.html"><span class="nav-icon">📊</span>Statistics</a></li>
+          <li class="nav-item"><a class="nav-link" href="competition.html"><span class="nav-icon">🏆</span>Competition</a></li>
+          <li class="nav-item"><a class="nav-link active" href="menu.html"><span class="nav-icon">☰</span>Menu</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
 	<!-- Statistics preview (visual mock) -->
 	<section class="container mt-3 mb-5">
@@ -77,7 +120,7 @@
 				<div>
 					<h5>Statistics Preview</h5>
 					<p class="mb-1">Quick glance at recent form and averages.</p>
-					<a href="Scores.html" class="btn btn-sm btn-primary">Open Statistics</a>
+					<a href="statistics.html" class="btn btn-sm btn-primary">Open Statistics</a>
 				</div>
 			</div>
 		</div>
@@ -88,12 +131,61 @@
 	(function(){
 		const toggle = document.getElementById('toggleMobileView');
 		let simulated=false;
+		const mobilePreview = document.getElementById('mobilePreview');
+
+		const navLinks = Array.from(document.querySelectorAll('nav.navbar .nav-link'));
+
+		function showMobileTab(href){
+			const title = document.getElementById('mpTitle');
+			const content = document.getElementById('mpContent');
+			switch(href){
+				case 'index.html': title.textContent='History'; content.innerHTML = '<p>History preview: recent sessions and cards.</p>'; break;
+				case 'AI_Coach.html': title.textContent='AI Coach'; content.innerHTML = '<p>AI Coach preview: drills and form analysis.</p>'; break;
+				case 'equipment.html': title.textContent='Equipment'; content.innerHTML = '<p>Equipment preview: saved setups and equipment manager.</p>'; break;
+				case 'statistics.html': title.textContent='Statistics'; content.innerHTML = '<p>Statistics preview: charts and averages.</p>'; break;
+				case 'competition.html': title.textContent='Competition'; content.innerHTML = '<p>Competition preview: events and scores.</p>'; break;
+				case 'menu.html': title.textContent='Menu'; content.innerHTML = '<p>Main menu and quick actions.</p>'; break;
+				default: title.textContent='Preview'; content.innerHTML = '<p>Tap a bottom tab to preview its view here.</p>';
+			}
+		}
+
+		navLinks.forEach(a=>{
+			a.addEventListener('click', (e)=>{
+				if(!simulated) return; // only intercept when simulating
+				e.preventDefault();
+				// toggle active classes
+				navLinks.forEach(n=>n.classList.remove('active'));
+				a.classList.add('active');
+				showMobileTab(a.getAttribute('href'));
+			});
+		});
+
 		toggle.addEventListener('click',()=>{
 			simulated = !simulated;
-			if(simulated){ document.documentElement.classList.add('mobile-simulate'); toggle.textContent='Exit mobile view'; document.getElementById('m_status').textContent='Mobile view enabled (visual only)'; }
-			else { document.documentElement.classList.remove('mobile-simulate'); toggle.textContent='Switch to mobile view'; document.getElementById('m_status').textContent=''; }
+			if(simulated){
+				document.documentElement.classList.add('mobile-simulate');
+				toggle.textContent='Exit mobile view';
+				document.getElementById('m_status').textContent='Mobile view enabled (visual only)';
+				mobilePreview.style.display='block';
+				showMobileTab('index.html');
+			} else {
+				document.documentElement.classList.remove('mobile-simulate');
+				toggle.textContent='Switch to mobile view';
+				document.getElementById('m_status').textContent='';
+				mobilePreview.style.display='none';
+			}
 		});
 	})();
+	// Catch unhandled button clicks and show error
+	document.addEventListener('click', (e) => {
+		const btn = e.target.closest('button:not([data-bs-dismiss])'); 
+		if(!btn) return;
+		if(btn.onclick || btn.getAttribute('onclick')) return;
+		if(!btn.id && !btn.getAttribute('data-action')) {
+			e.preventDefault();
+			alert('This feature is not yet implemented.');
+		}
+	});
 	</script>
 </body>
 </html>

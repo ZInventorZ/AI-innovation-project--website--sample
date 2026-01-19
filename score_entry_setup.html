@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!doctype html>
 <html lang="en">
 <head>
@@ -261,4 +262,497 @@
 })();
 </script>
 </body>
+=======
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>New Score</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body>
+<!-- Top-left back button: tries history.back(), falls back to index.html -->
+<a class="back-btn" href="index.html" onclick="if(history.length>1){history.back();return false;}">← Back</a>
+<header class="page-header">
+  <div class="container">
+    <img src="images/AIchery_logo_full_sized.png" alt="AIchery Logo" style="max-width: 150px; height: auto;">
+  </div>
+</header>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="nav nav-pills ms-auto" role="tablist">
+          <li class="nav-item"><a class="nav-link active" href="index.html"><span class="nav-icon">📈</span>History</a></li>
+          <li class="nav-item"><a class="nav-link" href="AI_Coach.html"><span class="nav-icon">🤖</span>AI Coach</a></li>
+          <li class="nav-item"><a class="nav-link" href="equipment.html"><span class="nav-icon">🏹</span>Equipment</a></li>
+          <li class="nav-item"><a class="nav-link" href="statistics.html"><span class="nav-icon">📊</span>Statistics</a></li>
+          <li class="nav-item"><a class="nav-link" href="competition.html"><span class="nav-icon">🏆</span>Competition</a></li>
+          <li class="nav-item"><a class="nav-link" href="menu.html"><span class="nav-icon">☰</span>Menu</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+<main class="site-main container py-4">
+  <div class="card p-3">
+    <label class="form-label">Round Style</label>
+    <select id="roundStyle" class="form-select mb-3">
+      <option value="generic">Generic Practice</option>
+      <option value="vegas300">Vegas 300</option>
+      <option value="vegas450">Vegas 450</option>
+      <option value="nfaa5">NFAA 5-Spot</option>
+      <option value="3d">3D Shoot (score only)</option>
+    </select>
+    
+      <!-- target face preview for selected round style -->
+      <div class="d-flex align-items-center gap-2 mt-2">
+        <img id="roundStyleFace" src="images/target_standard.png" alt="Target face" style="width:56px;height:auto;border:1px solid #ccc;border-radius:4px;display:inline-block">
+        <div id="roundStyleFaceName" class="small text-muted"></div>
+      </div>
+
+    <div id="roundFields">
+        <div class="row g-2">
+        <div class="col-md-6">
+          <label class="form-label">Practice Name (choose template)</label>
+          <div class="d-flex gap-2">
+            <select id="name" class="form-select"></select>
+            <button id="btnAddTemplate" type="button" class="btn btn-outline-secondary">Save</button>
+            <button id="btnClearTemplates" type="button" class="btn btn-outline-danger">Clear</button>
+          </div>
+        </div>
+        <div class="col-12">
+          <label class="form-label">Distances (add multiple distances or use the single Distance/Ends fields below)</label>
+          <div id="distances" class="mb-2"></div>
+          <button id="addDistance" type="button" class="btn btn-sm btn-outline-primary">+ Add distance</button>
+        </div>
+        <div class="col-12"><label class="form-label">Arrows per end</label><input id="arrowCount" type="number" class="form-control"></div>
+        <div class="col-12"><label class="form-label">Ends</label><input id="ends" type="number" class="form-control"></div>
+        <div class="col-12" id="targetsContainer" style="display:none"><label class="form-label">Number of Targets</label><input id="targets" type="number" class="form-control"></div>
+        <div class="col-12"><label class="form-label">Distance (m)</label><input id="distance" type="number" class="form-control"></div>
+        <div class="col-12"><label class="form-label">Organization</label>
+          <select id="organization" class="form-select">
+            <option value="">(none)</option>
+            <option value="ASA">ASA</option>
+            <option value="NFAA">NFAA</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="col-12"><label class="form-label">Target Face</label>
+          <div class="d-flex gap-2 align-items-center">
+            <input type="hidden" id="targetFace" value="vegas_single">
+            <button id="chooseTargetFace" type="button" class="btn btn-outline-secondary d-flex align-items-center gap-2">
+              <img id="targetFacePreview" src="images/Target_images/Vegas_face_single_spot.webp" alt="target" style="width:40px;height:auto;border:1px solid #ccc;border-radius:4px;">
+              <span id="targetFaceName" class="text-start">Vegas Single Spot</span>
+            </button>
+          </div>
+        </div>
+        <div class="col-12"><label class="form-label">Total Score (optional)</label><input id="totalScore" type="number" class="form-control"></div>
+        <div class="col-12"><label class="form-label">Notes</label><input id="notes" class="form-control"></div>
+        <div class="col-12">
+          <label class="form-label">Weather</label>
+          <div class="d-flex gap-2 flex-column flex-sm-row">
+            <select id="weather" class="form-select">
+              <option value="indoor">Indoor</option>
+              <option value="outdoor">Outdoor</option>
+            </select>
+            <button id="pullWeather" type="button" class="btn btn-outline-secondary">Pull</button>
+          </div>
+        </div>
+        <div class="col-12">
+          <label class="form-label">Equipment Setup</label>
+          <select id="equipmentSetup" class="form-select">
+            <option value="">(none)</option>
+          </select>
+        </div>
+        <div class="col-12 mt-3 pt-2 border-top">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="isCompetition">
+            <label class="form-check-label" for="isCompetition">
+              <strong>Flag as Competition</strong> - Import to Competitions tab
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scan scoresheet (Collapsible) -->
+    <div class="card mt-3">
+      <div class="card-header p-3 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#scanCollapse">
+        <h5 class="mb-0" style="cursor:pointer">📸 Scan Scoresheet</h5>
+      </div>
+      <div id="scanCollapse" class="collapse" data-bs-parent=".site-main">
+        <div class="card-body p-3">
+          <div class="d-flex gap-2 align-items-center flex-column">
+            <input id="scanFile" type="file" accept="image/*,application/pdf" class="form-control w-100">
+            <div class="d-flex gap-2 w-100 flex-column flex-sm-row">
+              <button id="takePhoto" type="button" class="btn btn-outline-secondary flex-grow-1">Take picture</button>
+              <button id="scanTarget" type="button" class="btn btn-outline-secondary flex-grow-1">Scan target</button>
+            </div>
+            <div id="scanStatus" class="ms-2 text-muted w-100">No file selected</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Session equipment details (Collapsible) -->
+    <div class="card mt-3">
+      <div class="card-header p-3 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#equipmentCollapse">
+        <h5 class="mb-0" style="cursor:pointer">⚙️ Session Equipment</h5>
+      </div>
+      <div id="equipmentCollapse" class="collapse" data-bs-parent=".site-main">
+        <div class="card-body p-3">
+          <div class="row g-2">
+            <div class="col-12">
+              <label class="form-label">Bow (saved)</label>
+              <div class="d-flex gap-2 flex-column flex-sm-row">
+                <select id="session_bow_select" class="form-select"></select>
+                <button id="addEquipmentBtn" type="button" class="btn btn-outline-secondary">＋</button>
+              </div>
+            </div>
+            <div class="col-12"><label class="form-label">Sight (saved)</label>
+              <select id="session_sight_select" class="form-select"></select>
+            </div>
+            <div class="col-12"><label class="form-label">Arrows (saved)</label>
+              <select id="session_arrows_select" class="form-select"></select>
+            </div>
+
+            <div class="col-12"><label class="form-label">Bow (override)</label><input id="session_bow" class="form-control"></div>
+            <div class="col-12"><label class="form-label">Sight - Pin count</label><input id="session_sight_pins" type="number" class="form-control"></div>
+            <div class="col-12"><label class="form-label">Sight - Type</label>
+              <select id="session_sight_type" class="form-select"><option value="slider">Slider</option><option value="fixed">Fixed</option></select>
+            </div>
+            <div class="col-12"><label class="form-label">Arrow Model</label><input id="session_arrow_model" class="form-control"></div>
+            <div class="col-12"><label class="form-label">Vanes</label><input id="session_arrow_vanes" class="form-control" placeholder="e.g., 4 AirRazer"></div>
+            <div class="col-12"><label class="form-label">Spine</label><input id="session_arrow_spine" class="form-control" placeholder="e.g., 300"></div>
+            <div class="col-12"><label class="form-label">Diameter</label><input id="session_arrow_diameter" class="form-control" placeholder="e.g., 25"></div>
+          </div>
+          <div class="mt-2"><button id="fillVictory" class="btn btn-sm btn-secondary">Fill Victory V-TAC</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-3">
+      <button id="save" class="btn btn-primary w-100 mb-2">Save Round</button>
+      <a href="practice_list.html" class="btn btn-link w-100">View Practices</a>
+    </div>
+  </div>
+</main>
+
+<a class="fab" id="saveFab" href="#" title="Continue to Score Entry" onclick="document.getElementById('save').click();return false">→</a>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+(function(){
+  function getPractices(){return JSON.parse(localStorage.getItem('practices')||'[]');}
+  function savePractices(arr){localStorage.setItem('practices',JSON.stringify(arr));}
+  function getTemplates(){return JSON.parse(localStorage.getItem('practiceTemplates')||'[]');}
+  function saveTemplates(arr){localStorage.setItem('practiceTemplates',JSON.stringify(arr));}
+  const style=document.getElementById('roundStyle');
+  const map = {
+    vegas300:{ends:10,arrowCount:3,name:'Vegas 300'},
+    vegas450:{ends:15,arrowCount:3,name:'Vegas 450'},
+    nfaa5:{ends:6,arrowCount:5,name:'NFAA 5-Spot'},
+    '3d':{ends:0,arrowCount:0,name:'3D Shoot'},
+    generic:{ends:6,arrowCount:6,name:'Practice'}
+  };
+    // map round styles to target-face ids (these keys match entries in faceOptions below)
+    const faceMap = {
+      vegas300: 'vegas_3',
+      vegas450: 'vegas_3',
+      nfaa5: 'nfaa_5',
+      '3d': 'worcester',
+      generic: 'vegas_single'
+    };
+
+    // available target face options (id -> metadata)
+    const faceOptions = {
+      standard: { name: 'Metric', zones: '10 Zone', desc: 'X, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1', img: 'images/center_X_target.jpg' },
+      imperial: { name: 'Imperial', zones: '5 Zone', desc: '9, 7, 5, 3, 1', img: 'images/5_arrows_in_target_2.jpg' },
+      vegas: { name: 'Vegas', zones: '10 Zone', desc: 'X, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1', img: 'images/5_arrows_in_target.jpg' },
+      vegas_imp: { name: 'Vegas Imperial', zones: '5 Zone', desc: 'X, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1', img: 'images/5_arrows_in_target_2.jpg' },
+      worcester: { name: 'Worcester', zones: '5 Zone', desc: 'Black concentric target', img: 'images/white score-card.jpg' },
+      compound: { name: 'Compound', zones: '6 Zone', desc: 'X, 10, 9, 8, 7, 6', img: 'images/zoomed_in_center_X.jpg' },
+      fieldfita: { name: 'Field Fita', zones: '6 Zone', desc: 'X, 10, 9, 8, 7, 6', img: 'images/white score-card.jpg' },
+      '3d': { name: '3D', zones: 'score only', desc: 'Enter total points', img: 'images/white score-card.jpg' }
+      vegas_single: { name: 'Vegas Single Spot', zones: '10 Zone', desc: 'X, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1', img: 'images/Target_images/Vegas_face_single_spot.webp' },
+      vegas_3: { name: 'Vegas 3-Spot', zones: '10 Zone', desc: 'X, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1', img: 'images/Target_images/Vegas_face_3_spot.webp' },
+      nfaa_single: { name: 'NFAA Single Spot', zones: '5 Zone', desc: '9, 7, 5, 3, 1', img: 'images/Target_images/NFAA_face_single_spot.webp' },
+      nfaa_5: { name: 'NFAA 5-Spot', zones: '5 Zone', desc: '9, 7, 5, 3, 1', img: 'images/Target_images/NFAA_face_5_spot.webp' }
+    };
+  function applyPreset(){
+    const v=style.value; const p=map[v]||map.generic;
+    document.getElementById('name').value = p.name;
+    if(p.ends>0){ document.getElementById('ends').value=p.ends; document.getElementById('arrowCount').value=p.arrowCount; }
+    else { document.getElementById('ends').value=''; document.getElementById('arrowCount').value=''; }
+    if(v==='3d'){ 
+      document.getElementById('totalScore').placeholder='Enter total points (no arrows)';
+      // Show targets field, hide/disable arrow/ends fields
+      document.getElementById('targetsContainer').style.display='block';
+      document.getElementById('arrowCount').disabled=true;
+      document.getElementById('arrowCount').style.opacity='0.5';
+      document.getElementById('ends').disabled=true;
+      document.getElementById('ends').style.opacity='0.5';
+    }
+    else { 
+      document.getElementById('totalScore').placeholder='leave blank to estimate';
+      // Hide targets field, enable arrow/ends fields
+      document.getElementById('targetsContainer').style.display='none';
+      document.getElementById('arrowCount').disabled=false;
+      document.getElementById('arrowCount').style.opacity='1';
+      document.getElementById('ends').disabled=false;
+      document.getElementById('ends').style.opacity='1';
+    }
+  }
+  style.addEventListener('change',applyPreset);
+  applyPreset();
+
+    // update preview image/label for selected round style
+    function updateRoundStylePreview(){
+      const v = style.value;
+      const p = map[v] || map.generic;
+      const faceEl = document.getElementById('roundStyleFace');
+      const faceLabel = document.getElementById('roundStyleFaceName');
+      // prefer explicit selected targetFace if present, otherwise use mapping from style
+      const targetHidden = document.getElementById('targetFace');
+      const selectedFaceId = (targetHidden && targetHidden.value) ? targetHidden.value : (faceMap[v] || faceMap.generic || 'standard');
+      const faceMeta = (typeof faceOptions !== 'undefined' && faceOptions[selectedFaceId]) ? faceOptions[selectedFaceId] : null;
+      if(faceEl){ faceEl.src = faceMeta ? faceMeta.img : (faceMap[v] || faceMap.generic || ''); faceEl.alt = (p.name ? p.name + ' target face' : 'Target face'); }
+      if(faceLabel){ faceLabel.textContent = p.name ? p.name : ''; }
+      // Update chooser preview (button) to match selected face
+      const chooserImg = document.getElementById('targetFacePreview');
+      const chooserName = document.getElementById('targetFaceName');
+      if(chooserImg && faceMeta){ chooserImg.src = faceMeta.img; chooserImg.alt = faceMeta.name; }
+      if(chooserName && faceMeta){ chooserName.textContent = faceMeta.name; }
+    }
+    style.addEventListener('change', updateRoundStylePreview);
+    updateRoundStylePreview();
+
+    // Target Face chooser modal: build and open when button clicked
+    document.getElementById('chooseTargetFace')?.addEventListener('click', ()=>{
+      const mdl = document.createElement('div'); mdl.innerHTML = '<div class="modal fade" tabindex="-1"><div class="modal-dialog modal-dialog-centered modal-md"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Select Target Face</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body p-0"></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div></div></div></div>';
+      const body = mdl.querySelector('.modal-body');
+      const list = document.createElement('div'); list.className = 'list-group list-group-flush';
+      Object.keys(faceOptions).forEach(id=>{
+        const f = faceOptions[id];
+        const item = document.createElement('button'); item.type='button'; item.className='list-group-item list-group-item-action d-flex align-items-center gap-3';
+        item.innerHTML = `<img src="${f.img}" onerror="this.src='images/target_standard.png'" style="width:56px;height:auto;border-radius:6px;border:1px solid #eee"><div class="flex-grow-1 text-start"><div><strong>${f.name}</strong> <small class="text-muted">${f.zones||''}</small></div><div class="text-muted small">${f.desc||''}</div></div>`;
+        item.addEventListener('click', ()=>{
+          // set hidden input and update chooser preview + roundStyle preview
+          const hidden = document.getElementById('targetFace'); if(hidden) hidden.value = id;
+          const chooserImg = document.getElementById('targetFacePreview'); const chooserName = document.getElementById('targetFaceName');
+          if(chooserImg) chooserImg.src = f.img; if(chooserName) chooserName.textContent = f.name;
+          updateRoundStylePreview();
+          const bs = bootstrap.Modal.getInstance(mdl.querySelector('.modal'));
+          if(bs) bs.hide();
+        });
+        list.appendChild(item);
+      });
+      body.appendChild(list);
+      document.body.appendChild(mdl);
+      const bsModal = new bootstrap.Modal(mdl.querySelector('.modal'));
+      bsModal.show();
+      mdl.querySelector('.modal').addEventListener('hidden.bs.modal', ()=> mdl.remove());
+    });
+
+  // Templates and multi-distance helpers
+  const tplSelect = document.getElementById('name');
+  function populateTemplates(){ tplSelect.innerHTML=''; const opt0=document.createElement('option'); opt0.value=''; opt0.textContent='(new / none)'; tplSelect.appendChild(opt0); const tpls = getTemplates(); tpls.forEach(t=>{ const o=document.createElement('option'); o.value=t.id; o.textContent=t.name; tplSelect.appendChild(o); }); }
+
+  const distancesEl = document.getElementById('distances');
+  function addDistanceRow(d){ const div=document.createElement('div'); div.className='d-flex gap-2 align-items-center mb-2'; div.innerHTML = `<input class="form-control form-control-sm" type="number" placeholder="Distance (m)" value="${d?.distance||18}" style="width:110px"><input class="form-control form-control-sm" type="number" placeholder="Ends" value="${d?.ends||1}" style="width:90px"><input class="form-control form-control-sm" type="number" placeholder="Arrows/end" value="${d?.arrowsPerEnd||3}" style="width:110px"><button class="btn btn-sm btn-outline-danger">Remove</button>`; div.querySelector('button').addEventListener('click',()=>div.remove()); distancesEl.appendChild(div); }
+  document.getElementById('addDistance').addEventListener('click',()=> addDistanceRow());
+
+  tplSelect.addEventListener('change', function(){ const id=this.value; if(!id){ distancesEl.innerHTML=''; return; } const t = getTemplates().find(x=>String(x.id)===String(id)); if(!t) return; distancesEl.innerHTML=''; (t.distances||[]).forEach(d=>addDistanceRow(d)); document.getElementById('weather').value = t.weather || 'indoor'; document.getElementById('equipmentSetup').value = t.equipmentSetupId || ''; document.getElementById('distance').value=''; document.getElementById('arrowCount').value=''; document.getElementById('ends').value=''; });
+
+  document.getElementById('btnAddTemplate').addEventListener('click', ()=>{
+    const name = prompt('Template name:'); if(!name) return; const tpl = { id: Date.now(), name, distances: [], weather: document.getElementById('weather').value, equipmentSetupId: document.getElementById('equipmentSetup').value || '' };
+    document.querySelectorAll('#distances > div').forEach(div=>{ const inputs=div.querySelectorAll('input'); tpl.distances.push({ distance: Number(inputs[0].value)||0, ends: Number(inputs[1].value)||0, arrowsPerEnd: Number(inputs[2].value)||0 }); });
+    const arr = getTemplates(); arr.unshift(tpl); saveTemplates(arr); populateTemplates(); document.getElementById('m_status') && (document.getElementById('m_status').textContent='Template saved ✓'); setTimeout(()=>{ document.getElementById('m_status') && (document.getElementById('m_status').textContent=''); },1500);
+  });
+
+  document.getElementById('btnClearTemplates').addEventListener('click', ()=>{ if(!confirm('Clear saved templates?')) return; saveTemplates([]); populateTemplates(); document.getElementById('m_status') && (document.getElementById('m_status').textContent='Templates cleared'); setTimeout(()=>{ document.getElementById('m_status') && (document.getElementById('m_status').textContent=''); },1500); });
+
+  populateTemplates();
+
+    document.getElementById('save').addEventListener('click',function(e){
+    e.preventDefault();
+    // build practice object, supporting multi-distance rows if present
+    const p = { id:Date.now(), name: (document.getElementById('name').selectedOptions ? (document.getElementById('name').selectedOptions[0].textContent||'') : document.getElementById('name').value) || map[style.value].name, distances: null, endCount: 0, arrowCount:0, ends:0, distance:0, totalScore:(function(){const v=document.getElementById('totalScore').value; return v!==''?Number(v):null})(), notes:document.getElementById('notes').value||'', weather: document.getElementById('weather')? document.getElementById('weather').value : null, equipmentSetupId: (function(){const v=document.getElementById('equipmentSetup')?.value; return v? Number(v): null})(), equipmentSetup: null, sessionEquipment: { bow: document.getElementById('session_bow')?document.getElementById('session_bow').value:null, sight: { pins: Number(document.getElementById('session_sight_pins')?.value)||0, type: document.getElementById('session_sight_type')?.value||null }, arrow: { model: document.getElementById('session_arrow_model')?.value||null, vanes: document.getElementById('session_arrow_vanes')?.value||null, spine: document.getElementById('session_arrow_spine')?.value||null, diameter: document.getElementById('session_arrow_diameter')?.value||null } }, created:new Date().toISOString(), organization: (document.getElementById('organization')?.value) || null, targetFace: (document.getElementById('targetFace')?.value) || null };
+    // if distances rows exist, use them
+    const rows = document.querySelectorAll('#distances > div');
+    if(rows && rows.length){ p.distances = []; rows.forEach(div=>{ const inputs = div.querySelectorAll('input'); p.distances.push({ distance: Number(inputs[0].value)||0, ends: Number(inputs[1].value)||0, arrowsPerEnd: Number(inputs[2].value)||0 }); });
+      // compute simple summary fields
+      let totalArrows=0; p.distances.forEach(d=> totalArrows += (d.ends||0)*(d.arrowsPerEnd||0)); p.totalArrows = totalArrows; }
+    else {
+      p.endCount = Number(document.getElementById('arrowCount').value)||0;
+      p.arrowCount = Number(document.getElementById('arrowCount').value)||0;
+      p.ends = Number(document.getElementById('ends').value)||0;
+      p.distance = Number(document.getElementById('distance').value)||0;
+    }
+    // compute totalScore if blank (same logic as new_practice)
+    function totalArrows(obj){const perEnd = Number(obj.endCount) || Number(obj.arrowCount) || 0; const ends = Number(obj.ends) || 1; return perEnd * ends;}
+    if(p.totalScore==null){
+      const practices=getPractices(); let sumScore=0,sumArrows=0; practices.forEach(pr=>{ if(pr.totalScore!=null){ const arrows = totalArrows(pr); if(arrows>0){ sumScore+=Number(pr.totalScore); sumArrows+=arrows }}});
+      const avgPerArrow = sumArrows>0? (sumScore/sumArrows):8.0; const arrowsNow = totalArrows(p);
+      p.totalScore = arrowsNow>0? Math.round(avgPerArrow*arrowsNow): (style.value==='3d'? 0:0);
+    }
+    
+    // Check if flagged as competition
+    const isCompetition = document.getElementById('isCompetition')?.checked;
+    if(isCompetition){
+      // Create a competition entry
+      const place = prompt('Enter placement (1st, 2nd, etc):') || '';
+      const compComments = prompt('Any notes for this competition?') || '';
+      const comp = {
+        id: Date.now(),
+        name: p.name || 'Practice Competition',
+        score: p.totalScore || 0,
+        xCount: 0,
+        place: place,
+        distance: p.distance || 0,
+        date: p.created,
+        created: new Date().toISOString(),
+        practiceId: p.id,
+        comments: compComments,
+        organization: p.organization || '',
+        style: style.value
+      };
+      const comps = JSON.parse(localStorage.getItem('competitions')||'[]');
+      comps.push(comp);
+      localStorage.setItem('competitions', JSON.stringify(comps));
+    }
+    
+    const arr=getPractices(); arr.push(p); savePractices(arr);
+    window.location.href='score_entry.html?id='+p.id;
+  });
+  // attach chosen equipment snapshot if present
+  (function(){
+    const sel=document.getElementById('equipmentSetup');
+    const arr = JSON.parse(localStorage.getItem('equipmentSetups')||'[]');
+    arr.forEach(s=>{ const opt=document.createElement('option'); opt.value=s.id; opt.textContent=s.name; sel.appendChild(opt); });
+
+    // Populate session equipment selects (bow, sight, arrows) from equipmentSetups
+    function populateEquipmentSelects(){
+      const setups = JSON.parse(localStorage.getItem('equipmentSetups')||'[]');
+      const bowSel = document.getElementById('session_bow_select');
+      const sightSel = document.getElementById('session_sight_select');
+      const arrowsSel = document.getElementById('session_arrows_select');
+      if(!bowSel || !sightSel || !arrowsSel) return;
+      bowSel.innerHTML = '<option value="">(none)</option>';
+      sightSel.innerHTML = '<option value="">(none)</option>';
+      arrowsSel.innerHTML = '<option value="">(none)</option>';
+      setups.forEach(su=>{
+        const o = document.createElement('option'); o.value = su.id; o.textContent = su.name;
+        if(su.type==='bow') bowSel.appendChild(o.cloneNode(true));
+        if(su.type==='sight') sightSel.appendChild(o.cloneNode(true));
+        if(su.type==='arrows') arrowsSel.appendChild(o.cloneNode(true));
+      });
+    }
+
+    populateEquipmentSelects();
+
+    // Auto-refresh equipment selects when the page regains focus or storage changes
+    window.addEventListener('focus', populateEquipmentSelects);
+    window.addEventListener('storage', (e)=>{ if(e.key==='equipmentSetups') populateEquipmentSelects(); });
+
+    // When a saved equipment is chosen, populate the session fields with its snapshot
+    function applyEquipmentToSession(setupId){
+      const setups = JSON.parse(localStorage.getItem('equipmentSetups')||'[]');
+      const s = setups.find(x=>String(x.id)===String(setupId));
+      if(!s) return;
+      if(s.type==='bow'){
+        if(s.data && s.data.drawWeight) document.getElementById('session_bow').value = s.name + (s.data.drawWeight?(' - '+s.data.drawWeight+' lbs'):'');
+        else document.getElementById('session_bow').value = s.name;
+      }
+      if(s.type==='sight'){
+        // approximate: if pins saved, set sight pins and type
+        if(Array.isArray(s.data?.pins) && s.data.pins.length){
+          document.getElementById('session_sight_pins').value = s.data.pins.length;
+        }
+        if(s.data?.sightType) document.getElementById('session_sight_type').value = s.data.sightType;
+      }
+      if(s.type==='arrows'){
+        if(s.data?.material) document.getElementById('session_arrow_model').value = s.data.material;
+        if(s.data?.vanes) document.getElementById('session_arrow_vanes').value = s.data.vanes;
+        if(s.data?.spine) document.getElementById('session_arrow_spine').value = s.data.spine;
+        if(s.data?.diameter) document.getElementById('session_arrow_diameter').value = s.data.diameter;
+      }
+    }
+
+    document.getElementById('session_bow_select')?.addEventListener('change', (e)=>{ applyEquipmentToSession(e.target.value); });
+    document.getElementById('session_sight_select')?.addEventListener('change', (e)=>{ applyEquipmentToSession(e.target.value); });
+    document.getElementById('session_arrows_select')?.addEventListener('change', (e)=>{ applyEquipmentToSession(e.target.value); });
+
+    // Add button opens equipment management page (user can add new setup there)
+    document.getElementById('addEquipmentBtn')?.addEventListener('click', ()=>{ window.location.href='equipment.html'; });
+
+    // When saving, include snapshot (ensure listener wraps after this)
+    const saveBtn = document.getElementById('save');
+    saveBtn.addEventListener('click', ()=>{
+      // find last saved practice (just created in same handler) and attach snapshot if selected
+      const setups = JSON.parse(localStorage.getItem('equipmentSetups')||'[]');
+      const list = JSON.parse(localStorage.getItem('practices')||'[]');
+      if(!list.length) return;
+      const last = list[list.length-1];
+      const selId = Number(document.getElementById('equipmentSetup')?.value) || null;
+      if(selId){ const s = setups.find(x=>x.id===selId); if(s){ last.equipmentSetup = s; list[list.length-1]=last; localStorage.setItem('practices',JSON.stringify(list)); }}
+    });
+  })();
+  document.getElementById('pullWeather').addEventListener('click',()=>{
+    const mdl = document.createElement('div'); mdl.innerHTML = '<div class="modal fade" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Not available</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body">Pulling weather from location/time is not yet available.</div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div></div></div></div>';
+    document.body.appendChild(mdl);
+    const bsModal = new bootstrap.Modal(mdl.querySelector('.modal'));
+    bsModal.show();
+    mdl.querySelector('.modal').addEventListener('hidden.bs.modal', ()=> mdl.remove());
+  });
+  // scan file handling
+  const scanFile = document.getElementById('scanFile');
+  const scanStatus = document.getElementById('scanStatus');
+  scanFile.addEventListener('change', (ev)=>{ const f = ev.target.files && ev.target.files[0]; if(f) scanStatus.textContent = f.name; else scanStatus.textContent='No file selected'; });
+  document.getElementById('takePhoto').addEventListener('click', ()=>{
+    const mdl = document.createElement('div'); mdl.innerHTML = '<div class="modal fade" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Camera</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body">Camera not functional at this time.</div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div></div></div></div>';
+    document.body.appendChild(mdl);
+    const bsModal = new bootstrap.Modal(mdl.querySelector('.modal'));
+    bsModal.show();
+    mdl.querySelector('.modal').addEventListener('hidden.bs.modal', ()=> mdl.remove());
+  });
+
+  // scan target placeholder
+  const scanTargetBtn = document.getElementById('scanTarget');
+  if(scanTargetBtn){
+    scanTargetBtn.addEventListener('click', ()=>{
+      const mdl = document.createElement('div'); mdl.innerHTML = '<div class="modal fade" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Target Scan</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body">Target scanning is not available in this demo. Upload an image or use the camera in a real environment.</div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div></div></div></div>';
+      document.body.appendChild(mdl);
+      const bsModal = new bootstrap.Modal(mdl.querySelector('.modal'));
+      bsModal.show();
+      mdl.querySelector('.modal').addEventListener('hidden.bs.modal', ()=> mdl.remove());
+    });
+  }
+
+  // Victory preset
+  document.getElementById('fillVictory').addEventListener('click', ()=>{
+    document.getElementById('session_bow').value = 'My Bow';
+    document.getElementById('session_sight_pins').value = 3;
+    document.getElementById('session_sight_type').value = 'slider';
+    document.getElementById('session_arrow_model').value = 'Victory V-TAC';
+    document.getElementById('session_arrow_vanes').value = '4 AirRazer vanes';
+    document.getElementById('session_arrow_spine').value = '300';
+    document.getElementById('session_arrow_diameter').value = '25';
+  });
+})();
+// Catch unhandled button clicks and show error
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('button:not([data-bs-dismiss])'); 
+  if(!btn) return;
+  if(btn.onclick || btn.getAttribute('onclick')) return;
+  if(!btn.id && !btn.getAttribute('data-action')) {
+    e.preventDefault();
+    alert('This feature is not yet implemented.');
+  }
+});
+</script>
+</body>
+>>>>>>> bd8dde3f9a6c70645d940c1966abc52415c74ac7
 </html>

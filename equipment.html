@@ -11,18 +11,37 @@
 <body>
 	<!-- Top-left back button: tries history.back(), falls back to index.html -->
 	<a class="back-btn" href="index.html" onclick="if(history.length>1){history.back();return false;}">← Back</a>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="nav nav-pills ms-auto" role="tablist">
+          <li class="nav-item"><a class="nav-link" href="index.html"><span class="nav-icon">📈</span>History</a></li>
+          <li class="nav-item"><a class="nav-link" href="AI_Coach.html"><span class="nav-icon">🤖</span>AI Coach</a></li>
+          <li class="nav-item"><a class="nav-link active" href="equipment.html"><span class="nav-icon">🏹</span>Equipment</a></li>
+          <li class="nav-item"><a class="nav-link" href="statistics.html"><span class="nav-icon">📊</span>Statistics</a></li>
+          <li class="nav-item"><a class="nav-link" href="competition.html"><span class="nav-icon">🏆</span>Competition</a></li>
+          <li class="nav-item"><a class="nav-link" href="menu.html"><span class="nav-icon">☰</span>Menu</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+	<header class="page-header">
+		<div class="container">
+			<img src="images/AIchery_logo_full_sized.png" alt="AIchery Logo" style="max-width: 150px; height: auto;">
+		</div>
+	</header>
 	<main class="container py-4">
-		<h1>Equipment Setup</h1>
+		<h2>Equipment Setup</h2>
 		<!-- Page purpose: create and persist equipment setups (arrows, sight, bow)
 		     Saved setups stored in localStorage under key 'equipmentSetups'.
 		     Edit the UI templates below to add/remove fields. -->
 		<p class="text-muted">Create and save equipment setups for quick use.</p>
 
 		<!-- Buttons to choose equipment category -->
-		<div class="btn-group mb-3" role="group" aria-label="Equipment type">
-			<button id="btnArrows" class="btn btn-outline-primary">Arrows</button>
-			<button id="btnSight" class="btn btn-outline-primary">Sight</button>
-			<button id="btnBow" class="btn btn-outline-primary">Bow</button>
+		<div class="d-flex gap-2 mb-3 flex-wrap">
+			<button id="btnArrows" class="btn btn-outline-primary flex-grow-1">Arrows</button>
+			<button id="btnSight" class="btn btn-outline-primary flex-grow-1">Sight</button>
+			<button id="btnBow" class="btn btn-outline-primary flex-grow-1">Bow</button>
 		</div>
 
 		<!-- Setup form: fields change depending on selected type -->
@@ -37,45 +56,66 @@
 				<div id="dynamicFields"></div>
 			</form>
 
-			<div class="mt-3 d-flex gap-2">
-				<button id="saveSetup" class="btn btn-success">Save Setup</button>
-				<button id="previewSetup" class="btn btn-secondary">Preview</button>
-				<button id="clearSetup" class="btn btn-outline-danger">Clear</button>
+			<div class="mt-3 d-flex gap-2 flex-column flex-sm-row">
+				<button id="saveEquipment" class="btn btn-success flex-grow-1">Save Equipment</button>
+				<button id="previewSetup" class="btn btn-secondary flex-grow-1">Preview</button>
+				<button id="clearSetup" class="btn btn-outline-danger flex-grow-1">Clear</button>
 			</div>
 		</div>
 
 		<!-- Preview / saved list -->
-		<div class="row">
-			<div class="col-md-6">
-				<h5>Saved Setups</h5>
-				<ul id="savedList" class="list-group"></ul>
+			<div class="row g-3">
+				<div class="col-12">
+					<h5>Saved Equipment</h5>
+					<ul id="savedList" class="list-group"></ul>
+				</div>
+				<div class="col-12">
+					<h5>Preview</h5>
+					<pre id="preview" class="p-2 bg-light border" style="white-space:pre-wrap"></pre>
+				</div>
 			</div>
-			<div class="col-md-6">
-				<h5>Preview</h5>
-				<pre id="preview" class="p-2 bg-light border" style="white-space:pre-wrap"></pre>
+
+			<!-- Section: Setups (bow + sight + arrows) (Collapsible) -->
+			<div class="card mt-3">
+				<div class="card-header p-3 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#setupsCollapse">
+					<h5 class="mb-0" style="cursor:pointer">🎯 Combined Setups (Bow + Sight + Arrows)</h5>
+				</div>
+				<div id="setupsCollapse" class="collapse show" data-bs-parent=".site-main">
+					<div class="card-body p-3">
+				<div class="row g-2 align-items-center">
+					<div class="col-12"><label class="form-label">Bow</label><select id="combo_bow" class="form-select"></select></div>
+					<div class="col-12"><label class="form-label">Sight</label><select id="combo_sight" class="form-select"></select></div>
+					<div class="col-12"><label class="form-label">Arrows</label><select id="combo_arrows" class="form-select"></select></div>
+					<div class="col-12 mt-2 d-flex gap-2 flex-column flex-sm-row">
+						<input id="comboName" class="form-control" placeholder="Setup name (e.g. 'Competition Setup')" />
+						<button id="saveCombo" class="btn btn-primary">Save Setup</button>
+					</div>
+				</div>
+				<div class="mt-3">
+					<h6>Saved Setups</h6>
+					<ul id="savedCombos" class="list-group"></ul>
+				</div>
+					</div>
+				</div>
 			</div>
-		</div>
 
 	</main>
 
 	<!-- Bottom navigation: mirror other pages for consistent navigation -->
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
-		<div class="container-fluid">
-			<a class="navbar-brand" href="index.html">AI Innovation</a>
-			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-				<span class="navbar-toggler-icon"></span>
-			</button>
-			<div class="collapse navbar-collapse" id="navbarNav">
-				<ul class="nav nav-pills ms-auto" role="tablist">
-					<li class="nav-item" role="presentation"><a class="nav-link" href="index.html"><span class="nav-icon">📈</span>History</a></li>
-					<li class="nav-item" role="presentation"><a class="nav-link" href="AI_Coach.html"><span class="nav-icon">🤖</span>AI Coach</a></li>
-					<li class="nav-item" role="presentation"><a class="nav-link active" href="equipment.html"><span class="nav-icon">🏹</span>Equipment</a></li>
-					<li class="nav-item" role="presentation"><a class="nav-link" href="Scores.html"><span class="nav-icon">📊</span>Statistics</a></li>
-					<li class="nav-item" role="presentation"><a class="nav-link" href="menu.html"><span class="nav-icon">☰</span>Menu</a></li>
-				</ul>
-			</div>
-		</div>
-	</nav>
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="nav nav-pills ms-auto" role="tablist">
+          <li class="nav-item"><a class="nav-link" href="index.html"><span class="nav-icon">📈</span>History</a></li>
+          <li class="nav-item"><a class="nav-link" href="AI_Coach.html"><span class="nav-icon">🤖</span>AI Coach</a></li>
+          <li class="nav-item"><a class="nav-link active" href="equipment.html"><span class="nav-icon">🏹</span>Equipment</a></li>
+		  <li class="nav-item"><a class="nav-link" href="statistics.html"><span class="nav-icon">📊</span>Statistics</a></li>
+          <li class="nav-item"><a class="nav-link" href="competition.html"><span class="nav-icon">🏆</span>Competition</a></li>
+          <li class="nav-item"><a class="nav-link" href="menu.html"><span class="nav-icon">☰</span>Menu</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 	<script>
@@ -91,7 +131,7 @@
 		const btnSight = document.getElementById('btnSight');
 		const btnBow = document.getElementById('btnBow');
 		const dynamic = document.getElementById('dynamicFields');
-		const saveBtn = document.getElementById('saveSetup');
+		const saveBtn = document.getElementById('saveEquipment');
 		const previewBtn = document.getElementById('previewSetup');
 		const clearBtn = document.getElementById('clearSetup');
 		const savedList = document.getElementById('savedList');
@@ -106,22 +146,33 @@
 
 		// Render saved setups
 		function renderSaved(){ savedList.innerHTML=''; const arr=getSetups(); arr.forEach(s=>{ const li=document.createElement('li'); li.className='list-group-item d-flex justify-content-between align-items-start'; li.innerHTML = `<div><strong>${s.name}</strong><div class="small text-muted">${s.type}</div></div><div class="btn-group btn-group-sm"><button data-id="${s.id}" class="btn btn-outline-primary load">Load</button><button data-id="${s.id}" class="btn btn-outline-danger del">Delete</button></div>`; savedList.appendChild(li); });
-			// hook events
-			Array.from(savedList.querySelectorAll('.load')).forEach(b=>b.addEventListener('click',e=>{ const id=Number(e.target.dataset.id); const s=getSetups().find(x=>x.id===id); if(s){ loadSetup(s); preview.textContent = JSON.stringify(s, null, 2); } }));
-			Array.from(savedList.querySelectorAll('.del')).forEach(b=>b.addEventListener('click',e=>{ const id=Number(e.target.dataset.id); const arr=getSetups().filter(x=>x.id!==id); saveSetups(arr); renderSaved(); }));
+				// hook events
+				Array.from(savedList.querySelectorAll('.load')).forEach(b=>b.addEventListener('click',e=>{ const id=Number(e.target.dataset.id); const s=getSetups().find(x=>x.id===id); if(s){ loadSetup(s); preview.textContent = JSON.stringify(s, null, 2); // highlight selection
+					Array.from(savedList.children).forEach(li=>li.classList.remove('active'));
+					e.target.closest('li').classList.add('active'); } }));
+				Array.from(savedList.querySelectorAll('.del')).forEach(b=>b.addEventListener('click',e=>{ const id=Number(e.target.dataset.id); const arr=getSetups().filter(x=>x.id!==id); saveSetups(arr); renderSaved(); }));
 		}
 
 		// Build field templates per type
 		function showArrows(){
 			currentType='arrows';
+			setActiveTypeButton('arrows');
 			dynamic.innerHTML = `
 				<!-- Arrow fields: length, fletch type, fletch count, material, diameter, spine, weight -->
 				<div class="row g-2">
-					<div class="col-6"><label class="form-label">Length (mm)</label><input name="length" class="form-control" type="number"/></div>
+					<div class="col-6"><label class="form-label">Length (in)</label><input name="length" class="form-control" type="number" step="0.1"/></div>
 					<div class="col-6"><label class="form-label">Fletch Type</label><input name="fletchType" class="form-control" placeholder="e.g. plastic vanes"/></div>
 					<div class="col-6"><label class="form-label">Fletch Count</label><input name="fletchCount" class="form-control" type="number"/></div>
-					<div class="col-6"><label class="form-label">Material</label><input name="material" class="form-control" placeholder="carbon/alu/wood"/></div>
-					<div class="col-6"><label class="form-label">Diameter (mm)</label><input name="diameter" class="form-control" type="number" step="0.1"/></div>
+					<div class="col-6"><label class="form-label">Material</label>
+						<select name="material" class="form-select">
+							<option value="fiberglass">Fiberglass</option>
+							<option value="carbon">Carbon</option>
+							<option value="aluminum">Aluminum</option>
+							<option value="wood">Wood</option>
+							<option value="custom">Custom</option>
+						</select>
+					</div>
+					<div class="col-6"><label class="form-label">Diameter (in)</label><input name="diameter" class="form-control" type="number" step="0.01"/></div>
 					<div class="col-6"><label class="form-label">Spine</label><input name="spine" class="form-control" placeholder="e.g. 500"/></div>
 					<div class="col-6"><label class="form-label">Weight (gr)</label><input name="weight" class="form-control" type="number" step="0.1"/></div>
 				</div>`;
@@ -129,11 +180,12 @@
 
 		function showBow(){
 			currentType='bow';
+			setActiveTypeButton('bow');
 			dynamic.innerHTML = `
 				<div class="row g-2">
 					<div class="col-6"><label class="form-label">Bow Type</label><input name="bowType" class="form-control" placeholder="recurve/compound"/></div>
 					<div class="col-6"><label class="form-label">Draw Weight (lbs)</label><input name="drawWeight" class="form-control" type="number"/></div>
-					<div class="col-6"><label class="form-label">Riser Length (mm)</label><input name="riserLength" class="form-control" type="number"/></div>
+					<div class="col-6"><label class="form-label">Riser Length (in)</label><input name="riserLength" class="form-control" type="number" step="0.1"/></div>
 					<div class="col-6"><label class="form-label">Limb Material</label><input name="limbMaterial" class="form-control"/></div>
 					<div class="col-12"><label class="form-label">Notes</label><textarea name="bowNotes" class="form-control" rows="2"></textarea></div>
 				</div>`;
@@ -141,6 +193,7 @@
 
 		function showSight(){
 			currentType='sight';
+			setActiveTypeButton('sight');
 			dynamic.innerHTML = `
 				<div class="row g-2">
 					<div class="col-6"><label class="form-label">Sight Type</label><input name="sightType" class="form-control" placeholder="single-pin / multi-pin"/></div>
@@ -165,6 +218,14 @@
 				lensToggle.addEventListener('change',()=>{ lensFields.style.display = lensToggle.checked ? 'block' : 'none'; });
 				document.getElementById('addPin').addEventListener('click', addPin);
 			},0);
+		}
+
+		function setActiveTypeButton(type){
+			['arrows','sight','bow'].forEach(t=>{
+				const btn = t==='arrows'?btnArrows:(t==='sight'?btnSight:btnBow);
+				if(!btn) return;
+				btn.classList.toggle('active', t===type);
+			});
 		}
 
 		// Add a new pin entry to the pinsContainer. Each pin records color + distance.
@@ -192,10 +253,48 @@
 				data.pins = Array.from(dynamic.querySelectorAll('.pin-line')).map(pl=>({ color: pl.querySelector('[name="pinColor"]').value, distance: pl.querySelector('[name="pinDistance"]').value })); }
 			return data; }
 
+
+		// Validation: ensure numeric fields are realistic
+		function clearFieldErrors(){ Array.from(dynamic.querySelectorAll('.field-error')).forEach(e=>e.remove()); }
+		function showFieldError(el, msg){ if(!el) return; const ex = document.createElement('div'); ex.className='form-text text-danger field-error'; ex.textContent = msg; el.insertAdjacentElement('afterend', ex); }
+		function validateData(data){ clearFieldErrors(); const errs = [];
+			if(currentType==='arrows'){
+				const length = parseFloat(data.length||0);
+				if(isNaN(length) || length < 10 || length > 40){ const el = dynamic.querySelector('[name="length"]'); showFieldError(el,'Length must be 10–40 in'); errs.push('length'); }
+				const fcount = parseInt(data.fletchCount||0);
+				if(isNaN(fcount) || fcount < 0 || fcount > 10){ const el = dynamic.querySelector('[name="fletchCount"]'); showFieldError(el,'Fletch count 0–10'); errs.push('fletchCount'); }
+				const diam = parseFloat(data.diameter||0);
+				if(isNaN(diam) || diam < 0.02 || diam > 1.0){ const el = dynamic.querySelector('[name="diameter"]'); showFieldError(el,'Diameter must be 0.02–1.0 in'); errs.push('diameter'); }
+				const spine = Number(data.spine||0);
+				if(data.spine && (spine < 200 || spine > 1500)){ const el = dynamic.querySelector('[name="spine"]'); showFieldError(el,'Spine typically 200–1500'); errs.push('spine'); }
+				const weight = parseFloat(data.weight||0);
+				if(isNaN(weight) || weight < 20 || weight > 1000){ const el = dynamic.querySelector('[name="weight"]'); showFieldError(el,'Weight must be 20–1000 gr'); errs.push('weight'); }
+			}
+			if(currentType==='bow'){
+				const riser = parseFloat(data.riserLength||0);
+				if(isNaN(riser) || riser < 8 || riser > 40){ const el = dynamic.querySelector('[name="riserLength"]'); showFieldError(el,'Riser length must be 8–40 in'); errs.push('riserLength'); }
+				const draw = parseFloat(data.drawWeight||0);
+				if(isNaN(draw) || draw < 12 || draw > 80){ const el = dynamic.querySelector('[name="drawWeight"]'); showFieldError(el,'Draw weight must be 12–80 lbs'); errs.push('drawWeight'); }
+			}
+			if(currentType==='sight'){
+				Array.from(dynamic.querySelectorAll('[name="pinDistance"]')).forEach(el=>{
+					const v = parseFloat(el.value||0);
+					if(isNaN(v) || v < 1 || v > 200){ showFieldError(el,'Pin distance must be 1–200 yd'); errs.push('pinDistance'); }
+				});
+			}
+			return errs.length===0;
+		}
+
 		// Save setup
 		saveBtn.addEventListener('click', ()=>{
-			const name = setupName.value.trim() || (currentType+' setup ' + new Date().toLocaleString());
-			const obj = { id: Date.now(), name, type: currentType, data: gatherData() };
+			const name = setupName.value.trim() || (currentType+' equipment ' + new Date().toLocaleString());
+			const data = gatherData();
+			// validate
+			if(!validateData(data)){
+				const firstErr = dynamic.querySelector('.field-error'); if(firstErr) firstErr.previousElementSibling?.focus();
+				return;
+			}
+			const obj = { id: Date.now(), name, type: currentType, data: data };
 			const arr = getSetups(); arr.push(obj); saveSetups(arr); renderSaved();
 			preview.textContent = JSON.stringify(obj, null, 2);
 		});
@@ -208,9 +307,97 @@
 		btnSight.addEventListener('click', ()=>{ showSight(); });
 		btnBow.addEventListener('click', ()=>{ showBow(); });
 
-		// init
+		// init - load pre-loaded setups if first time
+		function initializeDefaultSetups(){
+			const existing = getSetups();
+			if(existing.length === 0){
+				const defaults = [
+					{
+						id: 1,
+						name: "Prime Ronan",
+						type: "bow",
+						data: {
+							bowType: "compound",
+							drawWeight: "55",
+							riserLength: "29.5",
+							limbMaterial: "",
+							bowNotes: "Prime Ronan - Main bow"
+						}
+					},
+					{
+						id: 2,
+						name: "My Arrows",
+						type: "arrows",
+						data: {
+							length: "30",
+							fletchType: "Airrazr vanes",
+							fletchCount: "4",
+							material: "carbon",
+							diameter: "0.25",
+							spine: "",
+							weight: ""
+						}
+					},
+					{
+						id: 3,
+						name: "Redline RL-3",
+						type: "sight",
+						data: {
+							sightType: "multi-pin",
+							hasLens: false,
+							lensPower: "",
+							clarifier: "",
+							pins: [
+								{ color: "#FF0000", distance: "20" },
+								{ color: "#FFA500", distance: "30" },
+								{ color: "#FFFF00", distance: "40" },
+								{ color: "#00FF00", distance: "50" }
+							]
+						}
+					}
+				];
+				saveSetups(defaults);
+			}
+		}
+		initializeDefaultSetups();
 		showArrows(); renderSaved();
+			// populate combo selects and saved combos
+			function getCombos(){ return JSON.parse(localStorage.getItem('setups')||'[]'); }
+			function saveCombos(arr){ localStorage.setItem('setups', JSON.stringify(arr)); }
+
+			function populateComboSelects(){ const setups = getSetups(); const bowSel=document.getElementById('combo_bow'); const sightSel=document.getElementById('combo_sight'); const arrowsSel=document.getElementById('combo_arrows'); if(!bowSel) return; bowSel.innerHTML=''; sightSel.innerHTML=''; arrowsSel.innerHTML=''; setups.forEach(s=>{ const o=document.createElement('option'); o.value=s.id; o.textContent=s.name; if(s.type==='bow') bowSel.appendChild(o); if(s.type==='sight') sightSel.appendChild(o); if(s.type==='arrows') arrowsSel.appendChild(o); }); }
+
+			function renderCombos(){ const list=document.getElementById('savedCombos'); if(!list) return; list.innerHTML=''; const arr=getCombos(); arr.forEach(c=>{ const li=document.createElement('li'); li.className='list-group-item d-flex justify-content-between align-items-start'; li.innerHTML=`<div><strong>${c.name}</strong><div class="small text-muted">Bow:${c.bowName||'(none)'} • Sight:${c.sightName||'(none)'} • Arrows:${c.arrowsName||'(none)'}</div></div><div class="btn-group btn-group-sm"><button data-id="${c.id}" class="btn btn-outline-primary load-combo">Load</button><button data-id="${c.id}" class="btn btn-outline-danger del-combo">Delete</button></div>`; list.appendChild(li); });
+				Array.from(list.querySelectorAll('.load-combo')).forEach(b=>b.addEventListener('click', e=>{ const id=Number(e.target.dataset.id); const c = getCombos().find(x=>x.id===id); if(c){ document.getElementById('comboName').value = c.name; document.getElementById('combo_bow').value = c.bowId || ''; document.getElementById('combo_sight').value = c.sightId || ''; document.getElementById('combo_arrows').value = c.arrowsId || ''; preview.textContent = JSON.stringify(c, null, 2); Array.from(list.children).forEach(li=>li.classList.remove('active')); e.target.closest('li').classList.add('active'); } }));
+				Array.from(list.querySelectorAll('.del-combo')).forEach(b=>b.addEventListener('click', e=>{ const id=Number(e.target.dataset.id); const arr=getCombos().filter(x=>x.id!==id); saveCombos(arr); renderCombos(); })); }
+
+			populateComboSelects(); renderCombos();
+
+			// save combo handler
+			document.getElementById('saveCombo')?.addEventListener('click', ()=>{
+				const bowId = document.getElementById('combo_bow')?.value || null;
+				const sightId = document.getElementById('combo_sight')?.value || null;
+				const arrowsId = document.getElementById('combo_arrows')?.value || null;
+				const name = document.getElementById('comboName')?.value.trim() || ('Setup '+ new Date().toLocaleString());
+				const setups = getSetups(); const bow = setups.find(s=>String(s.id)===String(bowId)); const sight = setups.find(s=>String(s.id)===String(sightId)); const arrows = setups.find(s=>String(s.id)===String(arrowsId));
+				const combo = { id: Date.now(), name, bowId: bowId, sightId: sightId, arrowsId: arrowsId, bowName: bow?.name, sightName: sight?.name, arrowsName: arrows?.name };
+				const arr = getCombos(); arr.push(combo); saveCombos(arr); renderCombos(); showPreview(combo);
+			});
+
+			function showPreview(obj){ document.getElementById('preview').textContent = JSON.stringify(obj, null, 2); }
 	})();
+	</script>
+	<script>
+		// Catch unhandled button clicks and show error
+		document.addEventListener('click', (e) => {
+			const btn = e.target.closest('button:not([data-bs-dismiss])'); 
+			if(!btn) return;
+			if(btn.onclick || btn.getAttribute('onclick')) return;
+			if(!btn.id && !btn.getAttribute('data-action')) {
+				e.preventDefault();
+				alert('This feature is not yet implemented.');
+			}
+		});
 	</script>
 </body>
 </html>
