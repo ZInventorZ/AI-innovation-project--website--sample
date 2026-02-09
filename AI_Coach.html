@@ -6,6 +6,145 @@
 	<title>AI Innovation Project - AI Coach</title>
 	<link rel="stylesheet" href="style.css">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+	<style>
+		.coach-card {
+			border: none;
+			border-left: 4px solid var(--accent);
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+			transition: transform 0.2s, box-shadow 0.2s;
+			margin-bottom: 1.5rem;
+		}
+		.coach-card:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+		}
+		.coach-card .card-header {
+			border-color: transparent;
+			border-radius: 0;
+			padding: 1rem 1.25rem;
+			font-weight: 600;
+			letter-spacing: 0.5px;
+		}
+		.btn-objective {
+			border-radius: 20px;
+			padding: 0.6rem 1.5rem;
+			font-weight: 500;
+			transition: all 0.3s ease;
+			border: 2px solid rgba(255, 193, 7, 0.3);
+		}
+		.btn-objective.active {
+			background: linear-gradient(135deg, #FFC107 0%, #FF9800 100%);
+			color: white;
+			border-color: transparent;
+			box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4);
+		}
+		.btn-group-custom .btn {
+			border-radius: 8px;
+			padding: 0.6rem 1.2rem;
+			font-weight: 500;
+			margin: 0.25rem;
+			flex-grow: 1;
+			transition: all 0.2s;
+		}
+		.btn-group-custom .btn.active {
+			background: var(--accent);
+			color: white;
+			border-color: var(--accent);
+			box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3);
+		}
+		.preset-btn {
+			border-radius: 12px;
+			padding: 0.8rem;
+			font-weight: 500;
+			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+			border: none;
+			color: white;
+			transition: all 0.3s;
+			box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+		}
+		.preset-btn:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+			color: white;
+		}
+		.header-gradient {
+			background: linear-gradient(135deg, var(--accent) 0%, #0052cc 100%);
+			color: white;
+			padding: 2rem 1.5rem;
+			border-radius: 12px;
+			margin-bottom: 2rem;
+		}
+		.header-gradient h2 {
+			font-weight: 700;
+			margin: 0.5rem 0 0 0;
+			letter-spacing: -0.5px;
+		}
+		.header-gradient p {
+			margin: 0.5rem 0 0 0;
+			opacity: 0.95;
+			font-size: 0.95rem;
+		}
+		.feedback-badge {
+			background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+			color: white;
+			padding: 1.5rem;
+			border-radius: 12px;
+			margin-top: 1.5rem;
+			box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+		}
+		.feedback-badge strong {
+			display: block;
+			font-size: 1.1rem;
+			margin-bottom: 0.5rem;
+		}
+		#feedback-display {
+			animation: slideDown 0.3s ease;
+		}
+		@keyframes slideDown {
+			from {
+				opacity: 0;
+				transform: translateY(-10px);
+			}
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+		.section-label {
+			font-weight: 700;
+			color: var(--accent);
+			text-transform: uppercase;
+			letter-spacing: 1px;
+			font-size: 0.85rem;
+			margin-bottom: 1rem;
+			display: block;
+		}
+		.modal-content {
+			border: none;
+			border-radius: 16px;
+			box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+		}
+		.modal-header {
+			border-bottom: none;
+			padding: 1.5rem;
+			border-radius: 16px 16px 0 0;
+		}
+		.large-btn {
+			padding: 1rem;
+			font-size: 1rem;
+			border-radius: 10px;
+			font-weight: 600;
+			transition: all 0.2s;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+		}
+		.large-btn:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+		}
+		.site-main {
+			padding-bottom: 100px;
+		}
+	</style>
 </head>
 <body>
 	<!-- Top-left back button: tries history.back(), falls back to index.html -->
@@ -36,91 +175,102 @@
   </nav>
 
 	<main class="site-main container py-4">
-		<h2>AI Coach</h2>
 		
 		<!-- DRILLS SECTION -->
-		<div class="card p-3 mb-3 border-primary">
-			<div class="card-header bg-primary text-white mb-3" style="margin:-12px -12px 0 -12px;padding:12px">
+		<div class="coach-card card">
+			<div class="card-header" style="background: linear-gradient(135deg, #FF6B6B 0%, #FF8E72 100%); color: white;">
 				<strong>⚡ Drills & Training</strong>
 			</div>
-			
-			<div class="mb-3"><strong>Training Objectives</strong></div>
-			<div class="row g-2 mb-3">
-				<div class="col-6">
-					<button id="objStrength" class="btn btn-outline-warning w-100 active" data-objective="strength">💪 Strength</button>
+			<div class="card-body">
+				<div class="mb-4">
+					<span class="section-label">Training Focus</span>
+					<div class="row g-2 mb-3">
+						<div class="col-6">
+							<button id="objStrength" class="btn btn-objective w-100 active" data-objective="strength">💪 Strength</button>
+						</div>
+						<div class="col-6">
+							<button id="objEndurance" class="btn btn-objective w-100" data-objective="endurance">🏃 Endurance</button>
+						</div>
+						<div class="col-12">
+							<button id="objConsistency" class="btn btn-objective w-100" data-objective="consistency">🎯 Consistency</button>
+						</div>
+					</div>
 				</div>
-				<div class="col-6">
-					<button id="objEndurance" class="btn btn-outline-warning w-100" data-objective="endurance">🏃 Endurance</button>
-				</div>
-				<div class="col-12">
-					<button id="objConsistency" class="btn btn-outline-warning w-100" data-objective="consistency">🎯 Consistency</button>
-				</div>
-			</div>
 
-			<div class="mb-3"><strong>Difficulty Level</strong></div>
-			<div class="btn-group mb-3 w-100" role="group">
-				<button id="diffbegin" class="btn btn-outline-info">Beginner</button>
-				<button id="diffinter" class="btn btn-outline-info active">Intermediate</button>
-				<button id="diffadv" class="btn btn-outline-info">Advanced</button>
-			</div>
-			
-			<div class="mb-3"><strong>Preset Drills</strong></div>
-			<div class="row g-2">
-				<div class="col-6">
-					<button id="presetShort" class="btn btn-sm btn-secondary w-100">Short Range</button>
+				<div class="mb-4">
+					<span class="section-label">Difficulty Level</span>
+					<div class="btn-group w-100 mb-3" role="group">
+						<button id="diffbegin" class="btn btn-outline-secondary btn-group-custom">Beginner</button>
+						<button id="diffinter" class="btn btn-outline-secondary btn-group-custom active">Intermediate</button>
+						<button id="diffadv" class="btn btn-outline-secondary btn-group-custom">Advanced</button>
+					</div>
 				</div>
-				<div class="col-6">
-					<button id="presetComp" class="btn btn-sm btn-secondary w-100">Competition</button>
+				
+				<div class="mb-4">
+					<span class="section-label">Preset Drills</span>
+					<div class="row g-2">
+						<div class="col-6">
+							<button id="presetShort" class="btn preset-btn w-100 btn-sm">Short Range</button>
+						</div>
+						<div class="col-6">
+							<button id="presetComp" class="btn preset-btn w-100 btn-sm">Competition</button>
+						</div>
+						<div class="col-6">
+							<button id="presetEnd" class="btn preset-btn w-100 btn-sm">Endurance</button>
+						</div>
+						<div class="col-6">
+							<button id="presetWarm" class="btn preset-btn w-100 btn-sm">Warm-up</button>
+						</div>
+					</div>
 				</div>
-				<div class="col-6">
-					<button id="presetEnd" class="btn btn-sm btn-secondary w-100">Endurance</button>
-				</div>
-				<div class="col-6">
-					<button id="presetWarm" class="btn btn-sm btn-secondary w-100">Warm-up</button>
-				</div>
-			</div>
 
-			<div class="d-grid gap-2 mt-3">
-				<button id="scheduleBtn" class="btn btn-lg btn-info">📅 Weekly Practice Schedule</button>
+				<div class="d-grid gap-2 mt-4">
+					<button id="scheduleBtn" class="btn btn-lg btn-info large-btn">📅 Weekly Practice Schedule</button>
+				</div>
 			</div>
 		</div>
 
 		<!-- FORM ANALYSIS SECTION -->
-		<div class="card p-3 mb-3 border-success">
-			<div class="card-header bg-success text-white mb-3" style="margin:-12px -12px 0 -12px;padding:12px">
+		<div class="coach-card card">
+			<div class="card-header" style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); color: white;">
 				<strong>🎥 Form Analysis</strong>
 			</div>
-
-			<div class="mb-3"><strong>Experience Level</strong></div>
-			<div class="btn-group mb-3 w-100" role="group">
-				<button id="expBeginner" class="btn btn-outline-success">Beginner</button>
-				<button id="expIntermediate" class="btn btn-outline-success active">Intermediate</button>
-				<button id="expAdvanced" class="btn btn-outline-success">Advanced</button>
-			</div>
-
-			<div class="mb-3"><strong>Feedback Settings</strong></div>
-			<div class="form-check form-switch mb-2">
-				<input class="form-check-input" type="checkbox" id="liveFeedback" checked>
-				<label class="form-check-label" for="liveFeedback">Live feedback during shooting</label>
-			</div>
-			<div class="form-check form-switch mb-3">
-				<input class="form-check-input" type="checkbox" id="soundEnabled" checked>
-				<label class="form-check-label" for="soundEnabled">Sound notifications</label>
-			</div>
-
-			<div class="d-grid gap-2">
-				<button id="analyseForm" class="btn btn-lg btn-warning">📸 Start Form Analysis</button>
-				<div class="d-flex gap-2 mt-2">
-					<button id="newPracticeNameBtn" class="btn btn-outline-primary">＋ New Practice Name</button>
-					<button id="createUnidentifiedBtn" class="btn btn-outline-danger">Create Unidentified Practice</button>
+			<div class="card-body">
+				<div class="mb-4">
+					<span class="section-label">Experience Level</span>
+					<div class="btn-group w-100 mb-3" role="group">
+						<button id="expBeginner" class="btn btn-outline-success btn-group-custom">Beginner</button>
+						<button id="expIntermediate" class="btn btn-outline-success btn-group-custom active">Intermediate</button>
+						<button id="expAdvanced" class="btn btn-outline-success btn-group-custom">Advanced</button>
+					</div>
 				</div>
-				<button id="viewStats" class="btn btn-info">📊 View Session Stats</button>
-				<button id="getTips" class="btn btn-success">💡 Get Tips</button>
+
+				<div class="mb-4">
+					<span class="section-label">Settings</span>
+					<div class="form-check form-switch mb-2">
+						<input class="form-check-input" type="checkbox" id="liveFeedback" checked>
+						<label class="form-check-label" for="liveFeedback">Live feedback during shooting</label>
+					</div>
+					<div class="form-check form-switch mb-3">
+						<input class="form-check-input" type="checkbox" id="soundEnabled" checked>
+						<label class="form-check-label" for="soundEnabled">Sound notifications</label>
+					</div>
+				</div>
+
+				<div class="d-grid gap-2">
+					<button id="analyseForm" class="btn btn-lg btn-warning large-btn">📸 Start Form Analysis</button>
+					<div class="d-flex gap-2 mt-2">
+						<button id="newPracticeNameBtn" class="btn btn-outline-primary flex-grow-1">＋ New Practice</button>
+						<button id="createUnidentifiedBtn" class="btn btn-outline-danger flex-grow-1">Unidentified</button>
+					</div>
+					<button id="viewStats" class="btn btn-info large-btn">📊 View Session Stats</button>
+					<button id="getTips" class="btn btn-success large-btn">💡 Get Tips</button>
+				</div>
 			</div>
 		</div>
 
-		<div id="feedback-display" class="alert alert-info" style="display:none;margin-top:2rem">
-			<strong>AI Coach Feedback:</strong>
+		<div id="feedback-display" class="feedback-badge" style="display:none">
+			<strong>✨ AI Coach Feedback</strong>
 			<div id="feedback-content"></div>
 		</div>
 	</main>

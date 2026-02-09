@@ -138,6 +138,9 @@
 		const preview = document.getElementById('preview');
 		const setupName = document.getElementById('setupName');
 
+		// Get equipment mode (simple vs advanced)
+		const equipmentMode = localStorage.getItem('equipmentMode') || 'simple';
+
 		let currentType = 'arrows';
 
 		// Helpers for storage
@@ -181,43 +184,244 @@
 		function showBow(){
 			currentType='bow';
 			setActiveTypeButton('bow');
-			dynamic.innerHTML = `
-				<div class="row g-2">
-					<div class="col-6"><label class="form-label">Bow Type</label><input name="bowType" class="form-control" placeholder="recurve/compound"/></div>
-					<div class="col-6"><label class="form-label">Draw Weight (lbs)</label><input name="drawWeight" class="form-control" type="number"/></div>
-					<div class="col-6"><label class="form-label">Riser Length (in)</label><input name="riserLength" class="form-control" type="number" step="0.1"/></div>
-					<div class="col-6"><label class="form-label">Limb Material</label><input name="limbMaterial" class="form-control"/></div>
-					<div class="col-12"><label class="form-label">Notes</label><textarea name="bowNotes" class="form-control" rows="2"></textarea></div>
-				</div>`;
+			
+			if(equipmentMode === 'simple'){
+				// Simple mode: bow type and sight type only
+				dynamic.innerHTML = `
+					<div class="row g-2">
+						<div class="col-12"><label class="form-label">Bow Type</label>
+							<select name="bowType" class="form-select">
+								<option value="">Select bow type</option>
+								<option value="recurve">Recurve</option>
+								<option value="compound">Compound</option>
+							</select>
+						</div>
+						<div class="col-12"><label class="form-label">Sight Type</label>
+							<select name="sightType" class="form-select">
+								<option value="">Select sight style</option>
+								<option value="single-pin">Single Pin</option>
+								<option value="multi-pin">Multi Pin</option>
+								<option value="slider">Slider</option>
+							</select>
+						</div>
+					</div>`;
+			} else {
+				// Advanced mode: full form
+				dynamic.innerHTML = `
+					<div class="row g-2">
+						<div class="col-6"><label class="form-label">Bow Type</label>
+							<select name="bowType" class="form-select">
+								<option value="">Select bow type</option>
+								<option value="recurve">Recurve</option>
+								<option value="compound">Compound</option>
+							</select>
+						</div>
+						<div id="recurveSubType" class="col-6" style="display:none">
+							<label class="form-label">Recurve Style</label>
+							<select name="recurveStyle" class="form-select">
+								<option value="">Select style</option>
+								<option value="barebow">Barebow</option>
+								<option value="olympic">Olympic</option>
+							</select>
+						</div>
+						<div class="col-6"><label class="form-label">Draw Weight (lbs)</label><input name="drawWeight" class="form-control" type="number"/></div>
+						<div class="col-6"><label class="form-label">Riser Length (in)</label><input name="riserLength" class="form-control" type="number" step="0.1"/></div>
+						<div class="col-6"><label class="form-label">Limb Material/Type</label><input name="limbMaterial" class="form-control" placeholder="e.g., Carbon, Wood"/></div>
+						<div class="col-6"><label class="form-label">String Replaced Date</label><input name="replacedStringDate" class="form-control" placeholder="MM/DD/YYYY"/></div>
+						
+						<!-- Barebow specific fields (hidden by default) -->
+						<div id="barebowToggle" class="col-12" style="display:none">
+							<div class="form-check form-switch">
+								<input class="form-check-input" type="checkbox" name="barebowNoAccessories" id="barebowNoAccessories">
+								<label class="form-check-label" for="barebowNoAccessories">Barebow (disable accessories)</label>
+							</div>
+						</div>
+						
+						<!-- Olympic/Compound sight & stabilizer fields (hidden by default) -->
+						<div id="sightFields" class="col-12" style="display:none">
+							<label class="form-label">Sight Type</label><input name="sightType" class="form-control" placeholder="e.g., Single-pin, Multi-pin"/>
+						</div>
+						<div id="stabilizerFields" class="col-12" style="display:none">
+							<label class="form-label">Stabilizer Length (in)</label><input name="stabilizerLength" class="form-control" type="number" step="0.1"/>
+						</div>
+						
+						<!-- Compound specific fields (hidden by default) -->
+						<div id="compoundFields" class="col-12" style="display:none">
+							<div class="row g-2">
+								<div class="col-6"><label class="form-label">Cam Type</label><input name="camType" class="form-control" placeholder="e.g., Single, Dual, Hybrid"/></div>
+								<div class="col-6"><label class="form-label">Let Off (%)</label><input name="letOff" class="form-control" type="number" min="0" max="100"/></div>
+								<div class="col-6"><label class="form-label">Draw Length (in)</label><input name="drawLength" class="form-control" type="number" step="0.125"/></div>
+								<div class="col-6"><label class="form-label">Bow Weight (lbs)</label><input name="bowWeight" class="form-control" type="number" step="0.1"/></div>
+								<div class="col-6"><label class="form-label">Axle to Axle (in)</label><input name="axleToAxle" class="form-control" type="number" step="0.1"/></div>
+								<div class="col-6"><label class="form-label">Brace Height (in)</label><input name="braceHeight" class="form-control" type="number" step="0.1"/></div>
+							</div>
+						</div>
+						
+						<div class="col-12"><label class="form-label">Notes</label><textarea name="bowNotes" class="form-control" rows="2"></textarea></div>
+					</div>`;
+				
+				// Attach event listeners for advanced mode
+				setTimeout(() => {
+					const bowTypeSelect = dynamic.querySelector('[name="bowType"]');
+					const recurveStyleSelect = dynamic.querySelector('[name="recurveStyle"]');
+					const barebowToggle = document.getElementById('barebowToggle');
+					const barebowNoAccessoriesCheckbox = document.getElementById('barebowNoAccessories');
+					const sightFields = document.getElementById('sightFields');
+					const stabilizerFields = document.getElementById('stabilizerFields');
+					const compoundFields = document.getElementById('compoundFields');
+					const recurveSubType = document.getElementById('recurveSubType');
+					
+					function updateBowFields() {
+						const bowType = bowTypeSelect.value;
+						const recurveStyle = recurveStyleSelect.value;
+						
+						// Reset visibility
+						recurveSubType.style.display = 'none';
+						barebowToggle.style.display = 'none';
+						sightFields.style.display = 'none';
+						stabilizerFields.style.display = 'none';
+						compoundFields.style.display = 'none';
+						
+						if (bowType === 'recurve') {
+							recurveSubType.style.display = 'block';
+							
+							if (recurveStyle === 'barebow') {
+								barebowToggle.style.display = 'block';
+							} else if (recurveStyle === 'olympic') {
+								sightFields.style.display = 'block';
+								stabilizerFields.style.display = 'block';
+							}
+						} else if (bowType === 'compound') {
+							sightFields.style.display = 'block';
+							stabilizerFields.style.display = 'block';
+							compoundFields.style.display = 'block';
+						}
+					}
+					
+					bowTypeSelect.addEventListener('change', updateBowFields);
+					recurveStyleSelect.addEventListener('change', updateBowFields);
+				}, 0);
+			}
 		}
 
 		function showSight(){
 			currentType='sight';
 			setActiveTypeButton('sight');
-			dynamic.innerHTML = `
-				<div class="row g-2">
-					<div class="col-6"><label class="form-label">Sight Type</label><input name="sightType" class="form-control" placeholder="single-pin / multi-pin"/></div>
-					<div class="col-6"><label class="form-label">Lens? (shows power)</label><div class="form-check form-switch"><input id="lensToggle" name="hasLens" class="form-check-input" type="checkbox"></div></div>
-					<div id="lensFields" class="col-12" style="display:none;"><label class="form-label">Lens Power</label><input name="lensPower" class="form-control" placeholder="e.g. +1.5"/><label class="form-label mt-2">Clarifier (optional)</label><input name="clarifier" class="form-control" placeholder="e.g. clear/neutral"/></div>
-					<div class="col-12"><label class="form-label">Pins</label><div id="pinsContainer"></div><div class="mt-2"><button id="addPin" type="button" class="btn btn-sm btn-outline-primary">Add Pin</button></div></div>
-				</div>
-
-				<!-- hidden template for each pin line: pin color + distance for multi-pin setups -->
-				<template id="pinTpl">
-					<div class="d-flex gap-2 align-items-center pin-line mb-2">
-						<input name="pinColor" class="form-control form-control-color" type="color" title="Color" style="width:56px" />
-						<input name="pinDistance" class="form-control" type="number" placeholder="Distance (m)" />
-						<button type="button" class="btn btn-sm btn-outline-danger remove-pin">Remove</button>
+			
+			if(equipmentMode === 'simple'){
+				// Simple mode: sight type only
+				dynamic.innerHTML = `
+					<div class="row g-2">
+						<div class="col-12"><label class="form-label">Sight Type</label>
+							<select name="sightType" class="form-select">
+								<option value="">Select sight style</option>
+								<option value="fixed">Fixed</option>
+								<option value="slider">Slider</option>
+							</select>
+						</div>
+					</div>`;
+			} else {
+				// Advanced mode: hierarchical sight configuration
+				dynamic.innerHTML = `
+					<div class="row g-2">
+						<!-- Sight Type: Fixed or Slider -->
+						<div class="col-12">
+							<label class="form-label">Sight Type</label>
+							<select id="sightType" class="form-select">
+								<option value="fixed">Fixed</option>
+								<option value="slider">Slider</option>
+							</select>
+						</div>
+						
+						<!-- Pin Configuration: Single or Multi (only for Slider) -->
+						<div id="pinConfigDiv" class="col-12" style="display:none;">
+							<label class="form-label">Pin Configuration</label>
+							<select id="pinConfiguration" class="form-select">
+								<option value="single">Single Pin</option>
+								<option value="multi">Multi-Pin</option>
+							</select>
+						</div>
+						
+						<!-- Additional Features: Lens, Ring, Dot -->
+						<div class="col-12">
+							<label class="form-label">Additional Features</label>
+							<div class="form-check">
+								<input type="checkbox" id="hasLens" class="form-check-input">
+								<label class="form-check-label" for="hasLens">Lens</label>
+							</div>
+							<div class="form-check">
+								<input type="checkbox" id="hasRing" class="form-check-input">
+								<label class="form-check-label" for="hasRing">Ring</label>
+							</div>
+							<div class="form-check">
+								<input type="checkbox" id="hasDot" class="form-check-input">
+								<label class="form-check-label" for="hasDot">Dot</label>
+							</div>
+						</div>
+						
+						<!-- Lens Configuration Fields -->
+						<div id="lensFields" class="col-12" style="display:none;">
+							<label class="form-label">Lens Power</label>
+							<input name="lensPower" class="form-control" placeholder="e.g. +1.5"/>
+							<label class="form-label mt-2">Clarifier (optional)</label>
+							<input name="clarifier" class="form-control" placeholder="e.g. clear/neutral"/>
+						</div>
+						
+						<!-- Pins Section (Slider without Ring/Dot) -->
+						<div id="pinsSection" class="col-12" style="display:none;">
+							<label class="form-label">Pin Configuration</label>
+							<div id="pinsContainer"></div>
+							<div class="mt-2"><button id="addPin" type="button" class="btn btn-sm btn-outline-primary">Add Pin</button></div>
+						</div>
 					</div>
-				</template>`;
 
-			// hook lens toggle and add pin button
-			setTimeout(()=>{
-				const lensToggle = document.getElementById('lensToggle');
-				const lensFields = document.getElementById('lensFields');
-				lensToggle.addEventListener('change',()=>{ lensFields.style.display = lensToggle.checked ? 'block' : 'none'; });
-				document.getElementById('addPin').addEventListener('click', addPin);
-			},0);
+					<!-- hidden template for each pin line -->
+					<template id="pinTpl">
+						<div class="d-flex gap-2 align-items-center pin-line mb-2">
+							<select name="pinColor" class="form-select form-select-sm" style="width:120px">
+								<option value="#FF0000">Red</option>
+								<option value="#FFA500">Orange</option>
+								<option value="#FF8C00">Red-Orange</option>
+								<option value="#00FF00">Green</option>
+							</select>
+							<input name="pinDistance" class="form-control form-control-sm" type="number" placeholder="Distance (yd)" />
+							<button type="button" class="btn btn-sm btn-outline-danger remove-pin">Remove</button>
+						</div>
+					</template>`;
+
+				// Set up hierarchical sight configuration logic
+				setTimeout(()=>{
+					const sightType = document.getElementById('sightType');
+					const pinConfigDiv = document.getElementById('pinConfigDiv');
+					const pinConfiguration = document.getElementById('pinConfiguration');
+					const hasLens = document.getElementById('hasLens');
+					const hasRing = document.getElementById('hasRing');
+					const hasDot = document.getElementById('hasDot');
+					const lensFields = document.getElementById('lensFields');
+					const pinsSection = document.getElementById('pinsSection');
+					
+					function updateFieldsVisibility(){
+						// Show pin configuration only for slider type
+						pinConfigDiv.style.display = (sightType.value === 'slider') ? 'block' : 'none';
+						
+						// Show pins section only if: Slider type, AND neither Ring nor Dot is selected
+						const showPins = (sightType.value === 'slider') && !hasRing.checked && !hasDot.checked;
+						pinsSection.style.display = showPins ? 'block' : 'none';
+						
+						// Show lens fields only if Lens checkbox is checked
+						lensFields.style.display = hasLens.checked ? 'block' : 'none';
+					}
+					
+					sightType.addEventListener('change', updateFieldsVisibility);
+					pinConfiguration.addEventListener('change', updateFieldsVisibility);
+					hasLens.addEventListener('change', updateFieldsVisibility);
+					hasRing.addEventListener('change', updateFieldsVisibility);
+					hasDot.addEventListener('change', updateFieldsVisibility);
+					
+					updateFieldsVisibility();
+					document.getElementById('addPin').addEventListener('click', addPin);
+				},0);
+			}
 		}
 
 		function setActiveTypeButton(type){
@@ -239,18 +443,47 @@
 
 		// Load a saved setup into the UI for editing
 		function loadSetup(s){ setupName.value = s.name || ''; if(s.type==='arrows'){ showArrows(); setTimeout(()=>{ Object.keys(s.data||{}).forEach(k=>{ const el = dynamic.querySelector('[name="'+k+'"]'); if(el) el.value = s.data[k]; }); },0); }
-			if(s.type==='sight'){ showSight(); setTimeout(()=>{ const d=s.data||{}; if(d.hasLens){ document.getElementById('lensToggle').checked=true; document.getElementById('lensFields').style.display='block'; dynamic.querySelector('[name="lensPower"]').value = d.lensPower||''; dynamic.querySelector('[name="clarifier"]').value = d.clarifier||''; }
-				// load pins
+		if(s.type==='sight'){ showSight(); setTimeout(()=>{ const d=s.data||{}; 
+			document.getElementById('sightType').value = d.sightType || 'fixed';
+			document.getElementById('pinConfiguration').value = d.pinConfiguration || 'single';
+			document.getElementById('hasLens').checked = d.hasLens || false;
+			document.getElementById('hasRing').checked = d.hasRing || false;
+			document.getElementById('hasDot').checked = d.hasDot || false;
+			if(d.hasLens){ 
+				dynamic.querySelector('[name="lensPower"]').value = d.lensPower||''; 
+				dynamic.querySelector('[name="clarifier"]').value = d.clarifier||''; 
+			}
+			// load pins if slider type without ring/dot
+			if(d.sightType === 'slider' && !d.hasRing && !d.hasDot){
 				(d.pins||[]).forEach(p=>{ addPin(); const pc = document.getElementById('pinsContainer'); const last = pc.querySelector('.pin-line:last-child'); last.querySelector('[name="pinColor"]').value = p.color||'#000000'; last.querySelector('[name="pinDistance"]').value = p.distance||''; });
-			},0); }
-			if(s.type==='bow'){ showBow(); setTimeout(()=>{ Object.keys(s.data||{}).forEach(k=>{ const el = dynamic.querySelector('[name="'+k+'"]'); if(el) el.value = s.data[k]; }); },0); }
+			}
+			// trigger visibility update
+			const evt = new Event('change', {bubbles:true});
+			document.getElementById('sightType').dispatchEvent(evt);
+		},0); }
+				if(s.type==='bow'){ showBow(); setTimeout(()=>{ const d=s.data||{}; Object.keys(d).forEach(k=>{ const el = dynamic.querySelector('[name="'+k+'"]'); if(k==='barebowNoAccessories' && el) el.checked = d[k]; else if(el) el.value = d[k]; }); const bowTypeSelect = dynamic.querySelector('[name="bowType"]'); const recurveStyleSelect = dynamic.querySelector('[name="recurveStyle"]'); if(bowTypeSelect && recurveStyleSelect) { const evt = new Event('change', {bubbles:true}); bowTypeSelect.dispatchEvent(evt); } },0); }
 		}
 
 		// gather form data depending on type
 		function gatherData(){ const data={}; if(currentType==='arrows'){ ['length','fletchType','fletchCount','material','diameter','spine','weight'].forEach(n=>{ const el = dynamic.querySelector('[name="'+n+'"]'); if(el) data[n]=el.value; }); }
-			else if(currentType==='bow'){ ['bowType','drawWeight','riserLength','limbMaterial','bowNotes'].forEach(n=>{ const el = dynamic.querySelector('[name="'+n+'"]'); if(el) data[n]=el?el.value:''; }); }
-			else if(currentType==='sight'){ const hasLens = dynamic.querySelector('[name="hasLens"]')?.checked; data.hasLens = !!hasLens; if(hasLens){ data.lensPower = dynamic.querySelector('[name="lensPower"]')?.value; data.clarifier = dynamic.querySelector('[name="clarifier"]')?.value; }
-				data.pins = Array.from(dynamic.querySelectorAll('.pin-line')).map(pl=>({ color: pl.querySelector('[name="pinColor"]').value, distance: pl.querySelector('[name="pinDistance"]').value })); }
+			else if(currentType==='bow'){ ['bowType','recurveStyle','drawWeight','riserLength','limbMaterial','bowNotes','replacedStringDate','sightType','stabilizerLength','barebowNoAccessories','camType','letOff','drawLength','bowWeight','axleToAxle','braceHeight'].forEach(n=>{ const barebowCheck = dynamic.querySelector('[name="barebowNoAccessories"]'); if(n==='barebowNoAccessories' && barebowCheck) data[n] = barebowCheck.checked; else { const el = dynamic.querySelector('[name="'+n+'"]'); if(el) data[n]=el?el.value:''; } }); }
+			else if(currentType==='sight'){ 
+				data.sightType = dynamic.querySelector('#sightType')?.value || 'fixed';
+				data.pinConfiguration = dynamic.querySelector('#pinConfiguration')?.value || 'single';
+				data.hasLens = dynamic.querySelector('#hasLens')?.checked || false;
+				data.hasRing = dynamic.querySelector('#hasRing')?.checked || false;
+				data.hasDot = dynamic.querySelector('#hasDot')?.checked || false;
+				if(data.hasLens){ 
+					data.lensPower = dynamic.querySelector('[name="lensPower"]')?.value; 
+					data.clarifier = dynamic.querySelector('[name="clarifier"]')?.value; 
+				}
+				// only save pins if slider without ring/dot
+				if(data.sightType === 'slider' && !data.hasRing && !data.hasDot){
+					data.pins = Array.from(dynamic.querySelectorAll('.pin-line')).map(pl=>({ color: pl.querySelector('[name="pinColor"]').value, distance: pl.querySelector('[name="pinDistance"]').value })); 
+				} else {
+					data.pins = [];
+				}
+			}
 			return data; }
 
 
@@ -275,6 +508,15 @@
 				if(isNaN(riser) || riser < 8 || riser > 40){ const el = dynamic.querySelector('[name="riserLength"]'); showFieldError(el,'Riser length must be 8–40 in'); errs.push('riserLength'); }
 				const draw = parseFloat(data.drawWeight||0);
 				if(isNaN(draw) || draw < 12 || draw > 80){ const el = dynamic.querySelector('[name="drawWeight"]'); showFieldError(el,'Draw weight must be 12–80 lbs'); errs.push('drawWeight'); }
+				// Compound-specific validation
+				if(data.bowType === 'compound'){
+					const letoff = parseFloat(data.letOff||0);
+					if(data.letOff && (isNaN(letoff) || letoff < 0 || letoff > 100)){ const el = dynamic.querySelector('[name="letOff"]'); showFieldError(el,'Let off must be 0–100%'); errs.push('letOff'); }
+					const drawLength = parseFloat(data.drawLength||0);
+					if(data.drawLength && (isNaN(drawLength) || drawLength < 15 || drawLength > 32)){ const el = dynamic.querySelector('[name="drawLength"]'); showFieldError(el,'Draw length must be 15–32 in'); errs.push('drawLength'); }
+					const a2a = parseFloat(data.axleToAxle||0);
+					if(data.axleToAxle && (isNaN(a2a) || a2a < 24 || a2a > 48)){ const el = dynamic.querySelector('[name="axleToAxle"]'); showFieldError(el,'Axle to axle must be 24–48 in'); errs.push('axleToAxle'); }
+				}
 			}
 			if(currentType==='sight'){
 				Array.from(dynamic.querySelectorAll('[name="pinDistance"]')).forEach(el=>{
@@ -320,8 +562,15 @@
 							bowType: "compound",
 							drawWeight: "55",
 							riserLength: "29.5",
-							limbMaterial: "",
-							bowNotes: "Prime Ronan - Main bow"
+							limbMaterial: "Carbon",
+							bowNotes: "Prime Ronan - Main bow",
+							camType: "Dual",
+							letOff: "80",
+							drawLength: "28",
+							bowWeight: "3.2",
+							axleToAxle: "31.5",
+							braceHeight: "6.25",
+							replacedStringDate: "02/03/2026"
 						}
 					},
 					{
@@ -354,12 +603,80 @@
 								{ color: "#00FF00", distance: "50" }
 							]
 						}
+					},
+					{
+						id: 5,
+						name: "AXCEL Driver",
+						type: "sight",
+						data: {
+							sightType: "3-pin-slider",
+							hasLens: false,
+							lensPower: "",
+							clarifier: "",
+							pins: [
+								{ color: "#00FF00", distance: "20" },
+								{ color: "#FF8C00", distance: "30" },
+								{ color: "#00FF00", distance: "40" }
+							]
+						}
+					},
+					{
+						id: 4,
+						name: "Olympic Recurve",
+						type: "bow",
+						data: {
+							bowType: "recurve",
+							recurveStyle: "olympic",
+							drawWeight: "48",
+							riserLength: "25",
+							limbMaterial: "Carbon",
+							bowNotes: "Competition recurve",
+							sightType: "Multi-pin",
+							stabilizerLength: "24",
+							replacedStringDate: ""
+						}
 					}
 				];
 				saveSetups(defaults);
 			}
 		}
 		initializeDefaultSetups();
+		
+		// Migration: ensure new sights are added to existing installations
+		function ensureNewSights(){
+			const setups = getSetups();
+			const newSights = [
+				{
+					id: 5,
+					name: "AXCEL Driver",
+					type: "sight",
+					data: {
+						sightType: "3-pin-slider",
+						hasLens: false,
+						lensPower: "",
+						clarifier: "",
+						pins: [
+							{ color: "#00FF00", distance: "20" },
+							{ color: "#FF8C00", distance: "30" },
+							{ color: "#00FF00", distance: "40" }
+						]
+					}
+				}
+			];
+			
+			let updated = false;
+			newSights.forEach(newSight => {
+				if(!setups.find(s => s.id === newSight.id)){
+					setups.push(newSight);
+					updated = true;
+				}
+			});
+			
+			if(updated){
+				saveSetups(setups);
+			}
+		}
+		ensureNewSights();
 		showArrows(); renderSaved();
 			// populate combo selects and saved combos
 			function getCombos(){ return JSON.parse(localStorage.getItem('setups')||'[]'); }
