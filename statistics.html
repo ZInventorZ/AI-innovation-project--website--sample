@@ -13,7 +13,6 @@
 	<a class="back-btn" href="index.html" onclick="if(history.length>1){history.back();return false;}">← Back</a>
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
     <div class="container-fluid">
-      <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="nav nav-pills ms-auto" role="tablist">
           <li class="nav-item"><a class="nav-link" href="index.html"><span class="nav-icon">📈</span>History</a></li>
           <li class="nav-item"><a class="nav-link" href="AI_Coach.html"><span class="nav-icon">🤖</span>AI Coach</a></li>
@@ -22,7 +21,6 @@
           <li class="nav-item"><a class="nav-link" href="competition.html"><span class="nav-icon">🏆</span>Competition</a></li>
           <li class="nav-item"><a class="nav-link" href="menu.html"><span class="nav-icon">☰</span>Menu</a></li>
         </ul>
-      </div>
     </div>
   </nav>
 
@@ -35,6 +33,59 @@
 	<main class="site-main container py-4">
 		<h2>Statistics</h2>
 		<p>Performance averages over time.</p>
+		
+		<!-- Filters -->
+		<div class="card p-3 mb-3">
+			<h5>Filters</h5>
+			<div class="row g-2">
+				<div class="col-md-3">
+					<label class="form-label">Equipment Setup</label>
+					<select id="filterSetup" class="form-select">
+						<option value="">All Setups</option>
+					</select>
+				</div>
+				<div class="col-md-3">
+					<label class="form-label">Target Style</label>
+					<select id="filterStyle" class="form-select">
+						<option value="">All Styles</option>
+						<option value="vegas">Vegas</option>
+						<option value="nfaa">NFAA</option>
+						<option value="3d">3D</option>
+						<option value="generic">Generic</option>
+					</select>
+				</div>
+				<div class="col-md-3">
+					<label class="form-label">Competition</label>
+					<select id="filterCompetition" class="form-select">
+						<option value="">All</option>
+						<option value="yes">Competition Only</option>
+						<option value="no">Practice Only</option>
+					</select>
+				</div>
+				<div class="col-md-3 d-flex align-items-end">
+					<div class="form-check">
+						<input class="form-check-input" type="checkbox" id="showEquipmentChanges">
+						<label class="form-check-label" for="showEquipmentChanges">Show Equipment Changes</label>
+					</div>
+				</div>
+			</div>
+			<div class="row g-2 mt-2">
+				<div class="col-md-3">
+					<div class="form-check">
+						<input class="form-check-input" type="checkbox" id="showRunningAverage">
+						<label class="form-check-label" for="showRunningAverage">Show Running Average</label>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<label class="form-label">Sessions to Average</label>
+					<input type="number" id="runningAvgSessions" class="form-control" value="5" min="2" max="20">
+				</div>
+			</div>
+			<div class="mt-2">
+				<button id="applyFilters" class="btn btn-primary">Apply Filters</button>
+			</div>
+		</div>
+		
 		<div id="statsBreakdown"></div>
 		<div class="card p-3 mb-3">
 			<canvas id="statsChart" height="150"></canvas>
@@ -47,78 +98,203 @@
 	<script>
 	(function(){
 		function getPractices(){return JSON.parse(localStorage.getItem('practices')||'[]');}
-		const list = getPractices().filter(p=>p.totalScore!=null);
-		if(!list.length){ document.getElementById('statsSummary').innerHTML='<div class="alert alert-secondary">No scored practices to chart.</div>'; return; }
-		// helper: infer style and per-arrow max
-		const inferStyle = (p)=>{
-			const s = (p.roundStyle||'').toString().toLowerCase();
-			const n = (p.name||'').toString().toLowerCase();
-			if(s) return s;
-			if(n.indexOf('3d')!==-1) return '3d';
-			if(n.indexOf('vegas')!==-1) return 'vegas';
-			if(n.indexOf('nfaa')!==-1) return 'nfaa';
-			return 'generic';
-		};
-		const perArrowMaxForStyle = (style, p)=>{
-			// blue-faced targets (NFAA) have a lower max per arrow
-			if(p && p.targetFace === 'blue') return 5;
-			if(style === '3d'){
-				if(p && p.organization === 'ASA') return 12;
-				if(p && p.organization === 'NFAA') return 11;
-				return 5; // default fallback
+		function getSetups(){return JSON.parse(localStorage.getItem('equipmentSetups')||'[]');}
+		
+		// Populate filters
+		const setups = getSetups();
+		const setupSel = document.getElementById('filterSetup');
+		setups.forEach(s => {
+			const opt = document.createElement('option');
+			opt.value = s.id;
+			opt.textContent = s.name;
+			setupSel.appendChild(opt);
+		});
+		
+		let chartInstance = null;
+		
+		function renderStats(){
+			const list = getPractices().filter(p=>p.totalScore!=null);
+			if(!list.length){ 
+				document.getElementById('statsSummary').innerHTML='<div class="alert alert-secondary">No scored practices to chart.</div>'; 
+				document.getElementById('statsBreakdown').innerHTML = '';
+				if(chartInstance) chartInstance.destroy();
+				return; 
 			}
-			return 10; // standard target (10 per arrow)
-		};
+			
+			// Apply filters
+			const filterSetup = document.getElementById('filterSetup').value;
+			const filterStyle = document.getElementById('filterStyle').value;
+			const filterCompetition = document.getElementById('filterCompetition').value;
+			const showEquipmentChanges = document.getElementById('showEquipmentChanges').checked;
+			
+			let filteredList = list;
+			if(filterSetup){
+				filteredList = filteredList.filter(p => p.equipmentSetupId == filterSetup);
+			}
+			if(filterStyle){
+				filteredList = filteredList.filter(p => inferStyle(p) === filterStyle);
+			}
+			if(filterCompetition === 'yes'){
+				filteredList = filteredList.filter(p => p.name && p.name.toLowerCase().includes('competition'));
+			} else if(filterCompetition === 'no'){
+				filteredList = filteredList.filter(p => !p.name || !p.name.toLowerCase().includes('competition'));
+			}
+			
+			if(!filteredList.length){ 
+				document.getElementById('statsSummary').innerHTML='<div class="alert alert-secondary">No data matches the filters.</div>'; 
+				document.getElementById('statsBreakdown').innerHTML = '';
+				if(chartInstance) chartInstance.destroy();
+				return; 
+			}
+			
+			// Sort by date ascending
+			filteredList.sort((a,b)=>new Date(a.created)-new Date(b.created));
+			
+			// helper: infer style and per-arrow max
+			const inferStyle = (p)=>{
+				const s = (p.roundStyle||'').toString().toLowerCase();
+				const n = (p.name||'').toString().toLowerCase();
+				if(s) return s;
+				if(n.indexOf('3d')!==-1) return '3d';
+				if(n.indexOf('vegas')!==-1) return 'vegas';
+				if(n.indexOf('nfaa')!==-1) return 'nfaa';
+				return 'generic';
+			};
+			const perArrowMaxForStyle = (style, p)=>{
+				// blue-faced targets (NFAA) have a lower max per arrow
+				if(p && p.targetFace === 'blue') return 5;
+				if(style === '3d'){
+					if(p && p.organization === 'ASA') return 12;
+					if(p && p.organization === 'NFAA') return 11;
+					return 5; // default fallback
+				}
+				return 10; // standard target (10 per arrow)
+			};
 
-		// Sort by date ascending
-		list.sort((a,b)=>new Date(a.created)-new Date(b.created));
-		const labels = list.map(p=> new Date(p.created).toLocaleDateString());
-		const data = list.map(p=>{
-			const arrows = (Number(p.endCount)||Number(p.arrowCount)||0) * (Number(p.ends)||1);
-			return arrows>0 ? (Number(p.totalScore)/arrows).toFixed(2) : null;
-		});
+			const labels = filteredList.map(p=> new Date(p.created).toLocaleDateString());
+			const data = filteredList.map(p=>{
+				const arrows = (Number(p.endCount)||Number(p.arrowCount)||0) * (Number(p.ends)||1);
+				return arrows>0 ? (Number(p.totalScore)/arrows).toFixed(2) : null;
+			});
 
-		// Build breakdown by style
-		const groups = {};
-		let overallScore=0, overallPossible=0, sessionsWithValues=0;
-		list.forEach(p=>{
-			const arrows = (Number(p.endCount)||Number(p.arrowCount)||0) * (Number(p.ends)||1);
-			const total = Number(p.totalScore)||0;
-			const style = inferStyle(p);
-			const perMax = perArrowMaxForStyle(style);
-			overallScore += total;
-			overallPossible += arrows * perMax;
-			if(total!=null) sessionsWithValues++;
-			const perMaxThis = perArrowMaxForStyle(style, p);
-			if(!groups[style]) groups[style] = { sessions:0, totalScore:0, arrows:0, totalPossible:0 };
-			groups[style].sessions += 1;
-			groups[style].totalScore += total;
-			groups[style].arrows += arrows;
-			groups[style].totalPossible += (arrows * perMaxThis);
-		});
+			// Build breakdown by style
+			const groups = {};
+			let overallScore=0, overallPossible=0, sessionsWithValues=0;
+			filteredList.forEach(p=>{
+				const arrows = (Number(p.endCount)||Number(p.arrowCount)||0) * (Number(p.ends)||1);
+				const total = Number(p.totalScore)||0;
+				const style = inferStyle(p);
+				const perMax = perArrowMaxForStyle(style);
+				overallScore += total;
+				overallPossible += arrows * perMax;
+				if(total!=null) sessionsWithValues++;
+				const perMaxThis = perArrowMaxForStyle(style, p);
+				if(!groups[style]) groups[style] = { sessions:0, totalScore:0, arrows:0, totalPossible:0 };
+				groups[style].sessions += 1;
+				groups[style].totalScore += total;
+				groups[style].arrows += arrows;
+				groups[style].totalPossible += (arrows * perMaxThis);
+			});
 
-		let breakdownHtml = '<div class="card p-3 mb-3"><h5>By Target Style</h5><div class="table-responsive"><table class="table table-sm mb-0"><thead><tr><th>Style</th><th>Sessions</th><th>Avg per arrow</th><th>% of possible</th></tr></thead><tbody>';
-		Object.keys(groups).forEach(k=>{
-			const g = groups[k];
-			const avg = g.arrows>0 ? (g.totalScore / g.arrows).toFixed(2) : '—';
-			const pct = (g.arrows>0 && g.totalPossible>0) ? ((g.totalScore / g.totalPossible)*100).toFixed(1) + '%' : '—';
-			breakdownHtml += `<tr><td>${k}</td><td>${g.sessions}</td><td>${avg}</td><td>${pct}</td></tr>`;
-		});
-		breakdownHtml += '</tbody></table></div></div>';
-		document.getElementById('statsBreakdown').innerHTML = breakdownHtml;
+			let breakdownHtml = '<div class="card p-3 mb-3"><h5>By Target Style</h5><div class="table-responsive"><table class="table table-sm mb-0"><thead><tr><th>Style</th><th>Sessions</th><th>Avg per arrow</th><th>% of possible</th></tr></thead><tbody>';
+			Object.keys(groups).forEach(k=>{
+				const g = groups[k];
+				const avg = g.arrows>0 ? (g.totalScore / g.arrows).toFixed(2) : '—';
+				const pct = (g.arrows>0 && g.totalPossible>0) ? ((g.totalScore / g.totalPossible)*100).toFixed(1) + '%' : '—';
+				breakdownHtml += `<tr><td>${k}</td><td>${g.sessions}</td><td>${avg}</td><td>${pct}</td></tr>`;
+			});
+			breakdownHtml += '</tbody></table></div></div>';
+			document.getElementById('statsBreakdown').innerHTML = breakdownHtml;
 
-		const ctx = document.getElementById('statsChart').getContext('2d');
-		new Chart(ctx,{
-			type:'line',
-			data:{ labels: labels, datasets:[{ label:'Avg per arrow', data: data, borderColor:'rgb(13,110,253)', backgroundColor:'rgba(13,110,253,0.08)', tension:0.25, pointRadius:4 }]},
-			options:{ scales: { y: { beginAtZero:true } }, responsive:true, maintainAspectRatio:false }
-		});
+			const showRunningAverage = document.getElementById('showRunningAverage').checked;
+			const runningAvgSessions = Number(document.getElementById('runningAvgSessions').value) || 5;
+			
+			// Chart data
+			const chartData = { labels: labels, datasets:[{ label:'Avg per arrow', data: data, borderColor:'rgb(13,110,253)', backgroundColor:'rgba(13,110,253,0.08)', tension:0.25, pointRadius:4 }]};
+			
+			// Add running average if enabled
+			if(showRunningAverage && filteredList.length >= runningAvgSessions){
+				const runningAvgData = [];
+				for(let i=0; i<data.length; i++){
+					const start = Math.max(0, i - runningAvgSessions + 1);
+					const slice = data.slice(start, i+1).filter(d => d != null);
+					const avg = slice.length ? slice.reduce((s,n)=>s+Number(n),0)/slice.length : null;
+					runningAvgData.push(avg ? avg.toFixed(2) : null);
+				}
+				chartData.datasets.push({
+					label: `Running Avg (${runningAvgSessions} sessions)`,
+					data: runningAvgData,
+					borderColor: 'rgb(255,193,7)',
+					backgroundColor: 'rgba(255,193,7,0.08)',
+					tension: 0.25,
+					pointRadius: 3,
+					borderDash: [5,5]
+				});
+			}
+			if(showEquipmentChanges && filterSetup === ''){ // Only if all setups
+				const changeIndices = [];
+				for(let i=1; i<filteredList.length; i++){
+					const prev = filteredList[i-1].sessionEquipment;
+					const curr = filteredList[i].sessionEquipment;
+					if(!prev || !curr) continue;
+					const prevEq = `${prev.bow || ''}-${prev.sight?.type || ''}-${prev.arrow?.model || ''}`;
+					const currEq = `${curr.bow || ''}-${curr.sight?.type || ''}-${curr.arrow?.model || ''}`;
+					if(prevEq !== currEq){
+						changeIndices.push(i);
+					}
+				}
+				if(changeIndices.length){
+					chartData.datasets.push({
+						label: 'Equipment Change',
+						data: changeIndices.map(idx => ({x: idx, y: Math.max(...data.filter(d=>d!=null))})), // top of chart
+						type: 'scatter',
+						pointStyle: 'line',
+						pointRadius: 0,
+						showLine: false,
+						// Custom to draw vertical lines
+					});
+					// For vertical lines, better to use annotations, but since no plugin, perhaps add line datasets
+					changeIndices.forEach(idx => {
+						chartData.datasets.push({
+							label: '',
+							data: [{x: idx, y: 0}, {x: idx, y: Math.max(...data.filter(d=>d!=null))}],
+							borderColor: 'red',
+							borderWidth: 2,
+							pointRadius: 0,
+							showLine: true,
+							fill: false,
+							tension: 0
+						});
+					});
+				}
+			}
 
-		// summary: overall average and percent of possible
-		const nums = data.map(x=>Number(x)).filter(x=>!isNaN(x));
-		const avg = (nums.length? (nums.reduce((s,n)=>s+n,0)/nums.length).toFixed(2) : '—');
-		const overallPercent = (overallPossible>0) ? ((overallScore/overallPossible)*100).toFixed(1) + '%' : '—';
-		document.getElementById('statsSummary').innerHTML = `<div class="card p-3">Overall average per arrow: <strong style="color:var(--accent)">${avg}</strong> (based on ${nums.length} sessions)<div style="margin-top:.5rem">Overall percent of possible score: <strong>${overallPercent}</strong></div></div>`;
+			if(chartInstance) chartInstance.destroy();
+			const ctx = document.getElementById('statsChart').getContext('2d');
+			chartInstance = new Chart(ctx,{
+				type:'line',
+				data: chartData,
+				options:{ 
+					scales: { 
+						y: { beginAtZero:true },
+						x: { type: 'category' }
+					}, 
+					responsive:true, 
+					maintainAspectRatio:false 
+				}
+			});
+
+			// summary: overall average and percent of possible
+			const nums = data.map(x=>Number(x)).filter(x=>!isNaN(x));
+			const avg = (nums.length? (nums.reduce((s,n)=>s+n,0)/nums.length).toFixed(2) : '—');
+			const overallPercent = (overallPossible>0) ? ((overallScore/overallPossible)*100).toFixed(1) + '%' : '—';
+			document.getElementById('statsSummary').innerHTML = `<div class="card p-3">Overall average per arrow: <strong style="color:var(--accent)">${avg}</strong> (based on ${nums.length} sessions)<div style="margin-top:.5rem">Overall percent of possible score: <strong>${overallPercent}</strong></div></div>`;
+		}
+		
+		document.getElementById('applyFilters').addEventListener('click', renderStats);
+		
+		// Initial render
+		renderStats();
 	})();
 	</script>
 	<script>

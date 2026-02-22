@@ -144,6 +144,12 @@
 		.site-main {
 			padding-bottom: 100px;
 		}
+		.collapse-icon::before {
+			content: "−";
+		}
+		.collapsed .collapse-icon::before {
+			content: "+";
+		}
 	</style>
 </head>
 <body>
@@ -161,7 +167,6 @@
 	</header>
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
     <div class="container-fluid">
-      <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="nav nav-pills ms-auto" role="tablist">
           <li class="nav-item"><a class="nav-link" href="index.html"><span class="nav-icon">📈</span>History</a></li>
           <li class="nav-item"><a class="nav-link active" href="AI_Coach.html"><span class="nav-icon">🤖</span>AI Coach</a></li>
@@ -170,7 +175,6 @@
           <li class="nav-item"><a class="nav-link" href="competition.html"><span class="nav-icon">🏆</span>Competition</a></li>
           <li class="nav-item"><a class="nav-link" href="menu.html"><span class="nav-icon">☰</span>Menu</a></li>
         </ul>
-      </div>
     </div>
   </nav>
 
@@ -180,7 +184,11 @@
 		<div class="coach-card card">
 			<div class="card-header" style="background: linear-gradient(135deg, #FF6B6B 0%, #FF8E72 100%); color: white;">
 				<strong>⚡ Drills & Training</strong>
+				<button class="btn btn-sm btn-light ms-2 float-end" type="button" data-bs-toggle="collapse" data-bs-target="#drillsCollapse" aria-expanded="true" aria-controls="drillsCollapse">
+					<span class="collapse-icon">−</span>
+				</button>
 			</div>
+			<div id="drillsCollapse" class="collapse show">
 			<div class="card-body">
 				<div class="mb-4">
 					<span class="section-label">Training Focus</span>
@@ -228,13 +236,18 @@
 					<button id="scheduleBtn" class="btn btn-lg btn-info large-btn">📅 Weekly Practice Schedule</button>
 				</div>
 			</div>
+			</div>
 		</div>
 
 		<!-- FORM ANALYSIS SECTION -->
 		<div class="coach-card card">
 			<div class="card-header" style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); color: white;">
 				<strong>🎥 Form Analysis</strong>
+				<button class="btn btn-sm btn-light ms-2 float-end" type="button" data-bs-toggle="collapse" data-bs-target="#formCollapse" aria-expanded="true" aria-controls="formCollapse">
+					<span class="collapse-icon">−</span>
+				</button>
 			</div>
+			<div id="formCollapse" class="collapse show">
 			<div class="card-body">
 				<div class="mb-4">
 					<span class="section-label">Experience Level</span>
@@ -242,6 +255,17 @@
 						<button id="expBeginner" class="btn btn-outline-success btn-group-custom">Beginner</button>
 						<button id="expIntermediate" class="btn btn-outline-success btn-group-custom active">Intermediate</button>
 						<button id="expAdvanced" class="btn btn-outline-success btn-group-custom">Advanced</button>
+					</div>
+				</div>
+
+				<div class="mb-4">
+					<span class="section-label">Form Focus</span>
+					<div class="btn-group w-100 mb-3" role="group">
+						<button id="focusStance" class="btn btn-outline-info btn-group-custom active">Stance</button>
+						<button id="focusDraw" class="btn btn-outline-info btn-group-custom">Draw</button>
+						<button id="focusAnchor" class="btn btn-outline-info btn-group-custom">Anchor</button>
+						<button id="focusRelease" class="btn btn-outline-info btn-group-custom">Release</button>
+						<button id="focusFollow" class="btn btn-outline-info btn-group-custom">Follow-through</button>
 					</div>
 				</div>
 
@@ -267,6 +291,7 @@
 					<button id="getTips" class="btn btn-success large-btn">💡 Get Tips</button>
 				</div>
 			</div>
+			</div>
 		</div>
 
 		<div id="feedback-display" class="feedback-badge" style="display:none">
@@ -284,7 +309,8 @@
 			difficulty: 'intermediate',
 			experienceLevel: 'intermediate',
 			liveFeedbackEnabled: true,
-			soundEnabled: true
+			soundEnabled: true,
+			formFocus: 'stance'
 		};
 
 		// Save state to localStorage
@@ -318,6 +344,13 @@
 			document.getElementById('expBeginner').classList.toggle('active', coachState.experienceLevel === 'beginner');
 			document.getElementById('expIntermediate').classList.toggle('active', coachState.experienceLevel === 'intermediate');
 			document.getElementById('expAdvanced').classList.toggle('active', coachState.experienceLevel === 'advanced');
+			
+			// Set form focus buttons
+			document.getElementById('focusStance').classList.toggle('active', coachState.formFocus === 'stance');
+			document.getElementById('focusDraw').classList.toggle('active', coachState.formFocus === 'draw');
+			document.getElementById('focusAnchor').classList.toggle('active', coachState.formFocus === 'anchor');
+			document.getElementById('focusRelease').classList.toggle('active', coachState.formFocus === 'release');
+			document.getElementById('focusFollow').classList.toggle('active', coachState.formFocus === 'follow');
 			
 			// Set checkboxes
 			document.getElementById('liveFeedback').checked = coachState.liveFeedbackEnabled;
@@ -388,6 +421,43 @@
 			document.getElementById('expAdvanced').classList.add('active');
 			saveState();
 			showFeedback('🏆 Advanced Mode: Competitive-level analysis with detailed micro-adjustments.');
+		});
+
+		// Form Focus selection
+		document.getElementById('focusStance').addEventListener('click', ()=>{
+			coachState.formFocus = 'stance';
+			document.querySelectorAll('[id^="focus"]').forEach(b=>b.classList.remove('active'));
+			document.getElementById('focusStance').classList.add('active');
+			saveState();
+			showFeedback('📐 Stance Focus: Analyzing foot position, alignment, and balance.');
+		});
+		document.getElementById('focusDraw').addEventListener('click', ()=>{
+			coachState.formFocus = 'draw';
+			document.querySelectorAll('[id^="focus"]').forEach(b=>b.classList.remove('active'));
+			document.getElementById('focusDraw').classList.add('active');
+			saveState();
+			showFeedback('🏹 Draw Focus: Evaluating draw length, back tension, and shoulder alignment.');
+		});
+		document.getElementById('focusAnchor').addEventListener('click', ()=>{
+			coachState.formFocus = 'anchor';
+			document.querySelectorAll('[id^="focus"]').forEach(b=>b.classList.remove('active'));
+			document.getElementById('focusAnchor').classList.add('active');
+			saveState();
+			showFeedback('🎯 Anchor Focus: Checking anchor point consistency and head position.');
+		});
+		document.getElementById('focusRelease').addEventListener('click', ()=>{
+			coachState.formFocus = 'release';
+			document.querySelectorAll('[id^="focus"]').forEach(b=>b.classList.remove('active'));
+			document.getElementById('focusRelease').classList.add('active');
+			saveState();
+			showFeedback('💨 Release Focus: Analyzing release timing and follow-through mechanics.');
+		});
+		document.getElementById('focusFollow').addEventListener('click', ()=>{
+			coachState.formFocus = 'follow';
+			document.querySelectorAll('[id^="focus"]').forEach(b=>b.classList.remove('active'));
+			document.getElementById('focusFollow').classList.add('active');
+			saveState();
+			showFeedback('🔄 Follow-through Focus: Monitoring post-release form and bow arm movement.');
 		});
 
 		// Checkbox listeners
@@ -483,7 +553,16 @@
 				'intermediate': '<ul><li>Advanced anchor consistency and micro-movements</li><li>Back/shoulder tension balance</li><li>Release technique refinement</li><li>Head/neck position during execution</li><li>Draw curve smoothness</li></ul>',
 				'advanced': '<ul><li>Micro-adjustments in hip rotation</li><li>Precision bow arm tracking</li><li>Advanced release timing analysis</li><li>Load/transfer efficiency</li><li>Competitive-level form optimization</li></ul>'
 			};
-			mdl.innerHTML = `<div class="modal fade" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">📸 Form Analysis - ${expLevel}</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><p><strong>Analysis will evaluate:</strong></p>${analysis[coachState.experienceLevel]}<p class="text-muted mt-3">📱 Position device at 45° angle for best results. Ensure adequate lighting.</p></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button><button id="startRecordingBtn" class="btn btn-primary">Analyze Sample</button></div></div></div></div>`;
+			
+			const cameraInstructions = {
+				'stance': '📷 Position camera 10-15 feet away at ground level, angled slightly upward to capture full body posture. Ensure feet and hip alignment are visible.',
+				'draw': '📷 Place camera at 45° angle to the side, 5-10 feet away. Focus on back tension and shoulder rotation during the draw phase.',
+				'anchor': '📷 Position camera directly in front or to the side at eye level. Capture face and anchor point clearly for consistency analysis.',
+				'release': '📷 Use side angle at 45°, close enough to see hand and string release. Ensure lighting highlights the release moment.',
+				'follow': '📷 Camera at side angle, following the bow arm movement post-release. Keep focus on bow arm and follow-through position.'
+			};
+			
+			mdl.innerHTML = `<div class="modal fade" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">📸 Form Analysis - ${expLevel} (${coachState.formFocus.charAt(0).toUpperCase() + coachState.formFocus.slice(1)})</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><p><strong>Analysis will evaluate:</strong></p>${analysis[coachState.experienceLevel]}<p class="text-muted mt-3"><strong>Camera Positioning:</strong><br/>${cameraInstructions[coachState.formFocus]}</p></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button><button id="startRecordingBtn" class="btn btn-primary">Analyze Sample</button></div></div></div></div>`;
 			document.body.appendChild(mdl);
 			const bsModal = new bootstrap.Modal(mdl.querySelector('.modal'));
 			bsModal.show();
@@ -494,7 +573,7 @@
 					bsModal.hide();
 					// show analysis modal with image and feedback
 					const analysis = document.createElement('div');
-					analysis.innerHTML = `<div class="modal fade" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header bg-success text-white"><h5 class="modal-title">✅ Analysis Complete - ${expLevel} Level</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="row"><div class="col-md-6"><h6>Sample Form Image</h6><img src="${randomImage}" alt="Form Analysis" style="max-width:100%;border-radius:8px;border:2px solid #28a745;"></div><div class="col-md-6"><h6>AI Coach Feedback</h6><div class="alert alert-info"><p style="margin:0;"><strong>💡 Analysis Result:</strong></p><p style="margin:0.5rem 0 0 0;">${randomFeedback}</p></div><div class="alert alert-light"><strong>Recommendations:</strong><ul><li>Maintain this form consistency across all shots</li><li>Practice this technique in varied conditions</li><li>Record more sessions to track improvement</li></ul></div></div></div></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button><button id="saveAnalysisBtn" class="btn btn-success">Save to Session</button></div></div></div></div>`;
+					analysis.innerHTML = `<div class="modal fade" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header bg-success text-white"><h5 class="modal-title">✅ Analysis Complete - ${expLevel} Level (${coachState.formFocus.charAt(0).toUpperCase() + coachState.formFocus.slice(1)})</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="row"><div class="col-md-6"><h6>Sample Form Image</h6><img src="${randomImage}" alt="Form Analysis" style="max-width:100%;border-radius:8px;border:2px solid #28a745;"></div><div class="col-md-6"><h6>AI Coach Feedback</h6><div class="alert alert-info"><p style="margin:0;"><strong>💡 Analysis Result:</strong></p><p style="margin:0.5rem 0 0 0;">${randomFeedback}</p></div><div class="alert alert-light"><strong>Recommendations:</strong><ul><li>Maintain this form consistency across all shots</li><li>Practice this technique in varied conditions</li><li>Record more sessions to track improvement</li></ul></div></div></div></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button><button id="saveAnalysisBtn" class="btn btn-success">Save to Session</button></div></div></div></div>`;
 					document.body.appendChild(analysis);
 					const bsAnalysis = new bootstrap.Modal(analysis.querySelector('.modal'));
 					bsAnalysis.show();
@@ -570,6 +649,20 @@
 
 		// Initialize on load
 		initializeUI();
+		
+		// Handle collapse icons
+		document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(btn => {
+			btn.addEventListener('click', function() {
+				const icon = this.querySelector('.collapse-icon');
+				setTimeout(() => {
+					if (this.classList.contains('collapsed')) {
+						icon.textContent = '+';
+					} else {
+						icon.textContent = '−';
+					}
+				}, 10);
+			});
+		});
 	})();
 	</script>
 	<script>
@@ -578,6 +671,7 @@
 			const btn = e.target.closest('button:not([data-bs-dismiss])'); 
 			if(!btn) return;
 			if(btn.onclick || btn.getAttribute('onclick')) return;
+			if(btn.getAttribute('data-bs-toggle')) return; // Bootstrap toggles
 			if(!btn.id && !btn.getAttribute('data-action')) {
 				e.preventDefault();
 				alert('This feature is not yet implemented.');

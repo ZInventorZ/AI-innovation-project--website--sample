@@ -11,20 +11,6 @@
 <body>
 	<!-- Top-left back button: tries history.back(), falls back to index.html -->
 	<a class="back-btn" href="index.html" onclick="if(history.length>1){history.back();return false;}">← Back</a>
-	<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
-    <div class="container-fluid">
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="nav nav-pills ms-auto" role="tablist">
-          <li class="nav-item"><a class="nav-link" href="index.html"><span class="nav-icon">📈</span>History</a></li>
-          <li class="nav-item"><a class="nav-link" href="AI_Coach.html"><span class="nav-icon">🤖</span>AI Coach</a></li>
-          <li class="nav-item"><a class="nav-link active" href="equipment.html"><span class="nav-icon">🏹</span>Equipment</a></li>
-          <li class="nav-item"><a class="nav-link" href="statistics.html"><span class="nav-icon">📊</span>Statistics</a></li>
-          <li class="nav-item"><a class="nav-link" href="competition.html"><span class="nav-icon">🏆</span>Competition</a></li>
-          <li class="nav-item"><a class="nav-link" href="menu.html"><span class="nav-icon">☰</span>Menu</a></li>
-        </ul>
-      </div>
-    </div>
-  </nav>
 	<header class="page-header">
 		<div class="container">
 			<img src="images/AIchery_logo_full_sized.png" alt="AIchery Logo" style="max-width: 150px; height: auto;">
@@ -104,7 +90,6 @@
 	<!-- Bottom navigation: mirror other pages for consistent navigation -->
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
     <div class="container-fluid">
-      <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="nav nav-pills ms-auto" role="tablist">
           <li class="nav-item"><a class="nav-link" href="index.html"><span class="nav-icon">📈</span>History</a></li>
           <li class="nav-item"><a class="nav-link" href="AI_Coach.html"><span class="nav-icon">🤖</span>AI Coach</a></li>
@@ -113,7 +98,6 @@
           <li class="nav-item"><a class="nav-link" href="competition.html"><span class="nav-icon">🏆</span>Competition</a></li>
           <li class="nav-item"><a class="nav-link" href="menu.html"><span class="nav-icon">☰</span>Menu</a></li>
         </ul>
-      </div>
     </div>
   </nav>
 
@@ -229,6 +213,10 @@
 						<div class="col-6"><label class="form-label">Limb Material/Type</label><input name="limbMaterial" class="form-control" placeholder="e.g., Carbon, Wood"/></div>
 						<div class="col-6"><label class="form-label">String Replaced Date</label><input name="replacedStringDate" class="form-control" placeholder="MM/DD/YYYY"/></div>
 						
+						<!-- Tracked data -->
+						<div class="col-6"><label class="form-label">Tracked Arrow Count</label><input name="trackedArrowCount" class="form-control" readonly></div>
+						<div class="col-6"><label class="form-label">Arrows Put Through (current string)</label><input name="arrowsPutThrough" class="form-control" readonly></div>
+						
 						<!-- Barebow specific fields (hidden by default) -->
 						<div id="barebowToggle" class="col-12" style="display:none">
 							<div class="form-check form-switch">
@@ -333,29 +321,23 @@
 							</select>
 						</div>
 						
-						<!-- Pin Configuration: Single or Multi (only for Slider) -->
-						<div id="pinConfigDiv" class="col-12" style="display:none;">
-							<label class="form-label">Pin Configuration</label>
-							<select id="pinConfiguration" class="form-select">
-								<option value="single">Single Pin</option>
-								<option value="multi">Multi-Pin</option>
-							</select>
+						<!-- Scope for Sliders -->
+						<div id="scopeDiv" class="col-12" style="display:none;">
+							<label class="form-label">Scope</label>
+							<input id="scope" class="form-control" list="scopeList" placeholder="e.g. accustatII, AVX-41"/>
+							<datalist id="scopeList"></datalist>
+							<div class="form-check mt-2">
+								<input type="checkbox" id="interchangeableScope" class="form-check-input">
+								<label class="form-check-label" for="interchangeableScope">Interchangeable Scope</label>
+							</div>
 						</div>
 						
-						<!-- Additional Features: Lens, Ring, Dot -->
+						<!-- Additional Features: Lens -->
 						<div class="col-12">
 							<label class="form-label">Additional Features</label>
 							<div class="form-check">
 								<input type="checkbox" id="hasLens" class="form-check-input">
 								<label class="form-check-label" for="hasLens">Lens</label>
-							</div>
-							<div class="form-check">
-								<input type="checkbox" id="hasRing" class="form-check-input">
-								<label class="form-check-label" for="hasRing">Ring</label>
-							</div>
-							<div class="form-check">
-								<input type="checkbox" id="hasDot" class="form-check-input">
-								<label class="form-check-label" for="hasDot">Dot</label>
 							</div>
 						</div>
 						
@@ -365,11 +347,20 @@
 							<input name="lensPower" class="form-control" placeholder="e.g. +1.5"/>
 							<label class="form-label mt-2">Clarifier (optional)</label>
 							<input name="clarifier" class="form-control" placeholder="e.g. clear/neutral"/>
+							<!-- Ring and Dot only if Lens -->
+							<div class="form-check mt-2">
+								<input type="checkbox" id="hasRing" class="form-check-input">
+								<label class="form-check-label" for="hasRing">Ring</label>
+							</div>
+							<div class="form-check">
+								<input type="checkbox" id="hasDot" class="form-check-input">
+								<label class="form-check-label" for="hasDot">Dot</label>
+							</div>
 						</div>
 						
-						<!-- Pins Section (Slider without Ring/Dot) -->
-						<div id="pinsSection" class="col-12" style="display:none;">
-							<label class="form-label">Pin Configuration</label>
+						<!-- Pins Section -->
+						<div id="pinsSection" class="col-12">
+							<label class="form-label">Pins</label>
 							<div id="pinsContainer"></div>
 							<div class="mt-2"><button id="addPin" type="button" class="btn btn-sm btn-outline-primary">Add Pin</button></div>
 						</div>
@@ -392,8 +383,7 @@
 				// Set up hierarchical sight configuration logic
 				setTimeout(()=>{
 					const sightType = document.getElementById('sightType');
-					const pinConfigDiv = document.getElementById('pinConfigDiv');
-					const pinConfiguration = document.getElementById('pinConfiguration');
+					const scopeDiv = document.getElementById('scopeDiv');
 					const hasLens = document.getElementById('hasLens');
 					const hasRing = document.getElementById('hasRing');
 					const hasDot = document.getElementById('hasDot');
@@ -401,25 +391,57 @@
 					const pinsSection = document.getElementById('pinsSection');
 					
 					function updateFieldsVisibility(){
-						// Show pin configuration only for slider type
-						pinConfigDiv.style.display = (sightType.value === 'slider') ? 'block' : 'none';
-						
-						// Show pins section only if: Slider type, AND neither Ring nor Dot is selected
-						const showPins = (sightType.value === 'slider') && !hasRing.checked && !hasDot.checked;
-						pinsSection.style.display = showPins ? 'block' : 'none';
+						// Show scope only for slider type
+						scopeDiv.style.display = (sightType.value === 'slider') ? 'block' : 'none';
 						
 						// Show lens fields only if Lens checkbox is checked
 						lensFields.style.display = hasLens.checked ? 'block' : 'none';
+						
+						// Grey out pins if ring or dot is selected
+						const greyPins = hasRing.checked || hasDot.checked;
+						pinsSection.style.opacity = greyPins ? 0.5 : 1;
+						pinsSection.style.pointerEvents = greyPins ? 'none' : 'auto';
 					}
 					
 					sightType.addEventListener('change', updateFieldsVisibility);
-					pinConfiguration.addEventListener('change', updateFieldsVisibility);
 					hasLens.addEventListener('change', updateFieldsVisibility);
 					hasRing.addEventListener('change', updateFieldsVisibility);
 					hasDot.addEventListener('change', updateFieldsVisibility);
 					
+					const scopeInput = document.getElementById('scope');
+					scopeInput.addEventListener('change', () => {
+						const scope = scopeInput.value.toLowerCase();
+						const pinsContainer = document.getElementById('pinsContainer');
+						pinsContainer.innerHTML = '';
+						if(scope.includes('avx-41') || scope.includes('avx-31')){
+							// Single pin
+							addPin();
+						} else if(scope.includes('accustat')){
+							// 3-5 pins, default 3
+							for(let i=0; i<3; i++) addPin();
+						}
+						// For other scopes, leave empty or as is
+					});
+					
 					updateFieldsVisibility();
 					document.getElementById('addPin').addEventListener('click', addPin);
+					
+					// Populate scope datalist with past entries
+					const scopeList = document.getElementById('scopeList');
+					scopeList.innerHTML = '';
+					const setups = getSetups();
+					const scopes = new Set();
+					setups.forEach(s => {
+						if(s.type === 'sight' && s.data.scope){
+							scopes.add(s.data.scope);
+						}
+					});
+					['accustatII', 'AVX-41', 'AVX-31'].forEach(s => scopes.add(s));
+					scopes.forEach(scope => {
+						const opt = document.createElement('option');
+						opt.value = scope;
+						scopeList.appendChild(opt);
+					});
 				},0);
 			}
 		}
@@ -445,7 +467,8 @@
 		function loadSetup(s){ setupName.value = s.name || ''; if(s.type==='arrows'){ showArrows(); setTimeout(()=>{ Object.keys(s.data||{}).forEach(k=>{ const el = dynamic.querySelector('[name="'+k+'"]'); if(el) el.value = s.data[k]; }); },0); }
 		if(s.type==='sight'){ showSight(); setTimeout(()=>{ const d=s.data||{}; 
 			document.getElementById('sightType').value = d.sightType || 'fixed';
-			document.getElementById('pinConfiguration').value = d.pinConfiguration || 'single';
+			document.getElementById('scope').value = d.scope || '';
+			document.getElementById('interchangeableScope').checked = d.interchangeableScope || false;
 			document.getElementById('hasLens').checked = d.hasLens || false;
 			document.getElementById('hasRing').checked = d.hasRing || false;
 			document.getElementById('hasDot').checked = d.hasDot || false;
@@ -453,15 +476,32 @@
 				dynamic.querySelector('[name="lensPower"]').value = d.lensPower||''; 
 				dynamic.querySelector('[name="clarifier"]').value = d.clarifier||''; 
 			}
-			// load pins if slider type without ring/dot
-			if(d.sightType === 'slider' && !d.hasRing && !d.hasDot){
-				(d.pins||[]).forEach(p=>{ addPin(); const pc = document.getElementById('pinsContainer'); const last = pc.querySelector('.pin-line:last-child'); last.querySelector('[name="pinColor"]').value = p.color||'#000000'; last.querySelector('[name="pinDistance"]').value = p.distance||''; });
-			}
-			// trigger visibility update
+			// load pins always
+			(d.pins||[]).forEach(p=>{ addPin(); const pc = document.getElementById('pinsContainer'); const last = pc.querySelector('.pin-line:last-child'); last.querySelector('[name="pinColor"]').value = p.color||'#000000'; last.querySelector('[name="pinDistance"]').value = p.distance||''; });
+			// trigger visibility and scope change
 			const evt = new Event('change', {bubbles:true});
 			document.getElementById('sightType').dispatchEvent(evt);
+			document.getElementById('scope').dispatchEvent(evt);
 		},0); }
-				if(s.type==='bow'){ showBow(); setTimeout(()=>{ const d=s.data||{}; Object.keys(d).forEach(k=>{ const el = dynamic.querySelector('[name="'+k+'"]'); if(k==='barebowNoAccessories' && el) el.checked = d[k]; else if(el) el.value = d[k]; }); const bowTypeSelect = dynamic.querySelector('[name="bowType"]'); const recurveStyleSelect = dynamic.querySelector('[name="recurveStyle"]'); if(bowTypeSelect && recurveStyleSelect) { const evt = new Event('change', {bubbles:true}); bowTypeSelect.dispatchEvent(evt); } },0); }
+				if(s.type==='bow'){ showBow(); setTimeout(()=>{ const d=s.data||{}; Object.keys(d).forEach(k=>{ const el = dynamic.querySelector('[name="'+k+'"]'); if(k==='barebowNoAccessories' && el) el.checked = d[k]; else if(el) el.value = d[k]; }); const bowTypeSelect = dynamic.querySelector('[name="bowType"]'); const recurveStyleSelect = dynamic.querySelector('[name="recurveStyle"]'); if(bowTypeSelect && recurveStyleSelect) { const evt = new Event('change', {bubbles:true}); bowTypeSelect.dispatchEvent(evt); } 
+			// compute tracked data
+			const practices = JSON.parse(localStorage.getItem('practices')||'[]');
+			const bowName = s.name;
+			let totalArrows = 0;
+			let arrowsWithString = 0;
+			const stringDate = new Date(d.replacedStringDate);
+			practices.forEach(p => {
+				if(p.sessionEquipment && p.sessionEquipment.bow === bowName){
+					const arrows = p.totalArrows || (p.arrowCount * p.ends) || 0;
+					totalArrows += arrows;
+					if(d.replacedStringDate && new Date(p.created) > stringDate){
+						arrowsWithString += arrows;
+					}
+				}
+			});
+			dynamic.querySelector('[name="trackedArrowCount"]').value = totalArrows;
+			dynamic.querySelector('[name="arrowsPutThrough"]').value = arrowsWithString;
+		},0); }
 		}
 
 		// gather form data depending on type
@@ -469,7 +509,8 @@
 			else if(currentType==='bow'){ ['bowType','recurveStyle','drawWeight','riserLength','limbMaterial','bowNotes','replacedStringDate','sightType','stabilizerLength','barebowNoAccessories','camType','letOff','drawLength','bowWeight','axleToAxle','braceHeight'].forEach(n=>{ const barebowCheck = dynamic.querySelector('[name="barebowNoAccessories"]'); if(n==='barebowNoAccessories' && barebowCheck) data[n] = barebowCheck.checked; else { const el = dynamic.querySelector('[name="'+n+'"]'); if(el) data[n]=el?el.value:''; } }); }
 			else if(currentType==='sight'){ 
 				data.sightType = dynamic.querySelector('#sightType')?.value || 'fixed';
-				data.pinConfiguration = dynamic.querySelector('#pinConfiguration')?.value || 'single';
+				data.scope = dynamic.querySelector('#scope')?.value || '';
+				data.interchangeableScope = dynamic.querySelector('#interchangeableScope')?.checked || false;
 				data.hasLens = dynamic.querySelector('#hasLens')?.checked || false;
 				data.hasRing = dynamic.querySelector('#hasRing')?.checked || false;
 				data.hasDot = dynamic.querySelector('#hasDot')?.checked || false;
@@ -477,12 +518,8 @@
 					data.lensPower = dynamic.querySelector('[name="lensPower"]')?.value; 
 					data.clarifier = dynamic.querySelector('[name="clarifier"]')?.value; 
 				}
-				// only save pins if slider without ring/dot
-				if(data.sightType === 'slider' && !data.hasRing && !data.hasDot){
-					data.pins = Array.from(dynamic.querySelectorAll('.pin-line')).map(pl=>({ color: pl.querySelector('[name="pinColor"]').value, distance: pl.querySelector('[name="pinDistance"]').value })); 
-				} else {
-					data.pins = [];
-				}
+				// save pins always
+				data.pins = Array.from(dynamic.querySelectorAll('.pin-line')).map(pl=>({ color: pl.querySelector('[name="pinColor"]').value, distance: pl.querySelector('[name="pinDistance"]').value })); 
 			}
 			return data; }
 
@@ -689,6 +726,45 @@
 				Array.from(list.querySelectorAll('.del-combo')).forEach(b=>b.addEventListener('click', e=>{ const id=Number(e.target.dataset.id); const arr=getCombos().filter(x=>x.id!==id); saveCombos(arr); renderCombos(); })); }
 
 			populateComboSelects(); renderCombos();
+
+			// Add default 2026 loadouts
+			function ensureDefaultCombos(){
+				const combos = getCombos();
+				const newCombos = [
+					{
+						id: 1001,
+						name: "2026 Indoor Loadout",
+						bowId: null, // will set to Prime Ronan if exists
+						sightId: null, // AXCEL Driver
+						arrowsId: null, // V-TAC
+						bowName: "Prime Ronan",
+						sightName: "AXCEL Driver",
+						arrowsName: "Victory V-TAC"
+					},
+					{
+						id: 1002,
+						name: "2026 Outdoor Loadout",
+						bowId: null,
+						sightId: null,
+						arrowsId: null,
+						bowName: "Prime Ronan",
+						sightName: "AXCEL Driver",
+						arrowsName: "Easton Axis"
+					}
+				];
+				let updated = false;
+				newCombos.forEach(newCombo => {
+					if(!combos.find(c => c.id === newCombo.id)){
+						combos.push(newCombo);
+						updated = true;
+					}
+				});
+				if(updated){
+					saveCombos(combos);
+					renderCombos();
+				}
+			}
+			ensureDefaultCombos();
 
 			// save combo handler
 			document.getElementById('saveCombo')?.addEventListener('click', ()=>{

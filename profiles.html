@@ -12,14 +12,8 @@
 	<!-- Top-left back button: tries history.back(), falls back to index.html -->
 	<a class="back-btn" href="index.html" onclick="if(history.length>1){history.back();return false;}">← Back</a>
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
-		<div class="container-fluid">
-			<a class="navbar-brand" href="index.html">AI Innovation</a>
-			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-				<span class="navbar-toggler-icon"></span>
-			</button>
-
-			<div class="collapse navbar-collapse" id="navbarNav">
-				<ul class="nav nav-pills ms-auto" role="tablist">
+    <div class="container-fluid">
+        <ul class="nav nav-pills ms-auto" role="tablist">
 					<li class="nav-item" role="presentation">
 						<a class="nav-link" href="index.html" title="History"><span class="nav-icon">📈</span>History</a>
 					</li>
@@ -30,33 +24,137 @@
 						<a class="nav-link" href="equipment.html" title="Equipment"><span class="nav-icon">🏹</span>Equipment</a>
 					</li>
 					<li class="nav-item" role="presentation">
-						<a class="nav-link" href="Scores.html" title="Statistics"><span class="nav-icon">📊</span>Statistics</a>
-					</li>
-                    
-					<li class="nav-item" role="presentation">
-						<a class="nav-link" href="index.html" title="History"><span class="nav-icon">📈</span>History</a>
+						<a class="nav-link" href="statistics.html" title="Statistics"><span class="nav-icon">📊</span>Statistics</a>
 					</li>
 					<li class="nav-item" role="presentation">
 						<a class="nav-link" href="menu.html"><span class="nav-icon">☰</span>Menu</a>
 					</li>
 				</ul>
-			</div>
-		</div>
-	</nav>
+    </div>
+  </nav>
 
 	<header class="page-header">
 		<div class="container">
-			<h1>Profile</h1>
+			<img src="images/AIchery_logo_full_sized.png" alt="AIchery Logo" style="max-width: 150px; height: auto;">
 		</div>
 	</header>
 
 	<main class="site-main container py-4">
-		<h2>Profiles</h2>
+		<h2>Profile</h2>
 		<p>Manage your account and personal settings.</p>
-		<p><a class="fab-wide" href="#" id="manageProfile">Manage Profile</a></p>
+		<p><a class="fab-wide" href="profile_edit.html">Manage Profile</a></p>
+
+		<div class="row mt-4">
+			<div class="col-md-6">
+				<h3>Profile Information</h3>
+				<div id="profileInfo">
+					<p><strong>Name:</strong> <span id="profileName">Not set</span></p>
+					<p><strong>Email:</strong> <span id="profileEmail">Not set</span></p>
+					<p><strong>Preferred Distance:</strong> <span id="profileDistance">Not set</span> m</p>
+					<p><strong>Default Ends:</strong> <span id="profileEnds">Not set</span></p>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<h3>Current Setup</h3>
+				<div id="currentSetup">
+					<p>No recent practice found.</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="row mt-4">
+			<div class="col-md-6">
+				<h3>Running Average</h3>
+				<div id="runningAverage">
+					<p>Calculate from recent sessions.</p>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<h3>Other Statistics</h3>
+				<div id="otherStats">
+					<p><strong>Total Practices:</strong> <span id="totalPractices">0</span></p>
+					<p><strong>Total Score:</strong> <span id="totalScore">0</span></p>
+					<p><strong>Average Score:</strong> <span id="avgScore">0</span></p>
+					<p><strong>Total Arrows:</strong> <span id="totalArrows">0</span></p>
+				</div>
+			</div>
+		</div>
 	</main>
 
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+	<script>
+		function getProfile() {
+			return JSON.parse(localStorage.getItem('profile') || 'null');
+		}
+
+		function getPractices() {
+			return JSON.parse(localStorage.getItem('practices') || '[]');
+		}
+
+		function getEquipmentSetups() {
+			return JSON.parse(localStorage.getItem('equipmentSetups') || '[]');
+		}
+
+		function calculateRunningAverage(practices, sessions = 5) {
+			if (practices.length === 0) return 0;
+			const recent = practices.slice(-sessions);
+			const totalScore = recent.reduce((sum, p) => sum + (p.totalScore || 0), 0);
+			const totalArrows = recent.reduce((sum, p) => sum + (p.scores ? p.scores.length : 0), 0);
+			return totalArrows > 0 ? (totalScore / totalArrows * 3).toFixed(2) : 0;
+		}
+
+		function loadProfileData() {
+			const profile = getProfile();
+			if (profile) {
+				document.getElementById('profileName').textContent = profile.name || 'Not set';
+				document.getElementById('profileEmail').textContent = profile.email || 'Not set';
+				document.getElementById('profileDistance').textContent = profile.distance || 'Not set';
+				document.getElementById('profileEnds').textContent = profile.ends || 'Not set';
+			}
+
+			const practices = getPractices();
+			const setups = getEquipmentSetups();
+
+			// Current Setup: from last practice
+			if (practices.length > 0) {
+				const lastPractice = practices[practices.length - 1];
+				const eq = lastPractice.sessionEquipment;
+				if (eq) {
+					let setupHtml = '';
+					if (eq.bow) {
+						const bowSetup = setups.find(s => s.id == eq.bow);
+						setupHtml += `<p><strong>Bow:</strong> ${bowSetup ? bowSetup.name : 'Unknown'}</p>`;
+					}
+					if (eq.sight && eq.sight.type) {
+						setupHtml += `<p><strong>Sight:</strong> ${eq.sight.type} (${eq.sight.pins} pins)</p>`;
+					}
+					if (eq.arrow && eq.arrow.model) {
+						setupHtml += `<p><strong>Arrows:</strong> ${eq.arrow.model}</p>`;
+					}
+					document.getElementById('currentSetup').innerHTML = setupHtml || '<p>No equipment details.</p>';
+				} else {
+					document.getElementById('currentSetup').innerHTML = '<p>Last practice setup not found.</p>';
+				}
+			}
+
+			// Running Average
+			const runningAvg = calculateRunningAverage(practices);
+			document.getElementById('runningAverage').innerHTML = `<p><strong>Last 5 sessions:</strong> ${runningAvg}</p>`;
+
+			// Other Stats
+			const totalPractices = practices.length;
+			const totalScore = practices.reduce((sum, p) => sum + (p.totalScore || 0), 0);
+			const totalArrows = practices.reduce((sum, p) => sum + (p.scores ? p.scores.length : 0), 0);
+			const avgScore = totalArrows > 0 ? (totalScore / totalArrows * 3).toFixed(2) : 0;
+
+			document.getElementById('totalPractices').textContent = totalPractices;
+			document.getElementById('totalScore').textContent = totalScore;
+			document.getElementById('avgScore').textContent = avgScore;
+			document.getElementById('totalArrows').textContent = totalArrows;
+		}
+
+		document.addEventListener('DOMContentLoaded', loadProfileData);
+	</script>
 </body>
 </html>
 =======
