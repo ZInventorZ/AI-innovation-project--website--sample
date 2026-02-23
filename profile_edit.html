@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <!doctype html>
 <html lang="en">
 <head>
@@ -9,22 +8,17 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
 </head>
 <body>
-  <!-- Top-left back button: tries history.back(), falls back to index.html -->
   <a class="back-btn" href="index.html" onclick="if(history.length>1){history.back();return false;}">← Back</a>
   <header class="page-header"><div class="container"><h1>Edit Profile</h1></div></header>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
     <div class="container-fluid">
       <a class="navbar-brand" href="index.html">AI Innovation</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="nav nav-pills ms-auto">
           <li class="nav-item"><a class="nav-link" href="index.html"><span class="nav-icon">📈</span>History</a></li>
           <li class="nav-item"><a class="nav-link" href="AI_Coach.html"><span class="nav-icon">🤖</span>AI Coach</a></li>
           <li class="nav-item"><a class="nav-link" href="equipment.html"><span class="nav-icon">🏹</span>Equipment</a></li>
-          <li class="nav-item"><a class="nav-link" href="Scores.html"><span class="nav-icon">📊</span>Statistics</a></li>
-          <li class="nav-item"><a class="nav-link" href="index.html"><span class="nav-icon">📈</span>History</a></li>
+          <li class="nav-item"><a class="nav-link" href="statistics.html"><span class="nav-icon">📊</span>Statistics</a></li>
           <li class="nav-item"><a class="nav-link active" href="profile_edit.html"><span class="nav-icon">👤</span>Profile</a></li>
         </ul>
       </div>
@@ -33,10 +27,25 @@
 
   <main class="site-main container py-4">
     <form id="profileForm" class="row g-3">
-      <div class="col-12"><label class="form-label">Display Name</label><input id="p_name" class="form-control"></div>
-      <div class="col-12"><label class="form-label">Email</label><input id="p_email" class="form-control" type="email"></div>
+      <div class="col-12"><label class="form-label">Display Name</label><input id="p_name" class="form-control" placeholder="Your name"></div>
+      <div class="col-12"><label class="form-label">Email</label><input id="p_email" class="form-control" type="email" placeholder="you@example.com"></div>
       <div class="col-6"><label class="form-label">Preferred Distance (m)</label><input id="p_distance" class="form-control" type="number"></div>
       <div class="col-6"><label class="form-label">Default Ends</label><input id="p_ends" class="form-control" type="number"></div>
+
+      <hr style="width:100%"/>
+      <h5 class="mt-2">Athlete Profile</h5>
+      <div class="col-6"><label class="form-label">Eye Dominance</label>
+        <select id="p_eye" class="form-select">
+          <option value="right">Right</option>
+          <option value="left">Left</option>
+        </select>
+      </div>
+      <div class="col-6"><label class="form-label">Draw Length (in)</label><input id="p_draw" class="form-control" type="number" step="0.1"></div>
+      <div class="col-6"><label class="form-label">Draw Weight (lbs)</label><input id="p_poundage" class="form-control" type="number"></div>
+      <div class="col-6"><label class="form-label">Sight / Pins</label><input id="p_pins" class="form-control" placeholder="e.g. S3DA"></div>
+      <div class="col-6"><label class="form-label">Competition Class / Bow Type</label><input id="p_class" class="form-control" placeholder="e.g. NFAA modern bowhunter"></div>
+      <div class="col-6"><label class="form-label">Years Shooting</label><input id="p_years" class="form-control" type="number" min="0"></div>
+
       <div class="col-12"><button class="btn btn-primary" id="saveProfile">Save Profile</button></div>
     </form>
     <div id="profileStatus" class="mt-2 text-success"></div>
@@ -50,9 +59,39 @@
       const form=document.getElementById('profileForm');
       const status=document.getElementById('profileStatus');
       const existing=getProfile();
-      if(existing){ document.getElementById('p_name').value=existing.name||''; document.getElementById('p_email').value=existing.email||''; document.getElementById('p_distance').value=existing.distance||''; document.getElementById('p_ends').value=existing.ends||'' }
-      form.addEventListener('submit',e=>{ e.preventDefault(); const p={name:document.getElementById('p_name').value,email:document.getElementById('p_email').value,distance:Number(document.getElementById('p_distance').value)||null,ends:Number(document.getElementById('p_ends').value)||null}; saveProfile(p); status.textContent='Saved ✓'; setTimeout(()=>status.textContent='',2000); })
+      // Prefill with provided defaults if profile missing
+      const defaults = { eye:'right', draw:29.5, poundage:55, pins:'S3DA', class:'NFAA modern bowhunter', years:3 };
+      const profile = existing || defaults;
+      // if no existing profile, persist defaults for this user
+      if(!existing){ saveProfile(profile); }
+      document.getElementById('p_name').value=profile.name||'';
+      document.getElementById('p_email').value=profile.email||'';
+      document.getElementById('p_distance').value=profile.distance||'';
+      document.getElementById('p_ends').value=profile.ends||'';
+      document.getElementById('p_eye').value=profile.eye||defaults.eye;
+      document.getElementById('p_draw').value=profile.draw||defaults.draw;
+      document.getElementById('p_poundage').value=profile.poundage||defaults.poundage;
+      document.getElementById('p_pins').value=profile.pins||defaults.pins;
+      document.getElementById('p_class').value=profile.class||defaults.class;
+      document.getElementById('p_years').value=profile.years||defaults.years;
+
+      form.addEventListener('submit',e=>{
+        e.preventDefault();
+        const p={
+          name:document.getElementById('p_name').value,
+          email:document.getElementById('p_email').value,
+          distance:Number(document.getElementById('p_distance').value)||null,
+          ends:Number(document.getElementById('p_ends').value)||null,
+          eye:document.getElementById('p_eye').value,
+          draw:parseFloat(document.getElementById('p_draw').value)||null,
+          poundage:parseFloat(document.getElementById('p_poundage').value)||null,
+          pins:document.getElementById('p_pins').value,
+          class:document.getElementById('p_class').value,
+          years:parseInt(document.getElementById('p_years').value)||0
+        };
+        saveProfile(p); status.textContent='Saved ✓'; setTimeout(()=>status.textContent='',2000);
+      })
     })();
   </script>
 </body>
-=======
+</html>

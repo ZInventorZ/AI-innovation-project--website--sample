@@ -52,6 +52,14 @@
 					<p><strong>Email:</strong> <span id="profileEmail">Not set</span></p>
 					<p><strong>Preferred Distance:</strong> <span id="profileDistance">Not set</span> m</p>
 					<p><strong>Default Ends:</strong> <span id="profileEnds">Not set</span></p>
+					<hr/>
+					<h6>Athlete Details</h6>
+					<p><strong>Eye Dominance:</strong> <span id="profileEye">Not set</span></p>
+					<p><strong>Draw Length:</strong> <span id="profileDraw">Not set</span> in</p>
+					<p><strong>Draw Weight:</strong> <span id="profilePoundage">Not set</span> lbs</p>
+					<p><strong>Sight / Pins:</strong> <span id="profilePins">Not set</span></p>
+					<p><strong>Competition Class:</strong> <span id="profileClass">Not set</span></p>
+					<p><strong>Years Shooting:</strong> <span id="profileYears">Not set</span></p>
 				</div>
 			</div>
 			<div class="col-md-6">
@@ -110,6 +118,12 @@
 				document.getElementById('profileEmail').textContent = profile.email || 'Not set';
 				document.getElementById('profileDistance').textContent = profile.distance || 'Not set';
 				document.getElementById('profileEnds').textContent = profile.ends || 'Not set';
+				document.getElementById('profileEye').textContent = profile.eye || 'Not set';
+				document.getElementById('profileDraw').textContent = profile.draw || 'Not set';
+				document.getElementById('profilePoundage').textContent = profile.poundage || 'Not set';
+				document.getElementById('profilePins').textContent = profile.pins || 'Not set';
+				document.getElementById('profileClass').textContent = profile.class || 'Not set';
+				document.getElementById('profileYears').textContent = profile.years || 'Not set';
 			}
 
 			const practices = getPractices();

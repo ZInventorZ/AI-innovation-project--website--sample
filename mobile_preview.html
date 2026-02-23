@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mobile UI Preview</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <style>
+    .phone { width:240px; height:480px; border-radius:24px; border:12px solid #111; background:#fff; padding:14px; box-shadow:0 10px 30px rgba(0,0,0,.15); margin:10px }
+    .screen { width:100%; height:100%; overflow:hidden; border-radius:12px; background:#f8f9fa; display:flex; flex-direction:column }
+    .caption{ font-size:.85rem; margin-top:.4rem }
+  </style>
+</head>
+<body>
+  <a class="back-btn" href="information.html">← Back</a>
+  <main class="container py-4">
+    <h2>Mobile UI Preview</h2>
+    <p class="text-muted">Mock phone previews of core screens.</p>
+    <div class="d-flex flex-wrap">
+      <div class="phone">
+        <div class="screen p-2"><h6>Form Analysis</h6><img src="images/ready_to_fire.jpg" style="width:100%;border-radius:8px;"/></div>
+        <div class="caption">Form analysis screen</div>
+      </div>
+      <div class="phone">
+        <div class="screen p-2"><h6>Session History</h6><img src="images/center_X_target.jpg" style="width:100%;border-radius:8px;"/></div>
+        <div class="caption">Session history</div>
+      </div>
+      <div class="phone">
+        <div class="screen p-2"><h6>AI Feedback</h6><img src="images/full_draw_setting anchor.jpg" style="width:100%;border-radius:8px;"/></div>
+        <div class="caption">AI feedback & scores</div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

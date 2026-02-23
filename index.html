@@ -165,7 +165,12 @@
                         names.forEach(n=>{ const btn = document.createElement('button'); btn.className='pill'; btn.style.marginRight='.4rem'; btn.textContent=n; btn.addEventListener('click',()=>{ state.round = n==='All Rounds'? '': n; document.getElementById('pillRounds').textContent = n==='All Rounds'? 'All Rounds' : n; container.style.display='none'; renderScores(); }); container.appendChild(btn); });
                         const btnAll = document.createElement('button'); btnAll.className='pill active'; btnAll.textContent='All Rounds'; btnAll.addEventListener('click',()=>{ state.round=''; document.getElementById('pillRounds').textContent='All Rounds'; container.style.display='none'; renderScores(); }); container.insertBefore(btnAll, container.firstChild);
                     } else if(type==='bow'){
-                        const bows = Array.from(new Set(list.map(p=> (p.equipmentSetup&&p.equipmentSetup.bow) || (p.sessionEquipment && p.sessionEquipment.bow) || ''))).filter(x=>x);
+                        // collect bows from past practices
+                        const bowsFromPractices = Array.from(new Set(list.map(p=> (p.equipmentSetup&&p.equipmentSetup.bow) || (p.sessionEquipment && p.sessionEquipment.bow) || '') )).filter(x=>x);
+                        // also include bows saved in equipment setups
+                        const equipmentSetups = JSON.parse(localStorage.getItem('equipmentSetups')||'[]');
+                        const bowsFromSetups = equipmentSetups.filter(s=>s.type==='bow').map(s=>s.name);
+                        const bows = Array.from(new Set([...bowsFromPractices, ...bowsFromSetups])).filter(x=>x);
                         bows.forEach(b=>{ const btn = document.createElement('button'); btn.className='pill'; btn.style.marginRight='.4rem'; btn.textContent=b; btn.addEventListener('click',()=>{ state.bow=b; document.getElementById('pillBows').textContent = b; container.style.display='none'; renderScores(); }); container.appendChild(btn); });
                         const btnAll = document.createElement('button'); btnAll.className='pill active'; btnAll.textContent='All Bows'; btnAll.addEventListener('click',()=>{ state.bow=''; document.getElementById('pillBows').textContent='All Bows'; container.style.display='none'; renderScores(); }); container.insertBefore(btnAll, container.firstChild);
                     }

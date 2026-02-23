@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Feature Walkthrough</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <style>
+    .step { padding:18px; margin-bottom:12px; border-radius:8px; }
+    .step:nth-child(odd){ background:#fff; }
+    .device-mock { border:1px dashed #ccc; padding:8px; border-radius:6px; display:inline-block }
+    .arrow { font-size:20px; transform:rotate(10deg); }
+    /* small scroll animation */
+    .reveal{opacity:0; transform:translateY(12px); transition:all .5s ease-out}
+    .reveal.visible{opacity:1; transform:translateY(0)}
+  </style>
+</head>
+<body>
+  <a class="back-btn" href="information.html">← Back</a>
+  <main class="container py-4">
+    <h2>Feature Walkthrough</h2>
+    <p class="text-muted">A guided tour of key features. Scrolling reveals annotated screenshots and short previews.</p>
+
+    <div class="step reveal" id="s1">
+      <h5>1 — AI Coach Analysis</h5>
+      <div class="row g-2">
+        <div class="col-12 col-md-6">
+          <div class="device-mock"><img src="images/ready_to_fire.jpg" style="max-width:100%" alt="sample"/></div>
+        </div>
+        <div class="col-12 col-md-6">
+          <p>Start a form analysis to generate frame feedback, per-aspect scores and recommendations.</p>
+          <p><span class="arrow">➡️</span> Short animated preview: <em>(placeholder)</em></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="step reveal" id="s2">
+      <h5>2 — Session History & Filters</h5>
+      <div class="row g-2">
+        <div class="col-12 col-md-6">
+          <div class="device-mock"><img src="images/center_X_target.jpg" style="max-width:100%" alt="history"/></div>
+        </div>
+        <div class="col-12 col-md-6">
+          <p>Filter sessions by bow, round or date. Quick actions let you edit or delete a session.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="step reveal" id="s3">
+      <h5>3 — Equipment Setups</h5>
+      <div class="row g-2">
+        <div class="col-12 col-md-6">
+          <div class="device-mock"><img src="images/back_angled.webp" style="max-width:100%" alt="equipment"/></div>
+        </div>
+        <div class="col-12 col-md-6">
+          <p>Save combined setups and quickly attach them to sessions for accurate tracking.</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="text-muted small mt-3">Tip: Use the mobile preview to see how these screens look on phones.</p>
+  </main>
+
+  <script>
+    // simple reveal on scroll
+    const els = document.querySelectorAll('.reveal');
+    function onScroll(){ els.forEach(e=>{ const r = e.getBoundingClientRect(); if(r.top < window.innerHeight - 60) e.classList.add('visible'); }); }
+    window.addEventListener('scroll', onScroll); onScroll();
+  </script>
+</body>
+</html>

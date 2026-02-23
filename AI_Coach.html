@@ -6,6 +6,7 @@
 	<title>AI Innovation Project - AI Coach</title>
 	<link rel="stylesheet" href="style.css">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+	<link rel="icon" href="images/AIchery_logo.png" type="image/png">
 	<style>
 		.coach-card {
 			border: none;
@@ -150,6 +151,49 @@
 		.collapsed .collapse-icon::before {
 			content: "+";
 		}
+		.loading-bar {
+			position: fixed;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			background: rgba(255, 255, 255, 0.95);
+			border-radius: 20px;
+			padding: 20px;
+			box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+			z-index: 1000;
+			border: 3px solid var(--accent);
+		}
+		.loading-container {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			width: 300px;
+			position: relative;
+		}
+		.bow-icon, .target-icon {
+			font-size: 2rem;
+			z-index: 2;
+		}
+		.progress-track {
+			flex: 1;
+			height: 4px;
+			background: #e0e0e0;
+			border-radius: 2px;
+			margin: 0 10px;
+			position: relative;
+			overflow: hidden;
+		}
+		.progress-arrow {
+			position: absolute;
+			top: -8px;
+			left: -20px;
+			font-size: 1.5rem;
+			animation: arrowMove 2s linear infinite;
+		}
+		@keyframes arrowMove {
+			0% { left: -20px; }
+			100% { left: calc(100% + 20px); }
+		}
 	</style>
 </head>
 <body>
@@ -259,11 +303,23 @@
 				</div>
 
 				<div class="mb-4">
+					<span class="section-label">Mode</span>
+					<div class="btn-group w-100 mb-3" role="group">
+						<button id="modeBeginner" class="btn btn-outline-primary btn-group-custom">🎯 Beginner Mode</button>
+						<button id="modeCompetitive" class="btn btn-outline-primary btn-group-custom active">🏹 Competitive Mode</button>
+						<button id="modeTournament" class="btn btn-outline-primary btn-group-custom">🏆 Tournament Prep Mode</button>
+						<button id="modeTuning" class="btn btn-outline-primary btn-group-custom">🛠 Equipment Tuning Mode</button>
+					</div>
+				</div>
+
+				<div class="mb-4">
 					<span class="section-label">Form Focus</span>
 					<div class="btn-group w-100 mb-3" role="group">
 						<button id="focusStance" class="btn btn-outline-info btn-group-custom active">Stance</button>
 						<button id="focusDraw" class="btn btn-outline-info btn-group-custom">Draw</button>
 						<button id="focusAnchor" class="btn btn-outline-info btn-group-custom">Anchor</button>
+						<button id="focusGrip" class="btn btn-outline-info btn-group-custom">Grip</button>
+						<button id="focusBowArm" class="btn btn-outline-info btn-group-custom">Bow Arm</button>
 						<button id="focusRelease" class="btn btn-outline-info btn-group-custom">Release</button>
 						<button id="focusFollow" class="btn btn-outline-info btn-group-custom">Follow-through</button>
 					</div>
@@ -294,6 +350,17 @@
 			</div>
 		</div>
 
+		<!-- Loading Bar -->
+		<div id="loading-bar" class="loading-bar" style="display:none">
+			<div class="loading-container">
+				<span class="bow-icon">🏹</span>
+				<div class="progress-track">
+					<div class="progress-arrow">➡️</div>
+				</div>
+				<span class="target-icon">🎯</span>
+			</div>
+		</div>
+
 		<div id="feedback-display" class="feedback-badge" style="display:none">
 			<strong>✨ AI Coach Feedback</strong>
 			<div id="feedback-content"></div>
@@ -305,13 +372,14 @@
 	(function(){
 		// AI Coach state
 		const coachState = {
-			objective: 'strength',
+				objective: 'strength',
 			difficulty: 'intermediate',
 			experienceLevel: 'intermediate',
-			liveFeedbackEnabled: true,
-			soundEnabled: true,
+				liveFeedbackEnabled: true,
+				soundEnabled: true,
 			formFocus: 'stance'
 		};
+
 
 		// Save state to localStorage
 		function saveState(){
@@ -350,11 +418,24 @@
 			document.getElementById('focusDraw').classList.toggle('active', coachState.formFocus === 'draw');
 			document.getElementById('focusAnchor').classList.toggle('active', coachState.formFocus === 'anchor');
 			document.getElementById('focusRelease').classList.toggle('active', coachState.formFocus === 'release');
+			document.getElementById('focusBowArm').classList.toggle('active', coachState.formFocus === 'bowarm');
+			document.getElementById('focusGrip').classList.toggle('active', coachState.formFocus === 'grip');
+			document.getElementById('focusRelease').classList.toggle('active', coachState.formFocus === 'release');
 			document.getElementById('focusFollow').classList.toggle('active', coachState.formFocus === 'follow');
 			
 			// Set checkboxes
 			document.getElementById('liveFeedback').checked = coachState.liveFeedbackEnabled;
 			document.getElementById('soundEnabled').checked = coachState.soundEnabled;
+
+				// Mode: default to competitive if not set
+				if(!coachState.mode) coachState.mode = 'competitive';
+				document.getElementById('modeBeginner').classList.toggle('active', coachState.mode === 'beginner');
+				document.getElementById('modeCompetitive').classList.toggle('active', coachState.mode === 'competitive');
+				document.getElementById('modeTournament').classList.toggle('active', coachState.mode === 'tournament');
+				document.getElementById('modeTuning').classList.toggle('active', coachState.mode === 'tuning');
+
+				// render recent sessions
+				renderRecentSessions();
 		}
 
 		// Training Objectives
@@ -431,6 +512,20 @@
 			saveState();
 			showFeedback('📐 Stance Focus: Analyzing foot position, alignment, and balance.');
 		});
+			document.getElementById('focusGrip').addEventListener('click', ()=>{
+				coachState.formFocus = 'grip';
+				document.querySelectorAll('[id^="focus"]').forEach(b=>b.classList.remove('active'));
+				document.getElementById('focusGrip').classList.add('active');
+				saveState();
+				showFeedback('✊ Grip Focus: Evaluating hand placement, tension, and consistency.');
+			});
+			document.getElementById('focusBowArm').addEventListener('click', ()=>{
+				coachState.formFocus = 'bowarm';
+				document.querySelectorAll('[id^="focus"]').forEach(b=>b.classList.remove('active'));
+				document.getElementById('focusBowArm').classList.add('active');
+				saveState();
+				showFeedback('💪 Bow Arm Focus: Assessing arm alignment, extension and stability.');
+			});
 		document.getElementById('focusDraw').addEventListener('click', ()=>{
 			coachState.formFocus = 'draw';
 			document.querySelectorAll('[id^="focus"]').forEach(b=>b.classList.remove('active'));
@@ -540,19 +635,117 @@
 			]
 		};
 
-		// Tools
-		document.getElementById('analyseForm').addEventListener('click', ()=>{
+			// Tools
+				document.getElementById('analyseForm').addEventListener('click', ()=>{
+				// show an archery-themed loading overlay while preparing analysis
+				const loader = document.createElement('div');
+				loader.id = 'analysisLoader';
+				loader.innerHTML = `
+				  <div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);z-index:2000">
+				    <div style="padding:18px 22px;border-radius:12px;background:white;display:flex;flex-direction:column;align-items:center;">
+				      <style>
+				        .archery-loader{display:flex;align-items:center;gap:12px;width:420px}
+				        .archery-loader .track{flex:1;position:relative;height:48px;display:flex;align-items:center}
+				        .archery-loader .arrow{position:absolute;left:8px;top:6px;width:220px;height:36px;transform-origin:left center;animation:arrow-flight 1200ms linear infinite}
+				        @keyframes arrow-flight{0%{transform:translateX(0) rotate(0deg)}50%{transform:translateX(calc(100% - 260px)) rotate(0deg)}100%{transform:translateX(0) rotate(0deg)}}
+				        .archery-bow, .archery-target{width:56px;height:56px;flex:0 0 56px}
+				      </style>
+				
+				      <div class="archery-loader">
+				        <!-- Bow (left) -->
+				        <div class="archery-bow" aria-hidden="true">
+				          <svg viewBox="0 0 64 64" width="56" height="56" xmlns="http://www.w3.org/2000/svg">
+				            <g fill="none" stroke="#6b4226" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+				              <path d="M12 8 C28 12, 28 52, 12 56" />
+				              <path d="M18 12 C30 20, 30 44, 18 52" stroke="#a66f3a"/>
+				            </g>
+				            <line x1="20" y1="8" x2="44" y2="56" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+				          </svg>
+				        </div>
+				
+				        <!-- Track with moving arrow -->
+				        <div class="track" aria-hidden="true">
+				          <div class="arrow" style="position:absolute;left:8px;top:6px;">
+				            <svg viewBox="0 0 220 36" width="220" height="36" xmlns="http://www.w3.org/2000/svg">
+				              <g fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				                <line x1="0" y1="18" x2="180" y2="18" stroke="#555" stroke-width="3" stroke-linecap="round"/>
+				                <polygon points="180,8 210,18 180,28" fill="#b33" stroke="#800" />
+				                <rect x="8" y="10" width="12" height="8" rx="2" fill="#222" />
+				              </g>
+				            </svg>
+				          </div>
+				        </div>
+				
+				        <!-- Target (right) -->
+				        <div class="archery-target" aria-hidden="true">
+				          <svg viewBox="0 0 64 64" width="56" height="56" xmlns="http://www.w3.org/2000/svg">
+				            <circle cx="32" cy="32" r="24" fill="#fff" stroke="#222" stroke-width="2"/>
+				            <circle cx="32" cy="32" r="14" fill="#f33" stroke="#b00" stroke-width="2"/>
+				            <circle cx="32" cy="32" r="6" fill="#fff" stroke="#c00" stroke-width="1"/>
+				          </svg>
+				        </div>
+				      </div>
+				
+				      <div style="margin-top:10px;font-weight:600">Preparing analysis…</div>
+				    </div>
+				  </div>
+				`;
+				document.body.appendChild(loader);
 			const mdl = document.createElement('div');
 			const expLevel = coachState.experienceLevel.charAt(0).toUpperCase() + coachState.experienceLevel.slice(1);
 			const randomImage = feedbackImages[Math.floor(Math.random() * feedbackImages.length)];
 			const feedbackList = feedbackData[coachState.experienceLevel];
 			const randomFeedback = feedbackList[Math.floor(Math.random() * feedbackList.length)];
 			
-			const analysis = {
+				const analysis = {
 				'beginner': '<ul><li>Stance and foot position</li><li>Basic anchor point consistency</li><li>Draw length uniformity</li><li>Follow-through stability</li></ul>',
 				'intermediate': '<ul><li>Advanced anchor consistency and micro-movements</li><li>Back/shoulder tension balance</li><li>Release technique refinement</li><li>Head/neck position during execution</li><li>Draw curve smoothness</li></ul>',
 				'advanced': '<ul><li>Micro-adjustments in hip rotation</li><li>Precision bow arm tracking</li><li>Advanced release timing analysis</li><li>Load/transfer efficiency</li><li>Competitive-level form optimization</li></ul>'
 			};
+
+				// helper: adjust tone based on selected mode
+				function adjustTone(text){
+					const mode = coachState.mode || 'competitive';
+					switch(mode){
+						case 'beginner':
+							return '😊 ' + text + ' Keep it relaxed and repeat slowly.';
+						case 'tournament':
+							return '🔎 ' + text + ' Focus on repeatability under pressure.';
+						case 'tuning':
+							return '🛠 ' + text + ' Check equipment alignment and measurements.';
+						default:
+							return '💡 ' + text;
+					}
+				}
+
+				// helper: simulated video frame notes
+				function makeFrameNotes(focus){
+					const notes = [];
+					const baseFrame = Math.floor(10 + Math.random()*120);
+					if(focus === 'stance'){
+						notes.push(`Frame ${baseFrame}: Feet slightly shoulder-width; weight shifted forward.`);
+						notes.push(`Frame ${baseFrame+18}: Minor heel lift detected.`);
+					} else if(focus === 'draw'){
+						notes.push(`Frame ${baseFrame+3}: Draw length consistent.`);
+						notes.push(`Frame ${baseFrame+30}: Back tension engaged late.`);
+					} else if(focus === 'anchor'){
+						notes.push(`Frame ${baseFrame+5}: Anchor point varies ~1cm between shots.`);
+					} else if(focus === 'grip'){
+						notes.push(`Frame ${baseFrame+4}: Hand position steady; minimal torque on the grip.`);
+						notes.push(`Frame ${baseFrame+22}: Finger pressure consistent across shots.`);
+					} else if(focus === 'bowarm'){
+						notes.push(`Frame ${baseFrame+6}: Bow arm extension consistent; elbow locked.`);
+						notes.push(`Frame ${baseFrame+28}: Minor bow arm oscillation on follow-through.`);
+					} else if(focus === 'release'){
+						notes.push(`Frame ${baseFrame+2}: Slight wrist roll on release.`);
+						notes.push(`Frame ${baseFrame+25}: Follow-through begins correctly.`);
+					} else if(focus === 'follow') {
+						notes.push(`Frame ${baseFrame+10}: Smooth follow-through observed.`);
+					} else {
+						notes.push(`Frame ${baseFrame+10}: General form looks stable.`);
+					}
+					return notes;
+				}
 			
 			const cameraInstructions = {
 				'stance': '📷 Position camera 10-15 feet away at ground level, angled slightly upward to capture full body posture. Ensure feet and hip alignment are visible.',
@@ -566,29 +759,135 @@
 			document.body.appendChild(mdl);
 			const bsModal = new bootstrap.Modal(mdl.querySelector('.modal'));
 			bsModal.show();
+			// remove loading overlay
+			const existingLoader = document.getElementById('analysisLoader');
+			if(existingLoader) existingLoader.remove();
 			// hook up button to show analysis
 			const startBtn = mdl.querySelector('#startRecordingBtn');
-			if(startBtn){
-				startBtn.addEventListener('click', ()=>{
-					bsModal.hide();
-					// show analysis modal with image and feedback
-					const analysis = document.createElement('div');
-					analysis.innerHTML = `<div class="modal fade" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header bg-success text-white"><h5 class="modal-title">✅ Analysis Complete - ${expLevel} Level (${coachState.formFocus.charAt(0).toUpperCase() + coachState.formFocus.slice(1)})</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="row"><div class="col-md-6"><h6>Sample Form Image</h6><img src="${randomImage}" alt="Form Analysis" style="max-width:100%;border-radius:8px;border:2px solid #28a745;"></div><div class="col-md-6"><h6>AI Coach Feedback</h6><div class="alert alert-info"><p style="margin:0;"><strong>💡 Analysis Result:</strong></p><p style="margin:0.5rem 0 0 0;">${randomFeedback}</p></div><div class="alert alert-light"><strong>Recommendations:</strong><ul><li>Maintain this form consistency across all shots</li><li>Practice this technique in varied conditions</li><li>Record more sessions to track improvement</li></ul></div></div></div></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button><button id="saveAnalysisBtn" class="btn btn-success">Save to Session</button></div></div></div></div>`;
-					document.body.appendChild(analysis);
-					const bsAnalysis = new bootstrap.Modal(analysis.querySelector('.modal'));
-					bsAnalysis.show();
-					analysis.querySelector('#saveAnalysisBtn').addEventListener('click', ()=>{
-						showFeedback('✅ Analysis saved to current session!');
-						bsAnalysis.hide();
+				if(startBtn){
+					startBtn.addEventListener('click', ()=>{
+						bsModal.hide();
+
+						// generate fake per-aspect scores influenced by experience level and focus
+						const aspects = ['Stance','Draw','Anchor','Release','Follow-through','Grip','Bow Arm'];
+						const baseByLevel = { beginner:55, intermediate:72, advanced:86 };
+						const base = baseByLevel[coachState.experienceLevel] || 70;
+						const scores = {};
+						aspects.forEach(a => {
+							// small boost for currently selected focus (normalize names)
+							const normA = a.toLowerCase().replace(/[^a-z0-9]/g,'');
+							const normFocus = (coachState.formFocus||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+							const focusBoost = (normA.includes(normFocus) && normFocus) ? 6 + Math.round(Math.random()*4) : 0;
+							const randomVariance = Math.round((Math.random()-0.4) * 18); // skew slightly positive
+							let s = base + randomVariance + focusBoost + Math.round((Math.random()-0.5)*8);
+							s = Math.max(25, Math.min(99, s));
+							scores[a] = s;
+						});
+						const overall = Math.round(Object.values(scores).reduce((a,b)=>a+b,0)/aspects.length);
+
+						// build scores HTML (simple list + progress bars)
+						let scoresHtml = '<h6>Form Scores</h6>';
+						scoresHtml += '<div class="mb-2">';
+						aspects.forEach(a=>{
+							const v = scores[a];
+							scoresHtml += `<div style="margin-bottom:6px"><div class="d-flex justify-content-between"><small>${a}</small><small><strong>${v}</strong></small></div><div class="progress" style="height:8px;"><div class="progress-bar" role="progressbar" style="width:${v}%" aria-valuenow="${v}" aria-valuemin="0" aria-valuemax="100"></div></div></div>`;
+						});
+						scoresHtml += `<div style="margin-top:.75rem"><strong>Overall:</strong> ${overall}</div>`;
+						scoresHtml += '</div>';
+
+						// show analysis modal with image, feedback and scores
+						const analysis = document.createElement('div');
+						analysis.innerHTML = `<div class="modal fade" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header bg-success text-white"><h5 class="modal-title">✅ Analysis Complete - ${expLevel} Level (${coachState.formFocus.charAt(0).toUpperCase() + coachState.formFocus.slice(1)})</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="row"><div class="col-md-6"><h6>Sample Form Image</h6><img src="${randomImage}" alt="Form Analysis" style="max-width:100%;border-radius:8px;border:2px solid #28a745;"></div><div class="col-md-6"><h6>AI Coach Feedback</h6><div class="alert alert-info"><p style="margin:0;"><strong>💡 Analysis Result:</strong></p><p style="margin:0.5rem 0 0 0;">${randomFeedback}</p></div><div class="alert alert-light"><strong>Recommendations:</strong><ul><li>Maintain this form consistency across all shots</li><li>Practice this technique in varied conditions</li><li>Record more sessions to track improvement</li></ul></div>${scoresHtml}</div></div></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button><button id="saveAnalysisBtn" class="btn btn-success">Save to Session</button></div></div></div></div>`;
+						// add simulated frame notes and optional competition note
+						const frameNotes = makeFrameNotes(coachState.formFocus);
+						let frameHtml = '<div class="mt-3"><strong>Frame Feedback</strong><ul class="small text-muted">';
+						frameNotes.forEach(n=> frameHtml += `<li>${n}</li>`);
+						frameHtml += '</ul></div>';
+						const competitionNote = '<div class="mt-2 small text-muted">Note: Analysis uses simulated computer-vision markers to estimate joint angles and shot sequencing.</div>';
+						// inject frame notes and competition note into modal
+						analysis.innerHTML = analysis.innerHTML.replace('${scoresHtml}', `${scoresHtml}${frameHtml}${competitionNote}`);
+						document.body.appendChild(analysis);
+						const bsAnalysis = new bootstrap.Modal(analysis.querySelector('.modal'));
+						bsAnalysis.show();
+
+						// append stance report + frame notes into the right column, with a toggle for frame analysis
+						const cols = analysis.querySelectorAll('.modal-body .row .col-md-6');
+						const rightCol = cols && cols[1];
+						if(rightCol){
+							// stance-specific detailed report
+							if(coachState.formFocus === 'stance'){
+								const stanceReport = `
+									<div class="mt-3">
+										<h6>🏹 Stance Evaluation Report</h6>
+										<div><strong>Overall Stance Score:</strong> 87 / 100</div>
+										<div><strong>Stability Rating:</strong> High</div>
+										<div><strong>Consistency Index:</strong> 82%</div>
+										<hr/>
+										<h6>📊 Technical Breakdown</h6>
+										<ul class="small">
+											<li><strong>Foot Positioning:</strong> ✅ Optimal<br/>Front foot angled ~30° outward<br/>Rear foot alignment stable<br/>No heel lift detected</li>
+											<li><strong>Weight Distribution:</strong> ✅ Balanced<br/>Estimated 58% front / 42% rear<br/>Minimal lateral sway</li>
+											<li><strong>Shoulder Engagement:</strong> ✅ Strong<br/>Scapular engagement maintained<br/>No visible elevation in draw shoulder</li>
+										</ul>
+										<h6>🎯 Performance Impact</h6>
+										<p class="small text-muted">Your current stance provides strong structural stability and supports consistent draw alignment. This foundation is competition-ready at the intermediate level.</p>
+										<h6>🚀 Recommendations for Progression</h6>
+										<ul class="small">
+											<li>Maintain shoulder tension through full follow-through</li>
+											<li>Reduce micro-sway during pre-draw setup</li>
+											<li>Track stance consistency over 20+ shot sessions</li>
+											<li>Test stability under mild wind conditions</li>
+										</ul>
+										<h6>📈 Development Focus</h6>
+										<p class="small text-muted">To reach Advanced Level Stability, aim for: 90%+ stance consistency across sessions and &lt;3% lateral sway deviation.</p>
+									</div>`;
+								rightCol.innerHTML += stanceReport;
+							}
+
+							// add toggle & frame notes container
+							const toggleHtml = `<div class="mt-3"><button id="toggleFrameAnalysis" class="btn btn-sm btn-outline-secondary mb-2">View Frame Analysis</button><div id="frameNotesContainer" style="display:none">${frameHtml}${competitionNote}</div></div>`;
+							rightCol.innerHTML += toggleHtml;
+							const toggleBtn = analysis.querySelector('#toggleFrameAnalysis');
+							const frameContainer = analysis.querySelector('#frameNotesContainer');
+							if(toggleBtn && frameContainer){
+								toggleBtn.addEventListener('click', ()=>{
+									if(frameContainer.style.display === 'none'){
+										frameContainer.style.display = 'block';
+										toggleBtn.textContent = 'Hide Frame Analysis';
+									} else {
+										frameContainer.style.display = 'none';
+										toggleBtn.textContent = 'View Frame Analysis';
+									}
+								});
+							}
+						}
+
+						// save analysis with generated scores into practices when user clicks save
+						analysis.querySelector('#saveAnalysisBtn').addEventListener('click', ()=>{
+							// build practice record
+							const practices = JSON.parse(localStorage.getItem('practices')||'[]');
+							const record = {
+								id: Date.now(),
+								name: `Analysis - ${expLevel} - ${coachState.formFocus}`,
+								created: new Date().toISOString(),
+								totalScore: overall,
+								formScores: scores,
+								notes: randomFeedback
+							};
+							practices.push(record);
+							localStorage.setItem('practices', JSON.stringify(practices));
+							showFeedback('✅ Analysis saved to current session!');
+							bsAnalysis.hide();
+						});
+
+						analysis.querySelector('.modal').addEventListener('hidden.bs.modal', ()=> analysis.remove());
 					});
-					analysis.querySelector('.modal').addEventListener('hidden.bs.modal', ()=> analysis.remove());
-				});
-			}
+				}
 			mdl.querySelector('.modal').addEventListener('hidden.bs.modal', ()=> mdl.remove());
 		});
 
 		// New Practice Name button: add a practice template
-		document.getElementById('newPracticeNameBtn').addEventListener('click', ()=>{
+			document.getElementById('newPracticeNameBtn').addEventListener('click', ()=>{
 			const name = prompt('New practice/template name:');
 			if(!name) return;
 			const tpl = { id: Date.now(), name: name, distances: [], weather: 'indoor', equipmentSetupId: null };
@@ -634,18 +933,44 @@
 				'Film yourself from different angles to catch form issues early.'
 			];
 			const tip = tips[Math.floor(Math.random() * tips.length)];
-			showFeedback('💡 Tip: ' + tip);
+			showFeedback('💡 Tip: ' + tip, true);
 		});
 
-		function showFeedback(message){
-			const display = document.getElementById('feedback-display');
-			const content = document.getElementById('feedback-content');
-			content.innerHTML = message;
-			display.style.display = 'block';
-			setTimeout(()=>{
-				display.style.display = 'none';
-			}, 5000);
-		}
+			function showFeedback(message, showLoading = false){
+				const loadingBar = document.getElementById('loading-bar');
+				const display = document.getElementById('feedback-display');
+				const content = document.getElementById('feedback-content');
+				// apply mode tone if available
+				try{ if(coachState && coachState.mode){
+					const m = coachState.mode;
+					switch(m){
+						case 'beginner': message = '😊 ' + message; break;
+						case 'tournament': message = '🔎 ' + message; break;
+						case 'tuning': message = '🛠 ' + message; break;
+						default: message = '💡 ' + message; break;
+					}
+				}}
+				catch(e){}
+				content.innerHTML = message;
+				if (showLoading) {
+					// Show loading bar first
+					loadingBar.style.display = 'block';
+					setTimeout(() => {
+						loadingBar.style.display = 'none';
+						// Then show feedback
+						display.style.display = 'block';
+						setTimeout(()=>{
+							display.style.display = 'none';
+						}, 5000);
+					}, 2000); // 2 seconds for loading animation
+				} else {
+					// Show feedback immediately
+					display.style.display = 'block';
+					setTimeout(()=>{
+						display.style.display = 'none';
+					}, 5000);
+				}
+			}
 
 		// Initialize on load
 		initializeUI();
@@ -662,6 +987,32 @@
 					}
 				}, 10);
 			});
+
+			// Recent sessions renderer
+			function renderRecentSessions(){
+				const containerId = 'recentSessionsContainer';
+				let container = document.getElementById(containerId);
+				if(!container){
+					const wrap = document.createElement('div');
+					wrap.className = 'coach-card card';
+					wrap.innerHTML = `<div class="card-header" style="background: linear-gradient(135deg, #334155 0%, #1f2937 100%); color: white;"><strong>📈 Recent Sessions</strong></div><div class="card-body"><div id="${containerId}"></div></div>`;
+					document.querySelector('main.site-main').appendChild(wrap);
+					container = document.getElementById(containerId);
+				}
+				const practices = JSON.parse(localStorage.getItem('practices')||'[]');
+				const sorted = practices.slice().sort((a,b)=> new Date(b.created) - new Date(a.created)).slice(0,5);
+				if(!sorted.length){ container.innerHTML = '<div class="text-muted">No recent sessions yet.</div>'; return; }
+				let html = '<ul class="list-group">';
+				sorted.forEach(s=>{ const date = s.created? new Date(s.created).toLocaleString() : ''; const score = s.totalScore!=null? s.totalScore : (s.formScores? Math.round(Object.values(s.formScores).reduce((a,b)=>a+b,0)/Object.keys(s.formScores).length) : '—'); html += `<li class="list-group-item d-flex justify-content-between align-items-center"><div><strong>${s.name}</strong><div class="small text-muted">${date}</div></div><span class="badge bg-primary rounded-pill">${score}</span></li>`; });
+				html += '</ul>';
+				container.innerHTML = html;
+			}
+
+			// Mode button handlers
+			document.getElementById('modeBeginner').addEventListener('click', ()=>{ coachState.mode='beginner'; ['modeBeginner','modeCompetitive','modeTournament','modeTuning'].forEach(id=>document.getElementById(id).classList.remove('active')); document.getElementById('modeBeginner').classList.add('active'); saveState(); showFeedback('Mode set to Beginner'); });
+			document.getElementById('modeCompetitive').addEventListener('click', ()=>{ coachState.mode='competitive'; ['modeBeginner','modeCompetitive','modeTournament','modeTuning'].forEach(id=>document.getElementById(id).classList.remove('active')); document.getElementById('modeCompetitive').classList.add('active'); saveState(); showFeedback('Mode set to Competitive'); });
+			document.getElementById('modeTournament').addEventListener('click', ()=>{ coachState.mode='tournament'; ['modeBeginner','modeCompetitive','modeTournament','modeTuning'].forEach(id=>document.getElementById(id).classList.remove('active')); document.getElementById('modeTournament').classList.add('active'); saveState(); showFeedback('Mode set to Tournament Prep'); });
+			document.getElementById('modeTuning').addEventListener('click', ()=>{ coachState.mode='tuning'; ['modeBeginner','modeCompetitive','modeTournament','modeTuning'].forEach(id=>document.getElementById(id).classList.remove('active')); document.getElementById('modeTuning').classList.add('active'); saveState(); showFeedback('Mode set to Equipment Tuning'); });
 		});
 	})();
 	</script>
