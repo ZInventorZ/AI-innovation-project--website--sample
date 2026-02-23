@@ -257,7 +257,34 @@ main p{color:var(--muted);font-size:1rem}
 	.navbar .nav .nav-item:first-child{border-left:none}
 	.navbar .nav .nav-link{padding:.55rem .35rem}
 }
+.feature-card {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    background: #fff;
+}
 
-  
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
 
+.feature-icon {
+    font-size: 2rem;
+}
+.feature-card {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    background: #fff;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+.feature-icon {
+    font-size: 2rem;
+}
   
